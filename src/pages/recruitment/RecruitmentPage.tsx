@@ -8,6 +8,7 @@ import { Plus, ListFilter } from "lucide-react";
 import type { JobPosition } from "@/types/job";
 import { JobPositionList } from "./components/JobPositionList";
 import { JobPositionForm, type JobFormValues } from "./components/JobPositionForm";
+import { CandidateManagement } from "./components/CandidateManagement";
 import {
   Dialog,
   DialogContent,
@@ -178,17 +179,8 @@ export function RecruitmentPage() {
           />
         </TabsContent>
 
-        <TabsContent value="candidates">
-          <div className="flex h-100 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50">
-            <div className="text-center">
-              <h3 className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
-                候选人库
-              </h3>
-              <p className="mt-1 text-sm text-slate-500">
-                在此展示所有候选人及其状态。
-              </p>
-            </div>
-          </div>
+        <TabsContent value="candidates" className="h-full">
+          <CandidateManagement jobs={jobs} />
         </TabsContent>
 
         <TabsContent value="calendar">
