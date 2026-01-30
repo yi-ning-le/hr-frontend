@@ -1,99 +1,92 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
+import { LayoutGrid, List as ListIcon } from "lucide-react";
+import type { DropResult } from "@hello-pangea/dnd";
 
 import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import type { JobPosition } from "@/types/job";
-import type { Candidate } from "@/types/candidate";
+import type { CandidateStatus } from "@/types/candidate";
 
 import { JobSidebar } from "./candidate/JobSidebar";
 import { CandidateToolbar } from "./candidate/CandidateToolbar";
 import { CandidateList } from "./candidate/CandidateList";
 import { CandidateDetail } from "./candidate/CandidateDetail";
+import { CandidateKanban } from "./candidate/CandidateKanban";
 
-// Mock Data
-const MOCK_CANDIDATES: Candidate[] = [
-  {
-    id: "c1",
-    name: "Alex Johnson",
-    email: "alex.j@example.com",
-    phone: "+1 (555) 123-4567",
-    experienceYears: 5,
-    education: "Master in CS, Stanford",
-    appliedJobId: "1",
-    appliedJobTitle: "高级前端工程师",
-    channel: "LinkedIn",
-    resumeUrl: "#",
-    status: "screening",
-    note: "Great experience with React.",
-    appliedAt: new Date("2024-05-10"),
-  },
-  {
-    id: "c2",
-    name: "Sarah Williams",
-    email: "sarah.w@example.com",
-    phone: "+1 (555) 987-6543",
-    experienceYears: 3,
-    education: "Bachelor in Design, RISD",
-    appliedJobId: "2",
-    appliedJobTitle: "产品经理",
-    channel: "Referral",
-    resumeUrl: "#",
-    status: "interview",
-    note: "Strong portfolio.",
-    appliedAt: new Date("2024-05-12"),
-  },
-  {
-    id: "c3",
-    name: "Mike Chen",
-    email: "mike.chen@example.com",
-    phone: "+86 138-1234-5678",
-    experienceYears: 7,
-    education: "Bachelor in CS, Tsinghua",
-    appliedJobId: "1",
-    appliedJobTitle: "高级前端工程师",
-    channel: "Official Site",
-    resumeUrl: "#",
-    status: "new",
-    note: "",
-    appliedAt: new Date("2024-05-14"),
-  },
-];
+import { useCandidateStore } from "@/stores/useCandidateStore";
 
 interface CandidateManagementProps {
   jobs: JobPosition[];
 }
 
 export function CandidateManagement({ jobs }: CandidateManagementProps) {
-  const [selectedJobId, setSelectedJobId] = useState<string | "all">("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
-    null
+
+
+  // Use selectors to avoid unnecessary re-renders
+  const candidates = useCandidateStore((state) => state.candidates);
+  const selectedJobId = useCandidateStore((state) => state.selectedJobId);
+  const searchQuery = useCandidateStore((state) => state.searchQuery);
+  const selectedCandidateId = useCandidateStore((state) => state.selectedCandidateId);
+  const viewMode = useCandidateStore((state) => state.viewMode);
+  const statusFilter = useCandidateStore((state) => state.statusFilter);
+
+  // Actions
+  const updateCandidateStatus = useCandidateStore((state) => state.updateCandidateStatus);
+  const selectCandidate = useCandidateStore((state) => state.selectCandidate);
+  const setSearchQuery = useCandidateStore((state) => state.setSearchQuery);
+  const setSelectedJobId = useCandidateStore((state) => state.setSelectedJobId);
+  const setViewMode = useCandidateStore((state) => state.setViewMode);
+  const setStatusFilter = useCandidateStore((state) => state.setStatusFilter);
+
+  // Derived state
+  const selectedCandidate = useMemo(() =>
+    candidates.find((c) => c.id === selectedCandidateId) || null,
+    [candidates, selectedCandidateId]
   );
 
   const filteredCandidates = useMemo(() => {
-    return MOCK_CANDIDATES.filter((candidate) => {
+    return candidates.filter((candidate) => {
       const matchesJob =
         selectedJobId === "all" || candidate.appliedJobId === selectedJobId;
       const matchesSearch =
         candidate.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         candidate.email.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesJob && matchesSearch;
+      const matchesStatus =
+        statusFilter.length === 0 || statusFilter.includes(candidate.status);
+      return matchesJob && matchesSearch && matchesStatus;
     });
-  }, [selectedJobId, searchQuery]);
+  }, [candidates, selectedJobId, searchQuery, statusFilter]);
 
   // Aggregate counts
   const jobCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    MOCK_CANDIDATES.forEach((c) => {
+    candidates.forEach((c) => {
       counts[c.appliedJobId] = (counts[c.appliedJobId] || 0) + 1;
     });
     return counts;
-  }, []);
+  }, [candidates]);
 
-  const totalCandidates = MOCK_CANDIDATES.length;
+  const totalCandidates = candidates.length;
+
+  const handleDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) return;
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    const newStatus = destination.droppableId as CandidateStatus;
+    updateCandidateStatus(draggableId, newStatus);
+  };
 
   return (
     <div className="flex h-[calc(100vh-200px)] rounded-lg border bg-background shadow-sm overflow-hidden">
@@ -106,26 +99,51 @@ export function CandidateManagement({ jobs }: CandidateManagementProps) {
         totalCandidates={totalCandidates}
       />
 
-      {/* Main Content - Candidate List */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <CandidateToolbar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-        <CandidateList
-          candidates={filteredCandidates}
-          onCandidateClick={setSelectedCandidate}
-        />
+        <div className="flex items-center justify-between p-4 pb-0">
+          <div className="flex-1 mr-4">
+            <CandidateToolbar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+            />
+          </div>
+          <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "list" | "board")}>
+            <ToggleGroupItem value="list" aria-label="List View">
+              <ListIcon className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="board" aria-label="Kanban View">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
+        <div className="flex-1 overflow-hidden p-4 pt-2">
+          {viewMode === "list" ? (
+            <CandidateList
+              candidates={filteredCandidates}
+              onCandidateClick={(c) => selectCandidate(c.id)}
+            />
+          ) : (
+            <CandidateKanban
+              candidates={filteredCandidates}
+              onDragEnd={handleDragEnd}
+              onCandidateClick={(c) => selectCandidate(c.id)}
+            />
+          )}
+        </div>
       </div>
 
       {/* Candidate Detail Modal */}
       <Dialog
         open={!!selectedCandidate}
-        onOpenChange={(open: boolean) => !open && setSelectedCandidate(null)}
+        onOpenChange={(open: boolean) => !open && selectCandidate(null)}
       >
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
           {selectedCandidate && (
-            <CandidateDetail candidate={selectedCandidate} />
+            <CandidateDetail />
           )}
         </DialogContent>
       </Dialog>

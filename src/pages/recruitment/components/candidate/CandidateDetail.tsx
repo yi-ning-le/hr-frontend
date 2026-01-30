@@ -24,15 +24,22 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { Candidate, CandidateStatus } from "@/types/candidate";
+import type { CandidateStatus } from "@/types/candidate"; // Type only, data from store
+import { useCandidateStore } from "@/stores/useCandidateStore";
+import { ResumePreviewModal } from "./ResumePreviewModal";
 
-interface CandidateDetailProps {
-  candidate: Candidate;
-}
+export function CandidateDetail() {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-export function CandidateDetail({ candidate }: CandidateDetailProps) {
-  const [status, setStatus] = useState<CandidateStatus>(candidate.status);
-  const [note, setNote] = useState(candidate.note || "");
+  // Use store
+  const selectedCandidateId = useCandidateStore((state) => state.selectedCandidateId);
+  const candidates = useCandidateStore((state) => state.candidates);
+  const updateCandidateStatus = useCandidateStore((state) => state.updateCandidateStatus);
+  const updateCandidateNote = useCandidateStore((state) => state.updateCandidateNote);
+
+  const candidate = candidates.find((c) => c.id === selectedCandidateId);
+
+  if (!candidate) return null;
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
@@ -63,8 +70,8 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
           </div>
 
           <Select
-            value={status}
-            onValueChange={(v) => setStatus(v as CandidateStatus)}
+            value={candidate.status}
+            onValueChange={(v) => updateCandidateStatus(candidate.id, v as CandidateStatus)}
           >
             <SelectTrigger className="w-[140px]">
               <SelectValue />
@@ -130,10 +137,10 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
             </div>
             <div className="rounded-xl border bg-slate-50/50 dark:bg-slate-900/50 p-12 text-center text-sm text-muted-foreground min-h-[240px] flex flex-col items-center justify-center border-dashed">
               <FileText className="h-12 w-12 mb-3 opacity-20" />
-              <p className="font-medium">PDF预览组件在此处集成</p>
-              <p className="text-xs mt-2 opacity-60">
-                (Mock: Resume Content Display)
-              </p>
+              <p className="font-medium mb-2">PDF预览组件在此处集成</p>
+              <Button onClick={() => setIsPreviewOpen(true)} variant="secondary" size="sm">
+                全屏预览简历
+              </Button>
             </div>
           </section>
 
@@ -147,8 +154,8 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
             <div className="space-y-3">
               <Textarea
                 placeholder="添加候选人备注..."
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
+                value={candidate.note || ""}
+                onChange={(e) => updateCandidateNote(candidate.id, e.target.value)}
                 className="min-h-[120px] resize-none focus-visible:ring-primary"
               />
               <div className="flex justify-end">
@@ -160,6 +167,13 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
           </section>
         </div>
       </ScrollArea>
+
+      {/* Resume Preview Modal (controlled locally) */}
+      <ResumePreviewModal
+        candidate={candidate}
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+      />
     </div>
   );
 }

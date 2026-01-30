@@ -58,6 +58,16 @@ export function RecruitmentPage() {
     setJobs((prev) => prev.filter((job) => job.id !== jobId));
   };
 
+  const handleStatusToggle = (job: JobPosition) => {
+    setJobs((prev) =>
+      prev.map((j) =>
+        j.id === job.id
+          ? { ...j, status: j.status === "OPEN" ? "CLOSED" : "OPEN" }
+          : j
+      )
+    );
+  };
+
   const handleSaveJob = (data: JobFormValues) => {
     if (editingJob) {
       // Update existing
@@ -100,6 +110,7 @@ export function RecruitmentPage() {
             onEdit={handleEditJob}
             onDelete={handleDeleteJob}
             onView={handleViewJob}
+            onStatusToggle={handleStatusToggle}
           />
         </TabsContent>
 
