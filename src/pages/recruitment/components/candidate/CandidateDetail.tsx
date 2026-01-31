@@ -27,6 +27,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { CandidateStatus } from "@/types/candidate"; // Type only, data from store
 import { useCandidateStore } from "@/stores/useCandidateStore";
 import { ResumePreviewModal } from "./ResumePreviewModal";
+import { PdfPreview } from "./PdfPreview";
 
 export function CandidateDetail() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -38,6 +39,7 @@ export function CandidateDetail() {
   const updateCandidateNote = useCandidateStore((state) => state.updateCandidateNote);
 
   const candidate = candidates.find((c) => c.id === selectedCandidateId);
+  console.log(candidate)
 
   if (!candidate) return null;
 
@@ -131,17 +133,35 @@ export function CandidateDetail() {
               <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
                 <FileText className="h-4 w-4" /> 简历预览
               </h4>
-              <Button variant="outline" size="sm" className="h-8 text-xs">
-                下载简历
-              </Button>
+              {candidate.resumeUrl && candidate.resumeUrl !== "#" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  onClick={() => window.open(candidate.resumeUrl, "_blank")}
+                >
+                  下载简历
+                </Button>
+              )}
             </div>
-            <div className="rounded-xl border bg-slate-50/50 dark:bg-slate-900/50 p-12 text-center text-sm text-muted-foreground min-h-[240px] flex flex-col items-center justify-center border-dashed">
-              <FileText className="h-12 w-12 mb-3 opacity-20" />
-              <p className="font-medium mb-2">PDF预览组件在此处集成</p>
-              <Button onClick={() => setIsPreviewOpen(true)} variant="secondary" size="sm">
-                全屏预览简历
-              </Button>
-            </div>
+            {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
+              <div
+                onClick={() => setIsPreviewOpen(true)}
+                className="cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all rounded-xl"
+              >
+                <PdfPreview
+                  url={candidate.resumeUrl}
+                  maxHeight="300px"
+                  showToolbar={false}
+                  initialScale={0.8}
+                />
+              </div>
+            ) : (
+              <div className="rounded-xl border bg-slate-50/50 dark:bg-slate-900/50 p-12 text-center text-sm text-muted-foreground min-h-[240px] flex flex-col items-center justify-center border-dashed">
+                <FileText className="h-12 w-12 mb-3 opacity-20" />
+                <p className="font-medium">暂无简历文件</p>
+              </div>
+            )}
           </section>
 
           <Separator />
