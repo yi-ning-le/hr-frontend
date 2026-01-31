@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, ListFilter } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface RecruitmentHeaderProps {
   onAddJob: () => void;
@@ -17,10 +17,6 @@ export function RecruitmentHeader({ onAddJob }: RecruitmentHeaderProps) {
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm">
-          <ListFilter className="mr-2 h-4 w-4" />
-          筛选视图
-        </Button>
         <Button
           className="bg-blue-600 hover:bg-blue-700 text-white"
           size="sm"
