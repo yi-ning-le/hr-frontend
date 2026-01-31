@@ -2,11 +2,10 @@ import { useMemo } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import type { Candidate, CandidateStatus } from "@/types/candidate";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Briefcase, MapPin, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 
 interface CandidateKanbanProps {
   candidates: Candidate[];

@@ -60,6 +60,9 @@ interface CandidateState {
 
   // Actions
   setCandidates: (candidates: Candidate[]) => void;
+  addCandidate: (candidate: Candidate) => void;
+  updateCandidate: (id: string, updates: Partial<Candidate>) => void;
+  removeCandidate: (id: string) => void;
   updateCandidateStatus: (id: string, status: CandidateStatus) => void;
   updateCandidateNote: (id: string, note: string) => void;
   selectCandidate: (id: string | null) => void;
@@ -99,4 +102,23 @@ export const useCandidateStore = create<CandidateState>((set) => ({
   setSelectedJobId: (id) => set({ selectedJobId: id }),
   setViewMode: (mode) => set({ viewMode: mode }),
   setStatusFilter: (statuses) => set({ statusFilter: statuses }),
+
+  // CRUD Actions
+  addCandidate: (candidate) =>
+    set((state) => ({ candidates: [candidate, ...state.candidates] })),
+
+  updateCandidate: (id, updates) =>
+    set((state) => ({
+      candidates: state.candidates.map((c) =>
+        c.id === id ? { ...c, ...updates } : c,
+      ),
+    })),
+
+  removeCandidate: (id) =>
+    set((state) => ({
+      candidates: state.candidates.filter((c) => c.id !== id),
+      // If the removed candidate was selected, deselect them
+      selectedCandidateId:
+        state.selectedCandidateId === id ? null : state.selectedCandidateId,
+    })),
 }));

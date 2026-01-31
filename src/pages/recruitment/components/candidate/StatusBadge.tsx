@@ -9,7 +9,7 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const map: Record<CandidateStatus, { label: string; className: string; icon: any }> = {
+  const map: Record<CandidateStatus, { label: string; className: string; icon: React.ElementType }> = {
     new: {
       label: "新投递",
       className: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800",

@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { AddCandidateDialog } from "./AddCandidateDialog";
 import type { CandidateStatus } from "@/types/candidate";
 
 interface CandidateToolbarProps {
@@ -46,6 +47,7 @@ export function CandidateToolbar({
         />
       </div>
       <div className="flex items-center gap-2">
+        <AddCandidateDialog />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1">
