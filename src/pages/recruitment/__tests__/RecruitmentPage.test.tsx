@@ -3,12 +3,35 @@ import { RecruitmentPage } from "../RecruitmentPage";
 import { describe, it, expect, vi } from "vitest";
 
 // Mock subcomponents
-vi.mock("../components/RecruitmentStats", () => ({
+vi.mock("../../../lib/parseResume", () => ({
+  parseResume: vi.fn(),
+}));
+
+// Mock Router
+vi.mock("../../../routes/_protected/recruitment", () => ({
+  Route: {
+    useSearch: vi.fn(() => ({ tab: "overview" })),
+    useNavigate: vi.fn(() => vi.fn()),
+  },
+}));
+
+// Mock Stores
+vi.mock("../../../stores/useJobStore", () => ({
+  useJobStore: () => ({
+    setIsAddDialogOpen: vi.fn(),
+  }),
+}));
+
+vi.mock("../components/overview/RecruitmentStats", () => ({
   RecruitmentStats: () => <div data-testid="recruitment-stats">Stats Component</div>,
 }));
 
-vi.mock("../components/RecentApplications", () => ({
+vi.mock("../components/overview/RecentApplications", () => ({
   RecentApplications: () => <div data-testid="recent-applications">Applications Component</div>,
+}));
+
+vi.mock("../components/candidates/PdfPreview", () => ({
+  PdfPreview: () => <div data-testid="pdf-preview">PDF Preview Component</div>,
 }));
 
 describe("RecruitmentPage", () => {

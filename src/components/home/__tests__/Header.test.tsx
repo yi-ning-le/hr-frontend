@@ -17,6 +17,17 @@ const router = createRouter({
   history,
 });
 
+vi.mock("@/stores/useAuthStore", () => ({
+  useAuthStore: () => ({
+    user: {
+      username: "管理员",
+      email: "admin@example.com",
+      avatar: "https://github.com/shadcn.png"
+    },
+    logout: vi.fn(),
+  }),
+}));
+
 function renderWithRouter() {
   return render(<RouterProvider router={router} />);
 }
@@ -39,6 +50,6 @@ describe("Header", () => {
   it("renders the user avatar with fallback", () => {
     renderWithRouter(<Header />);
 
-    expect(screen.getByText("管")).toBeInTheDocument();
+    expect(screen.getByText("管理")).toBeInTheDocument();
   });
 });
