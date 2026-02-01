@@ -5,6 +5,7 @@ import { UploadCloud, Loader2, Plus } from "lucide-react";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { useCandidateStore } from "@/stores/useCandidateStore";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 
 export function AddCandidateDialog() {
@@ -12,6 +13,7 @@ export function AddCandidateDialog() {
   const [step, setStep] = useState<"upload" | "form">("upload");
   const [isParsing, setIsParsing] = useState(false);
   const [parsedData, setParsedData] = useState<Partial<CandidateFormValues>>({});
+  const [isDragging, setIsDragging] = useState(false);
 
   const addCandidate = useCandidateStore((state) => state.addCandidate);
 
@@ -19,6 +21,7 @@ export function AddCandidateDialog() {
     setStep("upload");
     setParsedData({});
     setIsParsing(false);
+    setIsDragging(false);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -28,9 +31,12 @@ export function AddCandidateDialog() {
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const processFile = (file: File) => {
+    const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Please upload a PDF or Word document (.pdf, .doc, .docx)");
+      return;
+    }
 
     setIsParsing(true);
 
@@ -51,6 +57,31 @@ export function AddCandidateDialog() {
       setStep("form");
       toast.success("Resume parsed successfully!");
     }, 1500);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file);
+    }
   };
 
   const handleSubmit = (values: CandidateFormValues) => {
@@ -84,7 +115,15 @@ export function AddCandidateDialog() {
         </DialogHeader>
 
         {step === "upload" ? (
-          <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-10 mt-4 transition-colors hover:bg-muted/50">
+          <div
+            className={cn(
+              "flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-10 mt-4 transition-colors",
+              isDragging ? "border-primary bg-primary/10" : "hover:bg-muted/50"
+            )}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             {isParsing ? (
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
