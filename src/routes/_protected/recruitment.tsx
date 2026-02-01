@@ -1,5 +1,5 @@
 import { createRoute } from '@tanstack/react-router'
-import { Route as RootRoute } from './__root'
+import { Route as ProtectedLayoutRoute } from '../_protected'
 import { RecruitmentPage } from '@/pages/recruitment/RecruitmentPage'
 import { z } from 'zod'
 
@@ -8,7 +8,7 @@ const recruitmentSearchSchema = z.object({
 })
 
 export const Route = createRoute({
-  getParentRoute: () => RootRoute,
+  getParentRoute: () => ProtectedLayoutRoute,
   path: '/recruitment',
   validateSearch: (search) => recruitmentSearchSchema.parse(search),
   component: RecruitmentPage,

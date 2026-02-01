@@ -5,7 +5,7 @@ import { OverviewTab } from "./components/overview/OverviewTab";
 import { CalendarTab } from "./components/calendar/CalendarTab";
 import { JobManagementTab } from "./components/jobs/JobManagementTab";
 import { useJobStore } from "@/stores/useJobStore";
-import { Route } from "@/routes/recruitment";
+import { Route } from "@/routes/_protected/recruitment";
 
 export function RecruitmentPage() {
   const { tab: activeTab = "overview" } = Route.useSearch();
