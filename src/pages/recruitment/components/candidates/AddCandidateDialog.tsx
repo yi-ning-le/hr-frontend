@@ -6,6 +6,7 @@ import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { useCandidateStore } from "@/stores/useCandidateStore";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { parseResume } from "@/lib/parseResume";
 
 
 export function AddCandidateDialog() {
@@ -33,7 +34,7 @@ export function AddCandidateDialog() {
     }
   };
 
-  const processFile = (file: File) => {
+  const processFile = async (file: File) => {
     const allowedTypes = ["application/pdf"];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Please upload a PDF document (.pdf)");
@@ -41,8 +42,27 @@ export function AddCandidateDialog() {
     }
 
     setResumeFile(file);
-    setStep("form");
-    toast.success("Resume attached successfully!");
+    setIsParsing(true);
+
+    try {
+      const parsed = await parseResume(file);
+      setParsedData(parsed);
+
+      const filledFields = Object.keys(parsed).filter(
+        (key) => parsed[key as keyof typeof parsed]
+      );
+      if (filledFields.length > 0) {
+        toast.success(`Auto-filled: ${filledFields.join(", ")}`);
+      } else {
+        toast.info("Could not extract candidate info. Please fill manually.");
+      }
+    } catch (error) {
+      console.error("Resume parsing error:", error);
+      toast.error("Failed to parse resume. Please fill form manually.");
+    } finally {
+      setIsParsing(false);
+      setStep("form");
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +132,7 @@ export function AddCandidateDialog() {
             {isParsing ? (
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">Attaching resume...</p>
+                <p className="text-sm text-muted-foreground">Parsing resume...</p>
               </div>
             ) : (
               <>
