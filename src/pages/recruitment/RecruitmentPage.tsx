@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CandidateManagement } from "./components/candidates/CandidateManagement";
 import { RecruitmentHeader } from "./components/layout/RecruitmentHeader";
@@ -6,10 +5,19 @@ import { OverviewTab } from "./components/overview/OverviewTab";
 import { CalendarTab } from "./components/calendar/CalendarTab";
 import { JobManagementTab } from "./components/jobs/JobManagementTab";
 import { useJobStore } from "@/stores/useJobStore";
+import { Route } from "@/routes/recruitment";
 
 export function RecruitmentPage() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const { tab: activeTab = "overview" } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { setIsAddDialogOpen } = useJobStore();
+
+  const setActiveTab = (tab: string) => {
+    navigate({
+      search: (old) => ({ ...old, tab: tab as any }),
+      replace: true,
+    });
+  };
 
   const handleAddJob = () => {
     setActiveTab("jobs");
