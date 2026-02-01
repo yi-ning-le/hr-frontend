@@ -23,7 +23,7 @@ import {
 
 const candidateSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  email: z.email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 characters"),
   education: z.string().min(2, "Education is required"),
   experienceYears: z.coerce.number().min(0, "Experience must be a positive number"),
