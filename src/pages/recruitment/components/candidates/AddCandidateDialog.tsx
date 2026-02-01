@@ -14,6 +14,7 @@ export function AddCandidateDialog() {
   const [isParsing, setIsParsing] = useState(false);
   const [parsedData, setParsedData] = useState<Partial<CandidateFormValues>>({});
   const [isDragging, setIsDragging] = useState(false);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   const addCandidate = useCandidateStore((state) => state.addCandidate);
 
@@ -22,6 +23,7 @@ export function AddCandidateDialog() {
     setParsedData({});
     setIsParsing(false);
     setIsDragging(false);
+    setResumeFile(null);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -32,31 +34,15 @@ export function AddCandidateDialog() {
   };
 
   const processFile = (file: File) => {
-    const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    const allowedTypes = ["application/pdf"];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Please upload a PDF or Word document (.pdf, .doc, .docx)");
+      toast.error("Please upload a PDF document (.pdf)");
       return;
     }
 
-    setIsParsing(true);
-
-    // Simulate parsing delay
-    setTimeout(() => {
-      // Mock data parsed from "PDF"
-      const mockParsedData: Partial<CandidateFormValues> = {
-        name: "Mock Candidate",
-        email: "mock.candidate@example.com",
-        phone: "+1 234 567 8900",
-        education: "Bachelor of Science, Mock University",
-        experienceYears: 4,
-        resumeUrl: URL.createObjectURL(file), // Create a blob URL for preview
-      };
-
-      setParsedData(mockParsedData);
-      setIsParsing(false);
-      setStep("form");
-      toast.success("Resume parsed successfully!");
-    }, 1500);
+    setResumeFile(file);
+    setStep("form");
+    toast.success("Resume attached successfully!");
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,12 +72,11 @@ export function AddCandidateDialog() {
 
   const handleSubmit = (values: CandidateFormValues) => {
     const newCandidate = {
-      id: crypto.randomUUID(),
       ...values,
       appliedAt: new Date(),
     };
 
-    addCandidate(newCandidate);
+    addCandidate(newCandidate, resumeFile || undefined);
     toast.success("Candidate added successfully");
     setOpen(false);
   };
@@ -109,7 +94,7 @@ export function AddCandidateDialog() {
           <DialogTitle>Add New Candidate</DialogTitle>
           <DialogDescription>
             {step === "upload"
-              ? "Upload a resume to auto-fill candidate details."
+              ? "Upload a resume for the new candidate."
               : "Review and edit candidate information."}
           </DialogDescription>
         </DialogHeader>
@@ -127,7 +112,7 @@ export function AddCandidateDialog() {
             {isParsing ? (
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">Parsing resume...</p>
+                <p className="text-sm text-muted-foreground">Attaching resume...</p>
               </div>
             ) : (
               <>

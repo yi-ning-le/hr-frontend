@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { LayoutGrid, List as ListIcon } from "lucide-react";
 import type { DropResult } from "@hello-pangea/dnd";
 
@@ -39,6 +39,13 @@ export function CandidateManagement() {
   const setSelectedJobId = useCandidateStore((state) => state.setSelectedJobId);
   const setViewMode = useCandidateStore((state) => state.setViewMode);
   const setStatusFilter = useCandidateStore((state) => state.setStatusFilter);
+  const fetchCandidates = useCandidateStore((state) => state.fetchCandidates);
+  const fetchJobs = useJobStore((state) => state.fetchJobs);
+
+  useEffect(() => {
+    fetchCandidates();
+    fetchJobs();
+  }, [fetchCandidates, fetchJobs]);
 
   // Derived state
   const selectedCandidate = useMemo(() =>

@@ -2,79 +2,97 @@ import { create } from "zustand";
 import type { JobPosition } from "@/types/job";
 import type { JobFormValues } from "@/pages/recruitment/components/jobs/forms/JobPositionForm";
 
-// Mock initial data
-const INITIAL_JOBS: JobPosition[] = [
-  {
-    id: "1",
-    title: "高级前端工程师",
-    department: "产品研发部",
-    headCount: 2,
-    openDate: new Date("2024-05-01"),
-    jobDescription: "负责公司核心产品的前端研发工作...",
-    note: "优先考虑有React经验的候选人",
-    status: "OPEN",
-  },
-  {
-    id: "2",
-    title: "产品经理",
-    department: "产品部",
-    headCount: 1,
-    openDate: new Date("2024-05-15"),
-    jobDescription: "负责产品规划和设计...",
-    note: "",
-    status: "OPEN",
-  },
-];
+import { JobsAPI } from "@/lib/api";
 
 interface JobState {
   jobs: JobPosition[];
   isAddDialogOpen: boolean;
+  isLoading: boolean;
+  error: string | null;
 
   // Actions
+  fetchJobs: () => Promise<void>;
   setJobs: (jobs: JobPosition[]) => void;
-  addJob: (data: JobFormValues) => void;
-  updateJob: (id: string, data: JobFormValues) => void;
-  deleteJob: (id: string) => void;
-  toggleJobStatus: (id: string) => void;
+  addJob: (data: JobFormValues) => Promise<void>;
+  updateJob: (id: string, data: JobFormValues) => Promise<void>;
+  deleteJob: (id: string) => Promise<void>;
+  toggleJobStatus: (id: string) => Promise<void>;
   setIsAddDialogOpen: (isOpen: boolean) => void;
 }
 
 export const useJobStore = create<JobState>((set) => ({
-  jobs: INITIAL_JOBS,
+  jobs: [],
   isAddDialogOpen: false,
+  isLoading: false,
+  error: null,
+
+  fetchJobs: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const jobs = await JobsAPI.list();
+      set({ jobs, isLoading: false });
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to fetch jobs", isLoading: false });
+    }
+  },
 
   setJobs: (jobs) => set({ jobs }),
 
-  addJob: (data) =>
-    set((state) => {
-      const newJob: JobPosition = {
-        ...data,
-        id: Math.random().toString(36).slice(2, 9),
-        status: data.status || "OPEN",
-      };
-      return { jobs: [newJob, ...state.jobs], isAddDialogOpen: false };
-    }),
+  addJob: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      const newJob = await JobsAPI.create(data);
+      set((state) => ({
+        jobs: [newJob, ...state.jobs],
+        isAddDialogOpen: false,
+        isLoading: false,
+      }));
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to create job", isLoading: false });
+    }
+  },
 
-  updateJob: (id, data) =>
-    set((state) => ({
-      jobs: state.jobs.map((job) =>
-        job.id === id ? { ...job, ...data } : job,
-      ),
-    })),
+  updateJob: async (id, data) => {
+    set({ isLoading: true, error: null });
+    try {
+      const updatedJob = await JobsAPI.update(id, data);
+      set((state) => ({
+        jobs: state.jobs.map((job) => (job.id === id ? updatedJob : job)),
+        isLoading: false,
+      }));
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to update job", isLoading: false });
+    }
+  },
 
-  deleteJob: (id) =>
-    set((state) => ({
-      jobs: state.jobs.filter((job) => job.id !== id),
-    })),
+  deleteJob: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await JobsAPI.delete(id);
+      set((state) => ({
+        jobs: state.jobs.filter((job) => job.id !== id),
+        isLoading: false,
+      }));
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to delete job", isLoading: false });
+    }
+  },
 
-  toggleJobStatus: (id) =>
-    set((state) => ({
-      jobs: state.jobs.map((job) =>
-        job.id === id
-          ? { ...job, status: job.status === "OPEN" ? "CLOSED" : "OPEN" }
-          : job,
-      ),
-    })),
+  toggleJobStatus: async (id) => {
+    try {
+      const updatedJob = await JobsAPI.toggleStatus(id);
+      set((state) => ({
+        jobs: state.jobs.map((job) => (job.id === id ? updatedJob : job)),
+      }));
+    } catch (_error) {
+      // Optimistic update revert or error handling could go here
+      console.error("Failed to toggle status", _error);
+    }
+  },
 
   setIsAddDialogOpen: (isOpen) => set({ isAddDialogOpen: isOpen }),
 }));

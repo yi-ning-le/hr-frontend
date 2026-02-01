@@ -18,8 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Configure PDF.js worker using a more robust method for Vite
+// This ensures the worker version matches the library version exactly
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 interface PdfPreviewProps {
   url: string;
@@ -43,8 +47,23 @@ export function PdfPreview({
   const [scale, setScale] = useState(initialScale);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentAreaRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef({ top: 0, left: 0 });
+  const [minHeight, setMinHeight] = useState<number | undefined>(undefined);
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+
+  // Reset state when URL changes to avoid stale state between candidates
+  useEffect(() => {
+    setPageNumber(1);
+    setNumPages(null);
+    setError(null);
+    setLoading(true);
+    setMinHeight(undefined);
+    setRetryKey(0);
+    setScale(initialScale);
+  }, [url, initialScale]);
 
   // Observe container width for responsive scaling
   useEffect(() => {
@@ -60,6 +79,7 @@ export function PdfPreview({
     return () => observer.disconnect();
   }, []);
 
+
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
     setLoading(false);
@@ -67,6 +87,7 @@ export function PdfPreview({
   }, []);
 
   const onDocumentLoadError = useCallback((error: Error) => {
+    console.error("PDF Load Error:", error);
     setError(error);
     setLoading(false);
   }, []);
@@ -92,9 +113,28 @@ export function PdfPreview({
   }, []);
 
   const retry = useCallback(() => {
+    if (contentAreaRef.current) {
+      setMinHeight(contentAreaRef.current.clientHeight);
+      scrollPositionRef.current = {
+        top: contentAreaRef.current.scrollTop,
+        left: contentAreaRef.current.scrollLeft,
+      };
+    }
     setError(null);
     setLoading(true);
-    // Force re-render by changing key
+    setRetryKey((prev) => prev + 1);
+  }, []);
+
+  const onPageRenderSuccess = useCallback(() => {
+    if (contentAreaRef.current) {
+      const { top, left } = scrollPositionRef.current;
+      contentAreaRef.current.scrollTo(left, top);
+    }
+    setMinHeight(undefined);
+  }, []);
+
+  const onPageRenderError = useCallback(() => {
+    setMinHeight(undefined);
   }, []);
 
   // Calculate page width based on container
@@ -117,7 +157,10 @@ export function PdfPreview({
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={goToPreviousPage}
+              onClick={(e) => {
+                e.stopPropagation();
+                goToPreviousPage();
+              }}
               disabled={pageNumber <= 1 || loading}
             >
               <ChevronLeft className="h-4 w-4" />
@@ -129,7 +172,10 @@ export function PdfPreview({
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={goToNextPage}
+              onClick={(e) => {
+                e.stopPropagation();
+                goToNextPage();
+              }}
               disabled={pageNumber >= (numPages || 1) || loading}
             >
               <ChevronRight className="h-4 w-4" />
@@ -142,7 +188,10 @@ export function PdfPreview({
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={zoomOut}
+              onClick={(e) => {
+                e.stopPropagation();
+                zoomOut();
+              }}
               disabled={scale <= 0.5 || loading}
             >
               <ZoomOut className="h-4 w-4" />
@@ -151,7 +200,10 @@ export function PdfPreview({
               variant="ghost"
               size="sm"
               className="h-8 px-2 text-xs min-w-[60px]"
-              onClick={resetScale}
+              onClick={(e) => {
+                e.stopPropagation();
+                resetScale();
+              }}
               disabled={loading}
             >
               {Math.round(scale * 100)}%
@@ -160,7 +212,10 @@ export function PdfPreview({
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={zoomIn}
+              onClick={(e) => {
+                e.stopPropagation();
+                zoomIn();
+              }}
               disabled={scale >= 3 || loading}
             >
               <ZoomIn className="h-4 w-4" />
@@ -174,7 +229,10 @@ export function PdfPreview({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
-                onClick={onFullscreen}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onFullscreen();
+                }}
                 disabled={loading}
               >
                 <Maximize2 className="h-4 w-4" />
@@ -184,25 +242,33 @@ export function PdfPreview({
         </div>
       )}
 
-      {/* PDF Content */}
       <div
+        ref={contentAreaRef}
         className="flex-1 overflow-auto flex items-start justify-center p-4"
-        style={{ maxHeight }}
+        style={{ maxHeight, minHeight: minHeight ? `${minHeight}px` : undefined }}
       >
         {error ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-4">
             <AlertCircle className="h-12 w-12 text-destructive/50" />
             <div className="text-center space-y-1">
               <p className="font-medium">无法加载 PDF</p>
-              <p className="text-xs">{error.message || "请检查文件地址是否正确"}</p>
+              <p className="text-xs">文件加载失败，请重试或检查链接</p>
             </div>
-            <Button variant="outline" size="sm" onClick={retry}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                retry();
+              }}
+            >
               <RotateCw className="h-4 w-4 mr-2" />
               重试
             </Button>
           </div>
         ) : (
           <Document
+            key={`${url}-${retryKey}`}
             file={url}
             onLoadSuccess={onDocumentLoadSuccess}
             onLoadError={onDocumentLoadError}
@@ -223,6 +289,8 @@ export function PdfPreview({
             <Page
               pageNumber={pageNumber}
               width={pageWidth}
+              onRenderSuccess={onPageRenderSuccess}
+              onRenderError={onPageRenderError}
               loading={
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

@@ -45,6 +45,7 @@ export function CandidateDetail() {
   const updateCandidate = useCandidateStore((state) => state.updateCandidate);
   const removeCandidate = useCandidateStore((state) => state.removeCandidate);
   const selectCandidate = useCandidateStore((state) => state.selectCandidate);
+  const uploadResume = useCandidateStore((state) => state.uploadResume);
 
   const candidate = candidates.find((c) => c.id === selectedCandidateId);
 
@@ -66,7 +67,7 @@ export function CandidateDetail() {
     setIsEditingNote(false);
   };
 
-  const handleResumeUpload = (file: File) => {
+  const handleResumeUpload = async (file: File) => {
     // 1. Validate file format (PDF only)
     if (file.type !== "application/pdf") {
       toast.error("Format error: Only PDF files are supported for resume upload.");
@@ -75,18 +76,15 @@ export function CandidateDetail() {
 
     setIsUploadingResume(true);
 
-    // TODO: Integrate with backend API
-    // 1. Upload file to server
-    // 2. Get permanent URL from response
-    // 3. Update candidate data via API call
-
-    // Simulate upload delay for now
-    setTimeout(() => {
-      const resumeUrl = URL.createObjectURL(file);
-      updateCandidate(candidate.id, { resumeUrl });
-      setIsUploadingResume(false);
+    try {
+      await uploadResume(candidate.id, file);
       toast.success("Resume uploaded successfully");
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload resume");
+    } finally {
+      setIsUploadingResume(false);
+    }
   };
 
   const handleEditSubmit = (values: CandidateFormValues) => {

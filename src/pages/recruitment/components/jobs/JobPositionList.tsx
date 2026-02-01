@@ -36,6 +36,7 @@ import type { JobPosition } from "@/types/job"
 
 interface JobPositionListProps {
   jobs: JobPosition[]
+  candidateCounts?: Record<string, number>
   onEdit: (job: JobPosition) => void
   onDelete?: (jobId: string) => void
   onView?: (job: JobPosition) => void
@@ -44,6 +45,7 @@ interface JobPositionListProps {
 
 export function JobPositionList({
   jobs,
+  candidateCounts = {},
   onEdit,
   onDelete,
   onView,
@@ -141,8 +143,7 @@ export function JobPositionList({
                   <TableCell>
                     {job.headCount}
                     <span className="ml-2 text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
-                      {/* Mock pipeline stats */}
-                      {Math.floor(Math.random() * 5)} 候选人
+                      {candidateCounts[job.id] || 0} 候选人
                     </span>
                   </TableCell>
                   <TableCell>

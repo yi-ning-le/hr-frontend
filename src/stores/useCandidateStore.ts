@@ -1,54 +1,7 @@
 import { create } from "zustand";
 import type { Candidate, CandidateStatus } from "@/types/candidate";
 
-// Mock Data (Moved from CandidateManagement.tsx)
-const MOCK_CANDIDATES: Candidate[] = [
-  {
-    id: "c1",
-    name: "Alex Johnson",
-    email: "alex.j@example.com",
-    phone: "+1 (555) 123-4567",
-    experienceYears: 5,
-    education: "Master in CS, Stanford",
-    appliedJobId: "1",
-    appliedJobTitle: "高级前端工程师",
-    channel: "LinkedIn",
-    resumeUrl: "#",
-    status: "screening",
-    note: "Great experience with React.",
-    appliedAt: new Date("2024-05-10"),
-  },
-  {
-    id: "c2",
-    name: "Sarah Williams",
-    email: "sarah.w@example.com",
-    phone: "+1 (555) 987-6543",
-    experienceYears: 3,
-    education: "Bachelor in Design, RISD",
-    appliedJobId: "2",
-    appliedJobTitle: "产品经理",
-    channel: "Referral",
-    resumeUrl: "#",
-    status: "interview",
-    note: "Strong portfolio.",
-    appliedAt: new Date("2024-05-12"),
-  },
-  {
-    id: "c3",
-    name: "Mike Chen",
-    email: "mike.chen@example.com",
-    phone: "+86 138-1234-5678",
-    experienceYears: 7,
-    education: "Bachelor in CS, Tsinghua",
-    appliedJobId: "1",
-    appliedJobTitle: "高级前端工程师",
-    channel: "Official Site",
-    resumeUrl: "#",
-    status: "new",
-    note: "",
-    appliedAt: new Date("2024-05-14"),
-  },
-];
+import { CandidatesAPI } from "@/lib/api";
 
 interface CandidateState {
   candidates: Candidate[];
@@ -57,14 +10,21 @@ interface CandidateState {
   selectedJobId: string | "all";
   viewMode: "list" | "board";
   statusFilter: CandidateStatus[];
+  isLoading: boolean;
+  error: string | null;
 
   // Actions
+  fetchCandidates: () => Promise<void>;
   setCandidates: (candidates: Candidate[]) => void;
-  addCandidate: (candidate: Candidate) => void;
-  updateCandidate: (id: string, updates: Partial<Candidate>) => void;
-  removeCandidate: (id: string) => void;
-  updateCandidateStatus: (id: string, status: CandidateStatus) => void;
-  updateCandidateNote: (id: string, note: string) => void;
+  addCandidate: (candidate: Partial<Candidate>, file?: File) => Promise<void>;
+  updateCandidate: (id: string, updates: Partial<Candidate>) => Promise<void>;
+  removeCandidate: (id: string) => Promise<void>;
+  updateCandidateStatus: (id: string, status: CandidateStatus) => Promise<void>;
+  updateCandidateNote: (id: string, note: string) => Promise<void>;
+  uploadResume: (
+    id: string,
+    file: File,
+  ) => Promise<{ resumeUrl: string; candidate: Candidate }>;
   selectCandidate: (id: string | null) => void;
   setSearchQuery: (query: string) => void;
   setSelectedJobId: (id: string | "all") => void;
@@ -73,52 +33,131 @@ interface CandidateState {
 }
 
 export const useCandidateStore = create<CandidateState>((set) => ({
-  candidates: MOCK_CANDIDATES, // Initialize with mock data
+  candidates: [], // Initialize with empty array, fetch on mount
   selectedCandidateId: null,
   searchQuery: "",
   selectedJobId: "all",
   viewMode: "board",
-
   statusFilter: [],
+  isLoading: false,
+  error: null,
+
+  fetchCandidates: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      // Fetch all candidates to maintain stable counts for the sidebar
+      const candidates = await CandidatesAPI.list();
+      set({ candidates, isLoading: false });
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to fetch candidates", isLoading: false });
+    }
+  },
 
   setCandidates: (candidates) => set({ candidates }),
 
-  updateCandidateStatus: (id, status) =>
-    set((state) => ({
-      candidates: state.candidates.map((c) =>
-        c.id === id ? { ...c, status } : c,
-      ),
-    })),
+  updateCandidateStatus: async (id, status) => {
+    try {
+      const updatedCandidate = await CandidatesAPI.updateStatus(id, status);
+      set((state) => ({
+        candidates: state.candidates.map((c) =>
+          c.id === id ? updatedCandidate : c,
+        ),
+      }));
+    } catch (_error) {
+      console.error("Failed to update status", _error);
+    }
+  },
 
-  updateCandidateNote: (id, note) =>
-    set((state) => ({
-      candidates: state.candidates.map((c) =>
-        c.id === id ? { ...c, note } : c,
-      ),
-    })),
+  updateCandidateNote: async (id, note) => {
+    try {
+      const updatedCandidate = await CandidatesAPI.updateNote(id, note);
+      set((state) => ({
+        candidates: state.candidates.map((c) =>
+          c.id === id ? updatedCandidate : c,
+        ),
+      }));
+    } catch (_error) {
+      console.error("Failed to update note", _error);
+    }
+  },
 
   selectCandidate: (id) => set({ selectedCandidateId: id }),
   setSearchQuery: (query) => set({ searchQuery: query }),
-  setSelectedJobId: (id) => set({ selectedJobId: id }),
+  setSelectedJobId: (id) => {
+    set({ selectedJobId: id });
+    // Removed automatic re-fetch to keep counts stable
+  },
   setViewMode: (mode) => set({ viewMode: mode }),
   setStatusFilter: (statuses) => set({ statusFilter: statuses }),
 
   // CRUD Actions
-  addCandidate: (candidate) =>
-    set((state) => ({ candidates: [candidate, ...state.candidates] })),
+  addCandidate: async (candidate, file) => {
+    set({ isLoading: true, error: null });
+    try {
+      let newCandidate = await CandidatesAPI.create(candidate);
 
-  updateCandidate: (id, updates) =>
-    set((state) => ({
-      candidates: state.candidates.map((c) =>
-        c.id === id ? { ...c, ...updates } : c,
-      ),
-    })),
+      if (file) {
+        const result = await CandidatesAPI.uploadResume(newCandidate.id, file);
+        newCandidate = result.candidate;
+      }
 
-  removeCandidate: (id) =>
-    set((state) => ({
-      candidates: state.candidates.filter((c) => c.id !== id),
-      // If the removed candidate was selected, deselect them
-      selectedCandidateId:
-        state.selectedCandidateId === id ? null : state.selectedCandidateId,
-    })),
+      set((state) => ({
+        candidates: [newCandidate, ...state.candidates],
+        isLoading: false,
+      }));
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to create candidate", isLoading: false });
+    }
+  },
+
+  updateCandidate: async (id, updates) => {
+    set({ isLoading: true, error: null });
+    try {
+      const updatedCandidate = await CandidatesAPI.update(id, updates);
+      set((state) => ({
+        candidates: state.candidates.map((c) =>
+          c.id === id ? updatedCandidate : c,
+        ),
+        isLoading: false,
+      }));
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to update candidate", isLoading: false });
+    }
+  },
+
+  removeCandidate: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await CandidatesAPI.delete(id);
+      set((state) => ({
+        candidates: state.candidates.filter((c) => c.id !== id),
+        // If the removed candidate was selected, deselect them
+        selectedCandidateId:
+          state.selectedCandidateId === id ? null : state.selectedCandidateId,
+        isLoading: false,
+      }));
+    } catch (_error) {
+      console.error(_error);
+      set({ error: "Failed to delete candidate", isLoading: false });
+    }
+  },
+
+  uploadResume: async (id, file) => {
+    try {
+      const { resumeUrl, candidate } = await CandidatesAPI.uploadResume(
+        id,
+        file,
+      );
+      set((state) => ({
+        candidates: state.candidates.map((c) => (c.id === id ? candidate : c)),
+      }));
+      return { resumeUrl, candidate };
+    } catch (error) {
+      console.error("Failed to upload resume");
+      throw error;
+    }
+  },
 }));

@@ -1,18 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { JobPosition } from "@/types/job";
 import { JobPositionList } from "./JobPositionList";
 import { JobDialogs } from "./JobDialogs";
+import type { JobFormValues } from "./forms/JobPositionForm";
 import { useJobStore } from "@/stores/useJobStore";
+import { useCandidateStore } from "@/stores/useCandidateStore";
 
 /**
  * JobManagementTab component extracts the job-related logic and UI from RecruitmentPage.
  * It manages its own dialog state and uses useJobStore for job-related actions.
  */
 export function JobManagementTab() {
-  const { jobs, addJob, updateJob, deleteJob, toggleJobStatus, isAddDialogOpen, setIsAddDialogOpen } = useJobStore();
+  const { jobs, addJob, updateJob, deleteJob, toggleJobStatus, isAddDialogOpen, setIsAddDialogOpen, fetchJobs } = useJobStore();
+  const { candidates, fetchCandidates } = useCandidateStore();
 
   const [editingJob, setEditingJob] = useState<JobPosition | undefined>(undefined);
   const [viewingJob, setViewingJob] = useState<JobPosition | undefined>(undefined);
+
+  useEffect(() => {
+    fetchJobs();
+    fetchCandidates();
+  }, [fetchJobs, fetchCandidates]);
+
+  const jobCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    candidates.forEach((c) => {
+      counts[c.appliedJobId] = (counts[c.appliedJobId] || 0) + 1;
+    });
+    return counts;
+  }, [candidates]);
 
   const handleEditJob = (job: JobPosition) => {
     setEditingJob(job);
@@ -31,7 +47,7 @@ export function JobManagementTab() {
     toggleJobStatus(job.id);
   };
 
-  const handleSaveJob = (data: any) => { // data is JobFormValues
+  const handleSaveJob = (data: JobFormValues) => {
     if (editingJob) {
       updateJob(editingJob.id, data);
     } else {
@@ -44,6 +60,7 @@ export function JobManagementTab() {
     <>
       <JobPositionList
         jobs={jobs}
+        candidateCounts={jobCounts}
         onEdit={handleEditJob}
         onDelete={handleDeleteJob}
         onView={handleViewJob}

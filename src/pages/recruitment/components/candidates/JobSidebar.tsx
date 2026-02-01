@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Briefcase, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 import type { JobPosition } from "@/types/job";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +52,15 @@ export function JobSidebar({
 
   const departments = useMemo(() => Object.keys(groupedJobs).sort(), [groupedJobs]);
 
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Automatically expand departments when they are first loaded
+  useEffect(() => {
+    if (departments.length > 0 && expandedItems.length === 0) {
+      setExpandedItems(departments);
+    }
+  }, [departments]);
+
   return (
     <div className="w-64 border-r bg-slate-50/50 dark:bg-slate-900/50 flex flex-col">
       <div className="p-4 border-b space-y-4">
@@ -81,9 +91,14 @@ export function JobSidebar({
             </Badge>
           </Button>
 
+          <div className="py-2 px-2">
+            <Separator className="mb-4 bg-slate-200 dark:bg-slate-800" />
+          </div>
+
           <Accordion
             type="multiple"
-            defaultValue={departments}
+            value={expandedItems}
+            onValueChange={setExpandedItems}
             className="w-full"
           >
             {departments.map((dept) => (

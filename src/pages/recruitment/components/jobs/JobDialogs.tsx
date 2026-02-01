@@ -29,7 +29,7 @@ export function JobDialogs({
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col" aria-describedby="job-description-content">
           <DialogHeader className="flex-shrink-0">
             <DialogTitle>{editingJob ? "编辑职位" : "发布新职位"}</DialogTitle>
             <DialogDescription>

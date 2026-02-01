@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,18 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useJobStore } from "@/stores/useJobStore";
+import { Loader2 } from "lucide-react";
 
 
 const candidateSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.email("Invalid email address"),
+  email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 characters"),
   education: z.string().min(2, "Education is required"),
   experienceYears: z.coerce.number().min(0, "Experience must be a positive number"),
   channel: z.string().min(1, "Please select a channel"),
   note: z.string().default(""),
   // Hidden/Auto fields
-  appliedJobId: z.string().default("1"), // Default to first job for now
+  appliedJobId: z.string().min(1, "Please select a position"),
   appliedJobTitle: z.string().default("General Application"),
   status: z.enum(["new", "screening", "interview", "offer", "hired", "rejected"]).default("new"),
   resumeUrl: z.string().default("#"),
@@ -54,6 +57,14 @@ export function CandidateForm({
   submitLabel = "Save",
   hideNote = false,
 }: CandidateFormProps) {
+  const { jobs, fetchJobs, isLoading: isLoadingJobs } = useJobStore();
+
+  useEffect(() => {
+    if (jobs.length === 0) {
+      fetchJobs();
+    }
+  }, [jobs.length, fetchJobs]);
+
   const form = useForm<CandidateFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(candidateSchema) as any,
@@ -65,9 +76,20 @@ export function CandidateForm({
       experienceYears: 0,
       channel: "",
       note: "",
+      appliedJobId: "",
+      appliedJobTitle: "",
       ...defaultValues,
     },
   });
+
+  // Update appliedJobTitle when appliedJobId changes
+  const selectedJobId = form.watch("appliedJobId");
+  useEffect(() => {
+    const selectedJob = jobs.find((job) => job.id === selectedJobId);
+    if (selectedJob) {
+      form.setValue("appliedJobTitle", selectedJob.title);
+    }
+  }, [selectedJobId, jobs, form]);
 
   return (
     <Form {...form}>
@@ -148,6 +170,42 @@ export function CandidateForm({
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
+            name="appliedJobId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Applying Position</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                  disabled={isLoadingJobs}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      {isLoadingJobs ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Loading jobs...</span>
+                        </div>
+                      ) : (
+                        <SelectValue placeholder="Select position" />
+                      )}
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {jobs.map((job) => (
+                      <SelectItem key={job.id} value={job.id}>
+                        {job.title} ({job.department})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="education"
             render={({ field }) => (
               <FormItem>
@@ -159,6 +217,9 @@ export function CandidateForm({
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="experienceYears"
