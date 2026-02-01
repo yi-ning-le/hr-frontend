@@ -14,7 +14,7 @@ export function RecruitmentPage() {
 
   const setActiveTab = (tab: string) => {
     navigate({
-      search: (old) => ({ ...old, tab: tab as any }),
+      search: (old) => ({ ...old, tab: tab as "overview" | "jobs" | "candidates" | "calendar" }),
       replace: true,
     });
   };

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,10 @@ export function CandidateForm({
   });
 
   // Update appliedJobTitle when appliedJobId changes
-  const selectedJobId = form.watch("appliedJobId");
+  const selectedJobId = useWatch({
+    control: form.control,
+    name: "appliedJobId",
+  });
   useEffect(() => {
     const selectedJob = jobs.find((job) => job.id === selectedJobId);
     if (selectedJob) {

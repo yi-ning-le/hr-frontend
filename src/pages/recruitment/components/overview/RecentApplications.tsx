@@ -71,7 +71,7 @@ export function RecentApplications() {
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <Badge variant={statusMap[app.status]?.variant as any} className="hidden sm:flex">
+                <Badge variant={statusMap[app.status]?.variant as "default" | "secondary" | "outline" | "destructive" | null | undefined} className="hidden sm:flex">
                   {statusMap[app.status]?.label}
                 </Badge>
                 <div className="text-xs text-slate-400 w-16 text-right">

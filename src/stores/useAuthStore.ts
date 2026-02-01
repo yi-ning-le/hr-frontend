@@ -75,8 +75,7 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
           });
           return { success: true };
-        } catch (error: any) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error) {
           set({ isLoading: false });
           return {
             success: false,
@@ -94,8 +93,7 @@ export const useAuthStore = create<AuthStore>()(
           // Registration successful - user needs to login separately
           set({ isLoading: false });
           return { success: true };
-        } catch (error: any) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error) {
           set({ isLoading: false });
           return {
             success: false,
@@ -118,12 +116,14 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
           });
           return { success: true };
-        } catch (error: any) {
+        } catch (error) {
           set({ isLoading: false });
           console.error("Logout API call failed:", error);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const err = error as any;
           return { 
             success: false, 
-            error: error.response?.data?.message || `Logout failed: ${error.response?.status || "Unknown error"}`
+            error: err.response?.data?.message || `Logout failed: ${err.response?.status || "Unknown error"}`
           };
         }
       },

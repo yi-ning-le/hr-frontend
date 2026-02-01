@@ -48,6 +48,7 @@ interface JobPositionFormProps {
 
 export function JobPositionForm({ initialData, onSubmit, onCancel, className }: JobPositionFormProps) {
   const form = useForm<JobFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(jobFormSchema) as any,
     defaultValues: {
       title: initialData?.title || "",

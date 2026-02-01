@@ -57,9 +57,10 @@ export function JobSidebar({
   // Automatically expand departments when they are first loaded
   useEffect(() => {
     if (departments.length > 0 && expandedItems.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setExpandedItems(departments);
     }
-  }, [departments]);
+  }, [departments, expandedItems.length]);
 
   return (
     <div className="w-64 border-r bg-slate-50/50 dark:bg-slate-900/50 flex flex-col">

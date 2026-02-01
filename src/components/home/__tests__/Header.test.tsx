@@ -17,7 +17,7 @@ const router = createRouter({
   history,
 });
 
-function renderWithRouter(_component: React.ReactNode) {
+function renderWithRouter() {
   return render(<RouterProvider router={router} />);
 }
 
