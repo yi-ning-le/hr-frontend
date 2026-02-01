@@ -46,7 +46,7 @@ export function CandidateDetailHeader({
           <Avatar className="h-16 w-16">
             <AvatarImage src={candidate.avatar} />
             <AvatarFallback className="text-lg">
-              {candidate.name.substring(0, 2).toUpperCase()}
+              {candidate.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="space-y-1">

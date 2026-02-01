@@ -19,7 +19,7 @@ export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={candidate.avatar} />
-            <AvatarFallback>{candidate.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>{candidate.name.slice(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
             <div className="font-medium leading-none group-hover:text-primary transition-colors">

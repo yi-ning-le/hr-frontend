@@ -80,7 +80,7 @@ export function RecruitmentPage() {
       // Create new
       const newJob: JobPosition = {
         ...data,
-        id: Math.random().toString(36).substr(2, 9), // Simple ID generation
+        id: Math.random().toString(36).slice(2, 9), // Simple ID generation
         status: data.status || "OPEN",
       };
       setJobs((prev) => [newJob, ...prev]);
