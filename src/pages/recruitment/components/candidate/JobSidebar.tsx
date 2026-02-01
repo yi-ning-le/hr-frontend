@@ -1,8 +1,17 @@
-import { Briefcase } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Briefcase, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import type { JobPosition } from "@/types/job";
+import { cn } from "@/lib/utils";
 
 interface JobSidebarProps {
   jobs: JobPosition[];
@@ -19,19 +28,51 @@ export function JobSidebar({
   jobCounts,
   totalCandidates,
 }: JobSidebarProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredJobs = useMemo(() => {
+    if (!searchQuery.trim()) return jobs;
+    return jobs.filter(
+      (job) =>
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.department.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [jobs, searchQuery]);
+
+  const groupedJobs = useMemo(() => {
+    const groups: Record<string, JobPosition[]> = {};
+    filteredJobs.forEach((job) => {
+      const dept = job.department || "未分类";
+      if (!groups[dept]) groups[dept] = [];
+      groups[dept].push(job);
+    });
+    return groups;
+  }, [filteredJobs]);
+
+  const departments = useMemo(() => Object.keys(groupedJobs).sort(), [groupedJobs]);
+
   return (
     <div className="w-64 border-r bg-slate-50/50 dark:bg-slate-900/50 flex flex-col">
-      <div className="p-4 border-b">
+      <div className="p-4 border-b space-y-4">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Briefcase className="w-4 h-4" />
           职位筛选
         </h3>
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="搜索职位..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 h-9"
+          />
+        </div>
       </div>
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="p-2 space-y-1">
           <Button
             variant={selectedJobId === "all" ? "secondary" : "ghost"}
-            className="w-full justify-between"
+            className="w-full justify-between mb-2"
             onClick={() => onSelectJob("all")}
           >
             <span className="truncate">全部职位</span>
@@ -39,21 +80,45 @@ export function JobSidebar({
               {totalCandidates}
             </Badge>
           </Button>
-          {jobs.map((job) => (
-            <Button
-              key={job.id}
-              variant={selectedJobId === job.id ? "secondary" : "ghost"}
-              className="w-full justify-between"
-              onClick={() => onSelectJob(job.id)}
-            >
-              <span className="truncate" title={job.title}>
-                {job.title}
-              </span>
-              <Badge variant="outline" className="ml-auto text-xs">
-                {jobCounts[job.id] || 0}
-              </Badge>
-            </Button>
-          ))}
+
+          <Accordion
+            type="multiple"
+            defaultValue={departments}
+            className="w-full"
+          >
+            {departments.map((dept) => (
+              <AccordionItem key={dept} value={dept} className="border-none">
+                <AccordionTrigger className="hover:no-underline py-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {dept}
+                  <Badge variant="outline" className="ml-auto text-[10px] font-normal">
+                    {groupedJobs[dept].reduce((acc, job) => acc + (jobCounts[job.id] || 0), 0)}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="pb-1">
+                  <div className="space-y-1">
+                    {groupedJobs[dept].map((job) => (
+                      <Button
+                        key={job.id}
+                        variant={selectedJobId === job.id ? "secondary" : "ghost"}
+                        className={cn(
+                          "w-full justify-between h-9 px-2 pl-4 text-sm font-normal",
+                          selectedJobId === job.id && "bg-secondary"
+                        )}
+                        onClick={() => onSelectJob(job.id)}
+                      >
+                        <span className="truncate" title={job.title}>
+                          {job.title}
+                        </span>
+                        <Badge variant="outline" className="ml-auto text-xs">
+                          {jobCounts[job.id] || 0}
+                        </Badge>
+                      </Button>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </ScrollArea>
     </div>
