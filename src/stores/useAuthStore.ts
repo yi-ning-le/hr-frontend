@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { AuthAPI, setAuthToken } from "@/lib/api";
 
 // User type definition
 export interface User {
@@ -13,6 +14,7 @@ export interface User {
 // Auth state interface
 interface AuthState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -26,9 +28,9 @@ interface AuthActions {
   register: (
     username: string,
     password: string,
-    email?: string,
+    email: string,
   ) => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
+  logout: () => Promise<{ success: boolean; error?: string }>;
   // Reserved for future third-party login
   loginWithProvider: (
     provider: "wechat" | "dingtalk" | "feishu",
@@ -36,20 +38,6 @@ interface AuthActions {
 }
 
 type AuthStore = AuthState & AuthActions;
-
-// Simulated user database (for frontend-only testing)
-const mockUsers: { username: string; password: string; user: User }[] = [
-  {
-    username: "admin",
-    password: "admin123",
-    user: {
-      id: "1",
-      username: "admin",
-      email: "admin@example.com",
-      createdAt: new Date().toISOString(),
-    },
-  },
-];
 
 // Simulate async delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -59,83 +47,85 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       // Initial state
       user: null,
+      token: null,
       isAuthenticated: false,
       isLoading: false,
 
-      // Login action (simulated) - TEMPORARY: bypass validation for testing
+      // Login action
       login: async (username: string, password: string) => {
         set({ isLoading: true });
-        await delay(800); // Simulate network delay
+        try {
+          const data = await AuthAPI.login({ username, password });
 
-        // TODO: Re-enable validation after testing
-        // const foundUser = mockUsers.find(
-        //   (u) => u.username === username && u.password === password,
-        // );
+          // Set token in api module
+          setAuthToken(data.token);
 
-        // TEMPORARY: Accept any credentials for testing
-        const tempUser: User = {
-          id: "temp-1",
-          username: username || "test_user",
-          email: "test@example.com",
-          createdAt: new Date().toISOString(),
-        };
+          // Map backend user to frontend User type if needed
+          // Assuming backend returns a compatible user object or we map it
+          const user: User = {
+            id: data.user.id,
+            username: data.user.username,
+            createdAt: new Date().toISOString(), // or data.user.createdAt
+          };
 
-        set({
-          user: tempUser,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-        return { success: true };
-
-        // Original validation logic (commented out for testing):
-        // if (foundUser) {
-        //   set({
-        //     user: foundUser.user,
-        //     isAuthenticated: true,
-        //     isLoading: false,
-        //   });
-        //   return { success: true };
-        // }
-
-        // set({ isLoading: false });
-        // return { success: false, error: "用户名或密码错误" };
+          set({
+            user,
+            token: data.token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+          return { success: true };
+        } catch (error: any) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          set({ isLoading: false });
+          return {
+            success: false,
+            error: error.response?.data?.message || "Login failed",
+          };
+        }
       },
 
-      // Register action (simulated)
-      register: async (username: string, password: string, email?: string) => {
+      // Register action
+      register: async (username: string, password: string, email: string) => {
         set({ isLoading: true });
-        await delay(800);
-
-        // Check if username exists
-        const exists = mockUsers.some((u) => u.username === username);
-        if (exists) {
+        try {
+          await AuthAPI.register({ username, password, email });
+          
+          // Registration successful - user needs to login separately
           set({ isLoading: false });
-          return { success: false, error: "用户名已存在" };
+          return { success: true };
+        } catch (error: any) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          set({ isLoading: false });
+          return {
+            success: false,
+            error: error.response?.data?.message || "Registration failed",
+          };
         }
-
-        // Create new user
-        const newUser: User = {
-          id: String(mockUsers.length + 1),
-          username,
-          email,
-          createdAt: new Date().toISOString(),
-        };
-
-        mockUsers.push({ username, password, user: newUser });
-
-        set({
-          isLoading: false,
-        });
-
-        return { success: true };
       },
 
       // Logout action
-      logout: () => {
-        set({
-          user: null,
-          isAuthenticated: false,
-        });
+      logout: async () => {
+        set({ isLoading: true });
+        try {
+          await AuthAPI.logout();
+          // Only clear state if API call succeeds
+          setAuthToken(null);
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
+          return { success: true };
+        } catch (error: any) {
+          set({ isLoading: false });
+          console.error("Logout API call failed:", error);
+          return { 
+            success: false, 
+            error: error.response?.data?.message || `Logout failed: ${error.response?.status || "Unknown error"}`
+          };
+        }
       },
 
       // Third-party login placeholder
@@ -153,8 +143,14 @@ export const useAuthStore = create<AuthStore>()(
       name: "auth-storage",
       partialize: (state) => ({
         user: state.user,
+        token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state?.token) {
+          setAuthToken(state.token);
+        }
+      },
     },
   ),
 );

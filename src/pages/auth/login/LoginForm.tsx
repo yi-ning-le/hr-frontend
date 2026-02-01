@@ -51,8 +51,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         description: "欢迎回来！",
       });
       onSuccess?.();
-      await router.invalidate();
-      await navigate({ to: "/" });
+      // Remove router.invalidate() as it might cause race conditions or unnecessary revalidations
+      // during navigation. The target route's beforeLoad will handle auth checks.
+      await navigate({ to: "/", replace: true });
     } else {
       toast.error("登录失败", {
         description: result.error,

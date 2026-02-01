@@ -1,9 +1,34 @@
-import { Link } from "@tanstack/react-router";
-import { Building2, Bell } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Building2, Bell, LogOut, Settings, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { toast } from "sonner";
 
 export function Header() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      toast.success("已退出登录");
+      navigate({ to: "/login" });
+    } else {
+      toast.error("退出失败", {
+        description: result.error || "请稍后重试",
+      });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -45,12 +70,48 @@ export function Header() {
               3
             </span>
           </Button>
-          <Avatar className="size-9 ring-2 ring-slate-200 ring-offset-2 dark:ring-slate-700">
-            <AvatarImage src="" />
-            <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-sm font-medium text-white">
-              管
-            </AvatarFallback>
-          </Avatar>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                <Avatar className="size-9 ring-2 ring-slate-200 ring-offset-2 dark:ring-slate-700">
+                  <AvatarImage src={user?.avatar} alt={user?.username} />
+                  <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-sm font-medium text-white">
+                    {user?.username?.slice(0, 2).toUpperCase() || "User"}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user?.username || "管理员"}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email || "admin@example.com"}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <UserIcon className="mr-2 size-4" />
+                <span>个人资料</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="mr-2 size-4" />
+                <span>设置</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 size-4" />
+                <span>退出登录</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

@@ -25,7 +25,7 @@ const registerSchema = z
       .min(3, "用户名至少3个字符")
       .max(20, "用户名最多20个字符")
       .regex(/^[a-zA-Z0-9_]+$/, "用户名只能包含字母、数字和下划线"),
-    email: z.string().email("请输入有效的邮箱地址").optional().or(z.literal("")),
+    email: z.string().email("请输入有效的邮箱地址"),
     password: z
       .string()
       .min(6, "密码至少6个字符")
@@ -64,7 +64,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     const result = await register(
       data.username,
       data.password,
-      data.email || undefined
+      data.email
     );
 
     if (result.success) {
@@ -109,7 +109,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                邮箱 <span className="text-muted-foreground">(可选)</span>
+                邮箱
               </FormLabel>
               <FormControl>
                 <Input

@@ -11,6 +11,34 @@ const api = axios.create({
   },
 });
 
+// Token management
+let authToken: string | null = null;
+
+export const setAuthToken = (token: string | null) => {
+  authToken = token;
+};
+
+// Request interceptor to add JWT token
+api.interceptors.request.use(
+  (config) => {
+    // Exclude public auth endpoints from token attachment
+    if (
+      config.url?.includes("/auth/login") ||
+      config.url?.includes("/auth/register")
+    ) {
+      return config;
+    }
+
+    if (authToken) {
+      config.headers.Authorization = `Bearer ${authToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 // Response interceptor to handle dates or errors if needed
 api.interceptors.response.use(
   (response) => {
@@ -19,9 +47,37 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Optional: Handle 401 Unauthorized globally (e.g., redirect to login)
     return Promise.reject(error);
   },
 );
+
+export const AuthAPI = {
+  login: async (
+    data: unknown,
+  ): Promise<{ token: string; user: { id: string; username: string } }> => {
+    const response = await api.post<{
+      token: string;
+      user: { id: string; username: string };
+    }>("/auth/login", data);
+    return response.data;
+  },
+
+  register: async (
+    data: unknown,
+  ): Promise<{ id: string; username: string; email: string }> => {
+    const response = await api.post<{
+      id: string;
+      username: string;
+      email: string;
+    }>("/auth/register", data);
+    return response.data;
+  },
+
+  logout: async (): Promise<void> => {
+    await api.post("/auth/logout");
+  },
+};
 
 export const JobsAPI = {
   list: async (): Promise<JobPosition[]> => {
