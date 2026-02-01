@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import type { JobPosition } from "@/types/job"
-import { JobBasicInfoFields } from "./job-form/JobBasicInfoFields"
-import { JobDateStatusFields } from "./job-form/JobDateStatusFields"
-import { JobDescriptionFields } from "./job-form/JobDescriptionFields"
+import { JobBasicInfoFields } from "./JobBasicInfoFields"
+import { JobDateStatusFields } from "./JobDateStatusFields"
+import { JobDescriptionFields } from "./JobDescriptionFields"
 
 const jobFormSchema = z.object({
   title: z.string().min(2, {

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { RecruitmentStats } from "../RecruitmentStats";
+import { RecruitmentStats } from "../overview/RecruitmentStats";
 import { describe, it, expect } from "vitest";
 
 describe("RecruitmentStats", () => {

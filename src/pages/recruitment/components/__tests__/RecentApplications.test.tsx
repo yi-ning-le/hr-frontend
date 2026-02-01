@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { RecentApplications } from "../RecentApplications";
+import { RecentApplications } from "../overview/RecentApplications";
 import { describe, it, expect } from "vitest";
 
 describe("RecentApplications", () => {

@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { JobPositionForm, type JobFormValues } from "./JobPositionForm";
+import { JobPositionForm, type JobFormValues } from "./forms/JobPositionForm";
 import { JobPositionDetail } from "./JobPositionDetail";
 import type { JobPosition } from "@/types/job";
 

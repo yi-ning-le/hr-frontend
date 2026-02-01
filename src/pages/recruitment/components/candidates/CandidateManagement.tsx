@@ -8,22 +8,20 @@ import {
 } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-import type { JobPosition } from "@/types/job";
-import type { CandidateStatus } from "@/types/candidate";
+import { type CandidateStatus } from "@/types/candidate";
 
-import { JobSidebar } from "./candidate/JobSidebar";
-import { CandidateToolbar } from "./candidate/CandidateToolbar";
-import { CandidateList } from "./candidate/CandidateList";
-import { CandidateDetail } from "./candidate/CandidateDetail";
-import { CandidateKanban } from "./candidate/CandidateKanban";
+import { JobSidebar } from "./JobSidebar";
+import { CandidateToolbar } from "./CandidateToolbar";
+import { CandidateList } from "./CandidateList";
+import { CandidateDetail } from "./CandidateDetail";
+import { CandidateKanban } from "./CandidateKanban";
 
 import { useCandidateStore } from "@/stores/useCandidateStore";
 
-interface CandidateManagementProps {
-  jobs: JobPosition[];
-}
+import { useJobStore } from "@/stores/useJobStore";
 
-export function CandidateManagement({ jobs }: CandidateManagementProps) {
+export function CandidateManagement() {
+  const jobs = useJobStore((state) => state.jobs);
 
 
   // Use selectors to avoid unnecessary re-renders
