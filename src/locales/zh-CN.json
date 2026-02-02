@@ -1,0 +1,390 @@
+{
+  "common": {
+    "appName": "HR System",
+    "appSubtitle": "人力资源管理系统",
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "search": "搜索",
+    "filter": "筛选",
+    "reset": "重置",
+    "submit": "提交",
+    "close": "关闭",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "viewAll": "查看全部",
+    "comparedToLastMonth": "较上月",
+    "people": "人",
+    "percentage": "占比",
+    "actions": "操作",
+    "uncategorized": "未分类",
+    "clearFilter": "清除筛选",
+    "noResults": "没有找到结果",
+    "resultsCount": "共找到 {{count}} 条结果"
+  },
+  "nav": {
+    "overview": "概览",
+    "recruitment": "招聘管理"
+  },
+  "header": {
+    "profile": "个人资料",
+    "settings": "设置",
+    "logout": "退出登录",
+    "logoutSuccess": "已退出登录",
+    "logoutFailed": "退出失败",
+    "retryLater": "请稍后重试",
+    "admin": "管理员"
+  },
+  "home": {
+    "welcome": "欢迎回来，管理员 👋",
+    "todayInfo": "今天是 {{date}}。以下是您的工作概览。",
+    "stats": {
+      "totalEmployees": "员工总数",
+      "monthlyOnboard": "本月入职",
+      "pendingLeave": "待审批请假",
+      "todayAttendance": "今日出勤率"
+    },
+    "quickActions": {
+      "title": "快捷操作",
+      "description": "常用功能的快速入口",
+      "employeeManagement": "员工管理",
+      "employeeManagementDesc": "查看和管理员工信息",
+      "attendanceManagement": "考勤管理",
+      "attendanceManagementDesc": "考勤记录与统计",
+      "leaveApproval": "请假审批",
+      "leaveApprovalDesc": "处理员工请假申请",
+      "performance": "绩效考核",
+      "performanceDesc": "员工绩效评估",
+      "departmentManagement": "部门管理",
+      "departmentManagementDesc": "组织架构管理",
+      "dataAnalysis": "数据分析",
+      "dataAnalysisDesc": "人力资源报表"
+    },
+    "recentActivities": {
+      "title": "最近活动",
+      "description": "员工动态更新",
+      "activityTypes": {
+        "leave": "请假",
+        "onboard": "入职",
+        "update": "更新",
+        "expense": "报销"
+      }
+    },
+    "departmentStats": {
+      "title": "部门人员分布",
+      "description": "各部门员工数量及占比",
+      "departments": {
+        "tech": "技术部",
+        "product": "产品部",
+        "marketing": "市场部",
+        "operations": "运营部",
+        "hr": "人事部"
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "登录",
+      "welcomeTitle": "欢迎回来",
+      "username": "用户名",
+      "usernamePlaceholder": "请输入用户名",
+      "usernameRequired": "请输入用户名",
+      "password": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "passwordRequired": "请输入密码",
+      "forgotPassword": "忘记密码?",
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码",
+      "submit": "登录",
+      "success": "登录成功",
+      "welcomeBack": "欢迎回来！",
+      "failed": "登录失败",
+      "noAccount": "还没有账号？",
+      "register": "立即注册",
+      "orContinueWith": "或使用以下方式登录"
+    },
+    "register": {
+      "title": "注册",
+      "createAccount": "创建账号",
+      "subtitle": "填写以下信息注册新账号",
+      "username": "用户名",
+      "usernamePlaceholder": "请输入用户名",
+      "usernameMin": "用户名至少3个字符",
+      "usernameMax": "用户名最多20个字符",
+      "usernamePattern": "用户名只能包含字母、数字和下划线",
+      "email": "邮箱",
+      "emailPlaceholder": "请输入邮箱地址",
+      "emailInvalid": "请输入有效的邮箱地址",
+      "password": "密码",
+      "passwordPlaceholder": "请输入密码（至少6个字符）",
+      "passwordMin": "密码至少6个字符",
+      "passwordMax": "密码最多50个字符",
+      "confirmPassword": "确认密码",
+      "confirmPasswordPlaceholder": "请再次输入密码",
+      "confirmPasswordRequired": "请确认密码",
+      "passwordMismatch": "两次输入的密码不一致",
+      "submit": "注册",
+      "success": "注册成功",
+      "welcomeMessage": "欢迎加入我们！",
+      "failed": "注册失败",
+      "hasAccount": "已有账号？",
+      "login": "立即登录",
+      "termsPrefix": "注册即表示您同意我们的",
+      "termsOfService": "服务条款",
+      "and": "和",
+      "privacyPolicy": "隐私政策"
+    },
+    "social": {
+      "orContinueWith": "或使用其他方式登录",
+      "wechat": "微信",
+      "dingtalk": "钉钉",
+      "feishu": "飞书",
+      "comingSoon": "第三方登录功能即将上线"
+    }
+  },
+  "recruitment": {
+    "title": "招聘管理",
+    "subtitle": "管理职位发布、候选人跟进及招聘数据分析",
+    "addJob": "发布职位",
+    "tabs": {
+      "overview": "概览",
+      "jobs": "职位管理",
+      "candidates": "候选人",
+      "calendar": "面试日程"
+    },
+    "stats": {
+      "activeJobs": "进行中职位",
+      "activeCandidates": "活跃候选人",
+      "todayInterviews": "今日面试",
+      "completionRate": "招聘完成率",
+      "totalCandidates": "候选人总数",
+      "interviewsThisWeek": "本周面试",
+      "offersSent": "已发Offer",
+      "thisWeek": "本周",
+      "lastMonth": "上月",
+      "upcoming": "即将开始"
+    },
+    "overview": {
+      "funnel": {
+        "title": "招聘漏斗",
+        "screening": "简历筛选",
+        "firstInterview": "初试",
+        "secondInterview": "复试",
+        "offer": "Offer"
+      },
+      "recentApplications": {
+        "title": "最近申请",
+        "appliedFor": "申请职位:"
+      }
+    },
+    "candidates": {
+      "title": "候选人管理",
+      "add": "添加候选人",
+      "name": "姓名",
+      "email": "邮箱",
+      "phone": "电话",
+      "position": "应聘职位",
+      "status": "状态",
+      "source": "来源",
+      "resume": "简历",
+      "notes": "备注",
+      "education": "学历",
+      "experience": "工作经验",
+      "experienceYears": "工作年限",
+      "channel": "来源渠道",
+      "note": "备注",
+      "statusOptions": {
+        "new": "新申请",
+        "screening": "筛选中",
+        "interview": "面试中",
+        "offer": "已发Offer",
+        "hired": "已入职",
+        "rejected": "已拒绝"
+      },
+      "toolbar": {
+        "searchPlaceholder": "搜索候选人姓名或邮箱...",
+        "statusFilter": "状态筛选",
+        "filterStatus": "筛选状态"
+      },
+      "sidebar": {
+        "title": "职位筛选",
+        "searchPlaceholder": "搜索职位...",
+        "allPositions": "全部职位"
+      },
+      "list": {
+        "noResults": "未找到符合条件的候选人"
+      },
+      "dialog": {
+        "addTitle": "添加候选人",
+        "editTitle": "编辑候选人",
+        "uploadStep": "上传简历",
+        "reviewStep": "查看和编辑候选人信息",
+        "uploadResume": "上传简历",
+        "dragDropHint": "拖拽PDF文件到此处，或点击选择。",
+        "selectFile": "选择文件",
+        "skipUpload": "跳过上传",
+        "parsingResume": "正在解析简历...",
+        "uploadError": "请上传PDF文档(.pdf)",
+        "autoFilled": "已自动填充: {{fields}}",
+        "parseError": "无法解析候选人信息，请手动填写。",
+        "parseFailed": "简历解析失败，请手动填写。",
+        "addSuccess": "候选人添加成功",
+        "updateSuccess": "候选人更新成功",
+        "deleteConfirmTitle": "确定删除？",
+        "deleteConfirmDesc": "此操作无法撤销。这将永久删除该候选人及其所有数据。",
+        "deleteSuccess": "候选人已删除",
+        "noteUpdated": "备注已更新",
+        "resumeUploadSuccess": "简历上传成功",
+        "resumeUploadFailed": "简历上传失败",
+        "resumeFormatError": "格式错误：只支持PDF格式的简历上传。"
+      },
+      "card": {
+        "yearsExp": "{{years}}年经验",
+        "appliedOn": "{{date}} 申请"
+      },
+      "detail": {
+        "appliedPosition": "申请职位：",
+        "basicInfo": "基本信息",
+        "email": "邮箱",
+        "phone": "电话",
+        "education": "教育背景",
+        "appliedAt": "申请时间",
+        "resumePreview": "简历预览",
+        "downloadResume": "下载简历",
+        "noResume": "暂无简历文件",
+        "uploadHint": "点击上传或拖拽文件到此处",
+        "uploadingResume": "正在上传简历...",
+        "dropToUpload": "松开以上传",
+        "uploadResume": "上传简历",
+        "interviewerNotes": "面试官备注",
+        "addNotePlaceholder": "添加候选人备注...",
+        "noNotesYet": "暂无备注，点击添加..."
+      },
+      "viewMode": {
+        "list": "列表视图",
+        "board": "看板视图"
+      },
+      "form": {
+        "namePlaceholder": "张三",
+        "emailPlaceholder": "zhangsan@example.com",
+        "phonePlaceholder": "+86 138 0000 0000",
+        "educationPlaceholder": "学历, 学校",
+        "notePlaceholder": "添加备注...",
+        "selectChannel": "选择渠道",
+        "selectPosition": "选择职位",
+        "loadingJobs": "加载职位中...",
+        "channels": {
+          "linkedin": "LinkedIn",
+          "referral": "内推",
+          "official": "官网",
+          "headhunter": "猎头",
+          "other": "其他"
+        },
+        "validation": {
+          "nameMin": "姓名至少2个字符",
+          "emailInvalid": "邮箱格式无效",
+          "phoneMin": "电话至少10位",
+          "educationRequired": "请填写学历",
+          "experiencePositive": "工作年限必须为正数",
+          "channelRequired": "请选择来源渠道",
+          "positionRequired": "请选择应聘职位"
+        }
+      }
+    },
+    "jobs": {
+      "title": "职位列表",
+      "add": "添加职位",
+      "name": "职位名称",
+      "department": "部门",
+      "location": "工作地点",
+      "type": "工作类型",
+      "salary": "薪资范围",
+      "description": "职位描述",
+      "requirements": "任职要求",
+      "status": "状态",
+      "headCount": "需求人数",
+      "openDate": "启动日期",
+      "quickAction": "快速操作",
+      "note": "备注",
+      "candidateCount": "{{count}} 候选人",
+      "statusOptions": {
+        "open": "招聘中",
+        "closed": "已关闭",
+        "paused": "已暂停"
+      },
+      "table": {
+        "searchPlaceholder": "搜索职位名称...",
+        "allDepartments": "所有部门",
+        "allStatus": "所有状态",
+        "noResults": "没有找到符合条件的职位",
+        "resultsCount": "共找到 {{count}} 个职位",
+        "openMenu": "打开菜单",
+        "statusOn": "开启",
+        "statusOff": "关闭"
+      },
+      "dialog": {
+        "addTitle": "发布新职位",
+        "editTitle": "编辑职位",
+        "description": "填写职位详情信息，完成后点击保存。",
+        "detailTitle": "职位详情"
+      },
+      "detail": {
+        "jobDescription": "职位描述 (JD)",
+        "headCountUnit": "人",
+        "fullscreen": "全屏查看"
+      },
+      "form": {
+        "titleLabel": "职位名称",
+        "titlePlaceholder": "例如：高级前端工程师",
+        "departmentLabel": "用人部门",
+        "departmentPlaceholder": "例如：研发部",
+        "headCountLabel": "需求人数",
+        "openDateLabel": "启动日期",
+        "selectDate": "选择日期",
+        "statusLabel": "状态",
+        "selectStatus": "选择状态",
+        "jdLabel": "职位描述 (JD)",
+        "jdPlaceholder": "请输入职位职责和要求...",
+        "noteLabel": "备注",
+        "notePlaceholder": "仅内部可见的备注信息...",
+        "cancel": "取消",
+        "save": "保存职位",
+        "validation": {
+          "titleMin": "职位名称至少需要2个字符",
+          "departmentRequired": "请选择或输入部门",
+          "headCountMin": "招聘人数至少为1人",
+          "jdMin": "职位描述至少需要10个字符"
+        },
+        "expandableTextarea": {
+          "fullscreenEdit": "全屏编辑",
+          "editTitle": "编辑{{title}}",
+          "done": "完成"
+        }
+      }
+    },
+    "calendar": {
+      "title": "面试日历",
+      "placeholder": "在此展示面试安排日程。"
+    }
+  },
+  "pdf": {
+    "loadError": "无法加载 PDF",
+    "loadErrorHint": "文件加载失败，请重试或检查链接",
+    "retry": "重试",
+    "loading": "加载中...",
+    "noFile": "未提供 PDF 文件"
+  },
+  "resumeModal": {
+    "resumeOf": "{{name}} 的简历",
+    "download": "下载",
+    "noResume": "暂无简历文件"
+  },
+  "footer": {
+    "copyright": "© 2026 HR System. 保留所有权利。"
+  }
+}

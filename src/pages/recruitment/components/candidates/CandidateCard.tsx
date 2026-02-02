@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { Briefcase, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatusBadge } from "./StatusBadge";
@@ -10,6 +11,8 @@ interface CandidateCardProps {
 }
 
 export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="group relative flex flex-col gap-3 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md cursor-pointer hover:border-primary/50"
@@ -36,11 +39,13 @@ export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mt-1">
         <div className="flex items-center gap-1">
           <Briefcase className="h-3 w-3" />
-          {candidate.experienceYears}年经验
+          {t("recruitment.candidates.card.yearsExp", { years: candidate.experienceYears })}
         </div>
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
-          {format(candidate.appliedJobId ? candidate.appliedAt : new Date(), "MM-dd")} 申请
+          {t("recruitment.candidates.card.appliedOn", {
+            date: format(candidate.appliedJobId ? candidate.appliedAt : new Date(), "MM-dd")
+          })}
         </div>
       </div>
 

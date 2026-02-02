@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Briefcase, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ export function JobSidebar({
   jobCounts,
   totalCandidates,
 }: JobSidebarProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredJobs = useMemo(() => {
@@ -43,12 +45,12 @@ export function JobSidebar({
   const groupedJobs = useMemo(() => {
     const groups: Record<string, JobPosition[]> = {};
     filteredJobs.forEach((job) => {
-      const dept = job.department || "未分类";
+      const dept = job.department || t("common.uncategorized");
       if (!groups[dept]) groups[dept] = [];
       groups[dept].push(job);
     });
     return groups;
-  }, [filteredJobs]);
+  }, [filteredJobs, t]);
 
   const departments = useMemo(() => Object.keys(groupedJobs).sort(), [groupedJobs]);
 
@@ -67,12 +69,12 @@ export function JobSidebar({
       <div className="p-4 border-b space-y-4">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Briefcase className="w-4 h-4" />
-          职位筛选
+          {t("recruitment.candidates.sidebar.title")}
         </h3>
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="搜索职位..."
+            placeholder={t("recruitment.candidates.sidebar.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8 h-9"
@@ -86,7 +88,7 @@ export function JobSidebar({
             className="w-full justify-between mb-2"
             onClick={() => onSelectJob("all")}
           >
-            <span className="truncate">全部职位</span>
+            <span className="truncate">{t("recruitment.candidates.sidebar.allPositions")}</span>
             <Badge variant="secondary" className="ml-auto text-xs">
               {totalCandidates}
             </Badge>

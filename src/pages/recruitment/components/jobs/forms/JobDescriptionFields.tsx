@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import type { Control } from "react-hook-form"
 import {
   FormField,
@@ -5,13 +6,15 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { ExpandableTextarea } from "./ExpandableTextarea"
-import type { JobFormValues } from "../JobPositionForm"
+import type { JobFormValues } from "./JobPositionForm"
 
 interface JobDescriptionFieldsProps {
   control: Control<JobFormValues>
 }
 
 export function JobDescriptionFields({ control }: JobDescriptionFieldsProps) {
+  const { t } = useTranslation()
+
   return (
     <>
       <FormField
@@ -22,8 +25,8 @@ export function JobDescriptionFields({ control }: JobDescriptionFieldsProps) {
             <ExpandableTextarea
               value={field.value || ''}
               onChange={field.onChange}
-              title="职位描述 (JD)"
-              placeholder="请输入职位职责和要求..."
+              title={t("recruitment.jobs.form.jdLabel")}
+              placeholder={t("recruitment.jobs.form.jdPlaceholder")}
               className="h-[200px]"
             />
             <FormMessage />
@@ -39,8 +42,8 @@ export function JobDescriptionFields({ control }: JobDescriptionFieldsProps) {
             <ExpandableTextarea
               value={field.value || ''}
               onChange={field.onChange}
-              title="备注"
-              placeholder="仅内部可见的备注信息..."
+              title={t("recruitment.jobs.form.noteLabel")}
+              placeholder={t("recruitment.jobs.form.notePlaceholder")}
               className="h-[80px]"
             />
             <FormMessage />

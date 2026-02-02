@@ -1,19 +1,27 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { RecentActivities } from "../RecentActivities";
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'zh-CN' },
+  }),
+}));
 
 describe("RecentActivities", () => {
   it("renders the section title", () => {
     render(<RecentActivities />);
 
-    expect(screen.getByText("最近活动")).toBeInTheDocument();
-    expect(screen.getByText("员工动态更新")).toBeInTheDocument();
+    expect(screen.getByText("home.recentActivities.title")).toBeInTheDocument();
+    expect(screen.getByText("home.recentActivities.description")).toBeInTheDocument();
   });
 
   it("renders the view all button", () => {
     render(<RecentActivities />);
 
-    expect(screen.getByText("查看全部")).toBeInTheDocument();
+    expect(screen.getByText("common.viewAll")).toBeInTheDocument();
   });
 
   it("renders all activity items with user names", () => {
@@ -25,7 +33,7 @@ describe("RecentActivities", () => {
     expect(screen.getByText("赵六")).toBeInTheDocument();
   });
 
-  it("renders activity actions", () => {
+  it("renders activity actions (Chinese as mock returns zh-CN)", () => {
     render(<RecentActivities />);
 
     expect(screen.getByText("提交了年假申请")).toBeInTheDocument();
@@ -34,7 +42,7 @@ describe("RecentActivities", () => {
     expect(screen.getByText("提交了报销申请")).toBeInTheDocument();
   });
 
-  it("renders activity timestamps", () => {
+  it("renders activity timestamps (Chinese as mock returns zh-CN)", () => {
     render(<RecentActivities />);
 
     expect(screen.getByText("5分钟前")).toBeInTheDocument();
@@ -43,12 +51,12 @@ describe("RecentActivities", () => {
     expect(screen.getByText("2小时前")).toBeInTheDocument();
   });
 
-  it("renders activity type badges", () => {
+  it("renders activity type badges with translation keys", () => {
     render(<RecentActivities />);
 
-    expect(screen.getByText("请假")).toBeInTheDocument();
-    expect(screen.getByText("入职")).toBeInTheDocument();
-    expect(screen.getByText("更新")).toBeInTheDocument();
-    expect(screen.getByText("报销")).toBeInTheDocument();
+    expect(screen.getByText("home.recentActivities.activityTypes.leave")).toBeInTheDocument();
+    expect(screen.getByText("home.recentActivities.activityTypes.onboard")).toBeInTheDocument();
+    expect(screen.getByText("home.recentActivities.activityTypes.update")).toBeInTheDocument();
+    expect(screen.getByText("home.recentActivities.activityTypes.expense")).toBeInTheDocument();
   });
 });

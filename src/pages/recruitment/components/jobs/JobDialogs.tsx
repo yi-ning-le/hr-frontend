@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -26,14 +27,20 @@ export function JobDialogs({
   viewingJob,
   setViewingJob,
 }: JobDialogsProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col" aria-describedby="job-description-content">
           <DialogHeader className="flex-shrink-0">
-            <DialogTitle>{editingJob ? "编辑职位" : "发布新职位"}</DialogTitle>
+            <DialogTitle>
+              {editingJob
+                ? t("recruitment.jobs.dialog.editTitle")
+                : t("recruitment.jobs.dialog.addTitle")}
+            </DialogTitle>
             <DialogDescription>
-              填写职位详情信息，完成后点击保存。
+              {t("recruitment.jobs.dialog.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 min-h-0 overflow-hidden">
@@ -52,7 +59,7 @@ export function JobDialogs({
           <DialogHeader className="flex-shrink-0">
             <DialogTitle>{viewingJob?.title}</DialogTitle>
             <DialogDescription>
-              职位详情
+              {t("recruitment.jobs.dialog.detailTitle")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-hidden px-1 min-h-0">

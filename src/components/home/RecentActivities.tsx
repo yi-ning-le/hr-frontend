@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,9 @@ interface Activity {
   user: string;
   avatar: string;
   action: string;
+  actionEn: string;
   time: string;
+  timeEn: string;
   type: ActivityType;
 }
 
@@ -25,55 +28,59 @@ const recentActivities: Activity[] = [
     user: "张三",
     avatar: "",
     action: "提交了年假申请",
+    actionEn: "submitted annual leave request",
     time: "5分钟前",
+    timeEn: "5 minutes ago",
     type: "leave",
   },
   {
     user: "李四",
     avatar: "",
     action: "完成了入职手续",
+    actionEn: "completed onboarding",
     time: "30分钟前",
+    timeEn: "30 minutes ago",
     type: "onboard",
   },
   {
     user: "王五",
     avatar: "",
     action: "更新了个人信息",
+    actionEn: "updated personal info",
     time: "1小时前",
+    timeEn: "1 hour ago",
     type: "update",
   },
   {
     user: "赵六",
     avatar: "",
     action: "提交了报销申请",
+    actionEn: "submitted expense claim",
     time: "2小时前",
+    timeEn: "2 hours ago",
     type: "expense",
   },
 ];
 
-const activityTypeLabels: Record<ActivityType, string> = {
-  leave: "请假",
-  onboard: "入职",
-  update: "更新",
-  expense: "报销",
-};
-
 export function RecentActivities() {
+  const { t, i18n } = useTranslation();
+  const isZh = i18n.language === 'zh-CN';
+
   return (
     <Card className="border-0 bg-white shadow-lg shadow-slate-200/50 dark:bg-slate-900 dark:shadow-slate-900/50">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white">
-            最近活动
+            {t("home.recentActivities.title")}
           </CardTitle>
-          <CardDescription>员工动态更新</CardDescription>
+          <CardDescription>{t("home.recentActivities.description")}</CardDescription>
         </div>
         <Button
           variant="ghost"
           size="sm"
           className="text-blue-600 dark:text-blue-400"
         >
-          查看全部
+          {t("common.viewAll")}
           <ChevronRight className="ml-1 size-4" />
         </Button>
       </CardHeader>
@@ -94,18 +101,18 @@ export function RecentActivities() {
                 <p className="text-sm text-slate-900 dark:text-white">
                   <span className="font-medium">{activity.user}</span>{" "}
                   <span className="text-slate-600 dark:text-slate-400">
-                    {activity.action}
+                    {isZh ? activity.action : activity.actionEn}
                   </span>
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-500">
-                  {activity.time}
+                  {isZh ? activity.time : activity.timeEn}
                 </p>
               </div>
               <Badge
                 variant="secondary"
                 className="shrink-0 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
               >
-                {activityTypeLabels[activity.type]}
+                {t(`home.recentActivities.activityTypes.${activity.type}`)}
               </Badge>
             </div>
           ))}

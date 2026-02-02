@@ -1,15 +1,23 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { StatsCards } from "../StatsCards";
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'zh-CN' },
+  }),
+}));
 
 describe("StatsCards", () => {
   it("renders all four stat cards", () => {
     render(<StatsCards />);
 
-    expect(screen.getByText("员工总数")).toBeInTheDocument();
-    expect(screen.getByText("本月入职")).toBeInTheDocument();
-    expect(screen.getByText("待审批请假")).toBeInTheDocument();
-    expect(screen.getByText("今日出勤率")).toBeInTheDocument();
+    expect(screen.getByText("home.stats.totalEmployees")).toBeInTheDocument();
+    expect(screen.getByText("home.stats.monthlyOnboard")).toBeInTheDocument();
+    expect(screen.getByText("home.stats.pendingLeave")).toBeInTheDocument();
+    expect(screen.getByText("home.stats.todayAttendance")).toBeInTheDocument();
   });
 
   it("displays the correct stat values", () => {
@@ -33,8 +41,8 @@ describe("StatsCards", () => {
   it("shows comparison text", () => {
     render(<StatsCards />);
 
-    // Should show "较上月" for all cards
-    const comparisonTexts = screen.getAllByText("较上月");
+    // Should show translation key for all cards
+    const comparisonTexts = screen.getAllByText("common.comparedToLastMonth");
     expect(comparisonTexts).toHaveLength(4);
   });
 });

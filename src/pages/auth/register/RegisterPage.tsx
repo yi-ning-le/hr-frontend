@@ -1,42 +1,45 @@
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { RegisterForm } from "./RegisterForm";
 
 export function RegisterPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="grid gap-6">
       <div className="grid gap-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">创建账号</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("auth.register.createAccount")}</h1>
         <p className="text-muted-foreground text-sm">
-          填写以下信息注册新账号
+          {t("auth.register.subtitle")}
         </p>
       </div>
 
       <RegisterForm />
 
       <p className="text-center text-sm text-muted-foreground">
-        已有账号?{" "}
+        {t("auth.register.hasAccount")}{" "}
         <Link
           to="/login"
           className="font-medium text-primary hover:underline underline-offset-4"
         >
-          立即登录
+          {t("auth.register.login")}
         </Link>
       </p>
 
       <p className="text-center text-xs text-muted-foreground">
-        注册即表示您同意我们的{" "}
+        {t("auth.register.termsPrefix")}{" "}
         <a
           href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
-          服务条款
+          {t("auth.register.termsOfService")}
         </a>{" "}
-        和{" "}
+        {t("auth.register.and")}{" "}
         <a
           href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
-          隐私政策
+          {t("auth.register.privacyPolicy")}
         </a>
       </p>
     </div>

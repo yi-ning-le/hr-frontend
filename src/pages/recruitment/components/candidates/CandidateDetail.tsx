@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Separator } from "@/components/ui/separator";
 import {
   DialogHeader,
@@ -26,6 +27,7 @@ import { CandidateResumeSection } from "./detail/CandidateResumeSection";
 import { CandidateNoteSection } from "./detail/CandidateNoteSection";
 
 export function CandidateDetail() {
+  const { t } = useTranslation();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -59,7 +61,7 @@ export function CandidateDetail() {
   const handleNoteSave = () => {
     updateCandidateNote(candidate.id, noteContent);
     setIsEditingNote(false);
-    toast.success("Note updated");
+    toast.success(t("recruitment.candidates.dialog.noteUpdated"));
   };
 
   const handleNoteCancel = () => {
@@ -70,7 +72,7 @@ export function CandidateDetail() {
   const handleResumeUpload = async (file: File) => {
     // 1. Validate file format (PDF only)
     if (file.type !== "application/pdf") {
-      toast.error("Format error: Only PDF files are supported for resume upload.");
+      toast.error(t("recruitment.candidates.dialog.resumeFormatError"));
       return;
     }
 
@@ -78,10 +80,10 @@ export function CandidateDetail() {
 
     try {
       await uploadResume(candidate.id, file);
-      toast.success("Resume uploaded successfully");
+      toast.success(t("recruitment.candidates.dialog.resumeUploadSuccess"));
     } catch (error) {
       console.error(error);
-      toast.error("Failed to upload resume");
+      toast.error(t("recruitment.candidates.dialog.resumeUploadFailed"));
     } finally {
       setIsUploadingResume(false);
     }
@@ -90,20 +92,20 @@ export function CandidateDetail() {
   const handleEditSubmit = (values: CandidateFormValues) => {
     updateCandidate(candidate.id, values);
     setIsEditing(false);
-    toast.success("Candidate updated successfully");
+    toast.success(t("recruitment.candidates.dialog.updateSuccess"));
   };
 
   const handleDelete = () => {
     removeCandidate(candidate.id);
     selectCandidate(null); // Close the detail view
-    toast.success("Candidate deleted");
+    toast.success(t("recruitment.candidates.dialog.deleteSuccess"));
   };
 
   if (isEditing) {
     return (
       <div className="flex flex-col h-full min-h-0">
         <DialogHeader className="p-6 border-b shrink-0">
-          <DialogTitle>Edit Candidate</DialogTitle>
+          <DialogTitle>{t("recruitment.candidates.dialog.editTitle")}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="flex-1 p-6">
           <CandidateForm
@@ -164,16 +166,15 @@ export function CandidateDetail() {
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t("recruitment.candidates.dialog.deleteConfirmTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the candidate
-              and remove their data from our servers.
+              {t("recruitment.candidates.dialog.deleteConfirmDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

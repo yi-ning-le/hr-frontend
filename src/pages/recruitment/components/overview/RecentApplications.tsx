@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,18 +40,20 @@ const recentApplications = [
   },
 ];
 
-const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" | null }> = {
-  new: { label: "新申请", variant: "default" },
-  reviewing: { label: "筛选中", variant: "secondary" },
-  interview: { label: "面试中", variant: "outline" },
-};
-
 export function RecentApplications() {
+  const { t } = useTranslation();
+
+  const statusMap: Record<string, { labelKey: string; variant: "default" | "secondary" | "outline" | "destructive" | null }> = {
+    new: { labelKey: "recruitment.candidates.statusOptions.new", variant: "default" },
+    reviewing: { labelKey: "recruitment.candidates.statusOptions.screening", variant: "secondary" },
+    interview: { labelKey: "recruitment.candidates.statusOptions.interview", variant: "outline" },
+  };
+
   return (
     <Card className="col-span-1 lg:col-span-2">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-medium">最近申请</CardTitle>
-        <Button variant="ghost" size="sm">查看全部</Button>
+        <CardTitle className="text-lg font-medium">{t("recruitment.overview.recentApplications.title")}</CardTitle>
+        <Button variant="ghost" size="sm">{t("common.viewAll")}</Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -66,13 +69,13 @@ export function RecentApplications() {
                     {app.name}
                   </p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    申请职位: {app.role}
+                    {t("recruitment.overview.recentApplications.appliedFor")} {app.role}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <Badge variant={statusMap[app.status]?.variant as "default" | "secondary" | "outline" | "destructive" | null | undefined} className="hidden sm:flex">
-                  {statusMap[app.status]?.label}
+                  {t(statusMap[app.status]?.labelKey)}
                 </Badge>
                 <div className="text-xs text-slate-400 w-16 text-right">
                   {app.appliedDate}

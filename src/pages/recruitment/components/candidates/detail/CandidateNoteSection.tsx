@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { FileText, Pencil, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,11 +23,13 @@ export function CandidateNoteSection({
   onNoteCancel,
   onEditClick,
 }: CandidateNoteSectionProps) {
+  const { t } = useTranslation();
+
   return (
     <section className="space-y-4 pb-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-          <FileText className="h-4 w-4" /> 面试官备注
+          <FileText className="h-4 w-4" /> {t("recruitment.candidates.detail.interviewerNotes")}
         </h4>
         {!isEditingNote && (
           <Button
@@ -43,7 +46,7 @@ export function CandidateNoteSection({
       {isEditingNote ? (
         <div className="space-y-2">
           <Textarea
-            placeholder="添加候选人备注..."
+            placeholder={t("recruitment.candidates.detail.addNotePlaceholder")}
             value={noteContent}
             onChange={(e) => onNoteChange(e.target.value)}
             className="min-h-[120px] resize-none focus-visible:ring-primary"
@@ -51,10 +54,10 @@ export function CandidateNoteSection({
           />
           <div className="flex justify-end gap-2">
             <Button variant="outline" size="sm" onClick={onNoteCancel}>
-              <X className="mr-1 h-3 w-3" /> Cancel
+              <X className="mr-1 h-3 w-3" /> {t("common.cancel")}
             </Button>
             <Button size="sm" onClick={onNoteSave}>
-              <Check className="mr-1 h-3 w-3" /> Save
+              <Check className="mr-1 h-3 w-3" /> {t("common.save")}
             </Button>
           </div>
         </div>
@@ -65,7 +68,7 @@ export function CandidateNoteSection({
         >
           {candidate.note || (
             <span className="text-muted-foreground italic">
-              No notes added yet. Click to add...
+              {t("recruitment.candidates.detail.noNotesYet")}
             </span>
           )}
         </div>

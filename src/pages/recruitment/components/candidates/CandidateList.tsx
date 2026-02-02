@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Users } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CandidateCard } from "./CandidateCard";
@@ -12,6 +13,8 @@ export function CandidateList({
   candidates,
   onCandidateClick,
 }: CandidateListProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex-1 bg-slate-50/30 dark:bg-slate-900/10 overflow-hidden">
       <ScrollArea className="h-full">
@@ -26,7 +29,7 @@ export function CandidateList({
           {candidates.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
               <Users className="h-12 w-12 mb-4 opacity-20" />
-              <p>未找到符合条件的候选人</p>
+              <p>{t("recruitment.candidates.list.noResults")}</p>
             </div>
           )}
         </div>

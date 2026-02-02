@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import type { Control } from "react-hook-form"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
@@ -23,13 +24,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { JobFormValues } from "../JobPositionForm"
+import type { JobFormValues } from "./JobPositionForm"
 
 interface JobDateStatusFieldsProps {
   control: Control<JobFormValues>
 }
 
 export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormField
@@ -37,7 +40,7 @@ export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
         name="openDate"
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>启动日期</FormLabel>
+            <FormLabel>{t("recruitment.jobs.form.openDateLabel")}</FormLabel>
             <Popover>
               <PopoverTrigger asChild>
                 <FormControl>
@@ -51,7 +54,7 @@ export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
                     {field.value ? (
                       format(field.value, "yyyy-MM-dd")
                     ) : (
-                      <span>选择日期</span>
+                      <span>{t("recruitment.jobs.form.selectDate")}</span>
                     )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
@@ -79,16 +82,16 @@ export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
         name="status"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>状态</FormLabel>
+            <FormLabel>{t("recruitment.jobs.form.statusLabel")}</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="选择状态" />
+                  <SelectValue placeholder={t("recruitment.jobs.form.selectStatus")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="OPEN">招聘中 (Open)</SelectItem>
-                <SelectItem value="CLOSED">已关闭 (Closed)</SelectItem>
+                <SelectItem value="OPEN">{t("recruitment.jobs.statusOptions.open")}</SelectItem>
+                <SelectItem value="CLOSED">{t("recruitment.jobs.statusOptions.closed")}</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />

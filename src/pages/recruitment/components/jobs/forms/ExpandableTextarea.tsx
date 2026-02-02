@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Maximize2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ export function ExpandableTextarea({
   title,
   className
 }: ExpandableTextareaProps) {
+  const { t } = useTranslation()
   const [isFullScreen, setIsFullScreen] = useState(false)
 
   return (
@@ -38,7 +40,7 @@ export function ExpandableTextarea({
           size="icon"
           className="h-6 w-6"
           onClick={() => setIsFullScreen(true)}
-          title="全屏编辑"
+          title={t("recruitment.jobs.form.expandableTextarea.fullscreenEdit")}
         >
           <Maximize2 className="h-3.5 w-3.5" />
         </Button>
@@ -55,7 +57,9 @@ export function ExpandableTextarea({
       <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>编辑{title}</DialogTitle>
+            <DialogTitle>
+              {t("recruitment.jobs.form.expandableTextarea.editTitle", { title })}
+            </DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto p-1">
             <Textarea
@@ -66,7 +70,9 @@ export function ExpandableTextarea({
             />
           </div>
           <div className="flex justify-end pt-2">
-            <Button onClick={() => setIsFullScreen(false)}>完成</Button>
+            <Button onClick={() => setIsFullScreen(false)}>
+              {t("recruitment.jobs.form.expandableTextarea.done")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

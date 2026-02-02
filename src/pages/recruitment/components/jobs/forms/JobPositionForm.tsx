@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
@@ -10,24 +11,6 @@ import type { JobPosition } from "@/types/job"
 import { JobBasicInfoFields } from "./JobBasicInfoFields"
 import { JobDateStatusFields } from "./JobDateStatusFields"
 import { JobDescriptionFields } from "./JobDescriptionFields"
-
-const jobFormSchema = z.object({
-  title: z.string().min(2, {
-    message: "职位名称至少需要2个字符",
-  }),
-  department: z.string().min(1, {
-    message: "请选择或输入部门",
-  }),
-  headCount: z.coerce.number().min(1, {
-    message: "招聘人数至少为1人",
-  }),
-  openDate: z.date(),
-  jobDescription: z.string().min(10, {
-    message: "职位描述至少需要10个字符",
-  }),
-  note: z.string().optional(),
-  status: z.enum(["OPEN", "CLOSED"]).default("OPEN"),
-})
 
 export interface JobFormValues {
   title: string
@@ -47,6 +30,26 @@ interface JobPositionFormProps {
 }
 
 export function JobPositionForm({ initialData, onSubmit, onCancel, className }: JobPositionFormProps) {
+  const { t } = useTranslation()
+
+  const jobFormSchema = z.object({
+    title: z.string().min(2, {
+      message: t("recruitment.jobs.form.validation.titleMin"),
+    }),
+    department: z.string().min(1, {
+      message: t("recruitment.jobs.form.validation.departmentRequired"),
+    }),
+    headCount: z.coerce.number().min(1, {
+      message: t("recruitment.jobs.form.validation.headCountMin"),
+    }),
+    openDate: z.date(),
+    jobDescription: z.string().min(10, {
+      message: t("recruitment.jobs.form.validation.jdMin"),
+    }),
+    note: z.string().optional(),
+    status: z.enum(["OPEN", "CLOSED"]).default("OPEN"),
+  })
+
   const form = useForm<JobFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(jobFormSchema) as any,
@@ -77,10 +80,10 @@ export function JobPositionForm({ initialData, onSubmit, onCancel, className }: 
         <div className="flex justify-end space-x-2 pt-4 border-t mt-auto">
           {onCancel && (
             <Button variant="outline" type="button" onClick={onCancel}>
-              取消
+              {t("recruitment.jobs.form.cancel")}
             </Button>
           )}
-          <Button type="submit">保存职位</Button>
+          <Button type="submit">{t("recruitment.jobs.form.save")}</Button>
         </div>
       </form>
     </Form>

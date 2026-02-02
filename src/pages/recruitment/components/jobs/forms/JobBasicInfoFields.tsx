@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import type { Control } from "react-hook-form"
 import {
   FormControl,
@@ -7,13 +8,15 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import type { JobFormValues } from "../JobPositionForm"
+import type { JobFormValues } from "./JobPositionForm"
 
 interface JobBasicInfoFieldsProps {
   control: Control<JobFormValues>
 }
 
 export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
+  const { t } = useTranslation()
+
   return (
     <>
       <FormField
@@ -21,9 +24,9 @@ export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>职位名称</FormLabel>
+            <FormLabel>{t("recruitment.jobs.form.titleLabel")}</FormLabel>
             <FormControl>
-              <Input placeholder="例如：高级前端工程师" {...field} value={field.value || ''} />
+              <Input placeholder={t("recruitment.jobs.form.titlePlaceholder")} {...field} value={field.value || ''} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -36,9 +39,9 @@ export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
           name="department"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>用人部门</FormLabel>
+              <FormLabel>{t("recruitment.jobs.form.departmentLabel")}</FormLabel>
               <FormControl>
-                <Input placeholder="例如：研发部" {...field} value={field.value || ''} />
+                <Input placeholder={t("recruitment.jobs.form.departmentPlaceholder")} {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -50,7 +53,7 @@ export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
           name="headCount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>需求人数</FormLabel>
+              <FormLabel>{t("recruitment.jobs.form.headCountLabel")}</FormLabel>
               <FormControl>
                 <Input type="number" min={1} {...field} value={field.value as number} onChange={field.onChange} />
               </FormControl>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { UploadCloud, Loader2, Plus } from "lucide-react";
@@ -10,6 +11,7 @@ import { parseResume } from "@/lib/parseResume";
 
 
 export function AddCandidateDialog() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"upload" | "form">("upload");
   const [isParsing, setIsParsing] = useState(false);
@@ -37,7 +39,7 @@ export function AddCandidateDialog() {
   const processFile = async (file: File) => {
     const allowedTypes = ["application/pdf"];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Please upload a PDF document (.pdf)");
+      toast.error(t("recruitment.candidates.dialog.uploadError"));
       return;
     }
 
@@ -52,13 +54,13 @@ export function AddCandidateDialog() {
         (key) => parsed[key as keyof typeof parsed]
       );
       if (filledFields.length > 0) {
-        toast.success(`Auto-filled: ${filledFields.join(", ")}`);
+        toast.success(t("recruitment.candidates.dialog.autoFilled", { fields: filledFields.join(", ") }));
       } else {
-        toast.info("Could not extract candidate info. Please fill manually.");
+        toast.info(t("recruitment.candidates.dialog.parseError"));
       }
     } catch (error) {
       console.error("Resume parsing error:", error);
-      toast.error("Failed to parse resume. Please fill form manually.");
+      toast.error(t("recruitment.candidates.dialog.parseFailed"));
     } finally {
       setIsParsing(false);
       setStep("form");
@@ -97,7 +99,7 @@ export function AddCandidateDialog() {
     };
 
     addCandidate(newCandidate, resumeFile || undefined);
-    toast.success("Candidate added successfully");
+    toast.success(t("recruitment.candidates.dialog.addSuccess"));
     setOpen(false);
   };
 
@@ -106,16 +108,16 @@ export function AddCandidateDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Candidate
+          {t("recruitment.candidates.add")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Add New Candidate</DialogTitle>
+          <DialogTitle>{t("recruitment.candidates.dialog.addTitle")}</DialogTitle>
           <DialogDescription>
             {step === "upload"
-              ? "Upload a resume for the new candidate."
-              : "Review and edit candidate information."}
+              ? t("recruitment.candidates.dialog.uploadStep")
+              : t("recruitment.candidates.dialog.reviewStep")}
           </DialogDescription>
         </DialogHeader>
 
@@ -132,19 +134,19 @@ export function AddCandidateDialog() {
             {isParsing ? (
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">Parsing resume...</p>
+                <p className="text-sm text-muted-foreground">{t("recruitment.candidates.dialog.parsingResume")}</p>
               </div>
             ) : (
               <>
                 <div className="bg-primary/10 p-4 rounded-full mb-4">
                   <UploadCloud className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">Upload Resume</h3>
+                <h3 className="text-lg font-semibold mb-1">{t("recruitment.candidates.dialog.uploadResume")}</h3>
                 <p className="text-sm text-muted-foreground mb-4 text-center max-w-xs">
-                  Drag and drop your PDF here, or click to browse.
+                  {t("recruitment.candidates.dialog.dragDropHint")}
                 </p>
                 <div className="relative">
-                  <Button variant="outline">Select File</Button>
+                  <Button variant="outline">{t("recruitment.candidates.dialog.selectFile")}</Button>
                   <input
                     type="file"
                     accept=".pdf,.doc,.docx"
@@ -154,7 +156,7 @@ export function AddCandidateDialog() {
                 </div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                   <Button variant="ghost" size="sm" onClick={() => setStep("form")}>
-                    Skip Upload
+                    {t("recruitment.candidates.dialog.skipUpload")}
                   </Button>
                 </div>
               </>
@@ -165,7 +167,7 @@ export function AddCandidateDialog() {
             defaultValues={parsedData}
             onSubmit={handleSubmit}
             onCancel={() => setStep("upload")}
-            submitLabel="Add Candidate"
+            submitLabel={t("recruitment.candidates.add")}
           />
         )}
       </DialogContent>

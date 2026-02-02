@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,27 +21,29 @@ interface CandidateToolbarProps {
   onStatusFilterChange: (status: CandidateStatus[]) => void;
 }
 
-const STATUS_OPTIONS: { label: string; value: CandidateStatus }[] = [
-  { label: "New", value: "new" },
-  { label: "Screening", value: "screening" },
-  { label: "Interview", value: "interview" },
-  { label: "Offer", value: "offer" },
-  { label: "Hired", value: "hired" },
-  { label: "Rejected", value: "rejected" },
-];
-
 export function CandidateToolbar({
   searchQuery,
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
 }: CandidateToolbarProps) {
+  const { t } = useTranslation();
+
+  const STATUS_OPTIONS: { labelKey: string; value: CandidateStatus }[] = [
+    { labelKey: "recruitment.candidates.statusOptions.new", value: "new" },
+    { labelKey: "recruitment.candidates.statusOptions.screening", value: "screening" },
+    { labelKey: "recruitment.candidates.statusOptions.interview", value: "interview" },
+    { labelKey: "recruitment.candidates.statusOptions.offer", value: "offer" },
+    { labelKey: "recruitment.candidates.statusOptions.hired", value: "hired" },
+    { labelKey: "recruitment.candidates.statusOptions.rejected", value: "rejected" },
+  ];
+
   return (
     <div className="flex items-center justify-between gap-4 w-full">
       <div className="relative flex-1 max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="搜索候选人姓名或邮箱..."
+          placeholder={t("recruitment.candidates.toolbar.searchPlaceholder")}
           className="pl-9"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
@@ -53,7 +56,7 @@ export function CandidateToolbar({
             <Button variant="outline" size="sm" className="h-9 gap-1">
               <Filter className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                状态筛选
+                {t("recruitment.candidates.toolbar.statusFilter")}
               </span>
               {statusFilter.length > 0 && (
                 <Badge
@@ -66,7 +69,7 @@ export function CandidateToolbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuLabel>筛选状态</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("recruitment.candidates.toolbar.filterStatus")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {STATUS_OPTIONS.map((option) => {
               const isSelected = statusFilter.includes(option.value);
@@ -84,7 +87,7 @@ export function CandidateToolbar({
                     }
                   }}
                 >
-                  {option.label}
+                  {t(option.labelKey)}
                 </DropdownMenuCheckboxItem>
               );
             })}
@@ -95,7 +98,7 @@ export function CandidateToolbar({
                   onCheckedChange={() => onStatusFilterChange([])}
                   className="justify-center text-center"
                 >
-                  清除筛选
+                  {t("common.clearFilter")}
                 </DropdownMenuCheckboxItem>
               </>
             )}

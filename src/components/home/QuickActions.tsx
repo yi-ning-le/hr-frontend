@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Users,
   Clock,
@@ -17,34 +18,36 @@ import {
 } from "@/components/ui/card";
 
 interface QuickAction {
-  title: string;
+  titleKey: string;
   icon: LucideIcon;
-  description: string;
+  descriptionKey: string;
 }
 
 const quickActions: QuickAction[] = [
-  { title: "员工管理", icon: Users, description: "查看和管理员工信息" },
-  { title: "考勤管理", icon: Clock, description: "考勤记录与统计" },
-  { title: "请假审批", icon: ClipboardList, description: "处理员工请假申请" },
-  { title: "绩效考核", icon: Award, description: "员工绩效评估" },
-  { title: "部门管理", icon: Building2, description: "组织架构管理" },
-  { title: "数据分析", icon: TrendingUp, description: "人力资源报表" },
+  { titleKey: "home.quickActions.employeeManagement", icon: Users, descriptionKey: "home.quickActions.employeeManagementDesc" },
+  { titleKey: "home.quickActions.attendanceManagement", icon: Clock, descriptionKey: "home.quickActions.attendanceManagementDesc" },
+  { titleKey: "home.quickActions.leaveApproval", icon: ClipboardList, descriptionKey: "home.quickActions.leaveApprovalDesc" },
+  { titleKey: "home.quickActions.performance", icon: Award, descriptionKey: "home.quickActions.performanceDesc" },
+  { titleKey: "home.quickActions.departmentManagement", icon: Building2, descriptionKey: "home.quickActions.departmentManagementDesc" },
+  { titleKey: "home.quickActions.dataAnalysis", icon: TrendingUp, descriptionKey: "home.quickActions.dataAnalysisDesc" },
 ];
 
 export function QuickActions() {
+  const { t } = useTranslation();
+
   return (
     <Card className="border-0 bg-white shadow-lg shadow-slate-200/50 lg:col-span-2 dark:bg-slate-900 dark:shadow-slate-900/50">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white">
-          快捷操作
+          {t("home.quickActions.title")}
         </CardTitle>
-        <CardDescription>常用功能的快速入口</CardDescription>
+        <CardDescription>{t("home.quickActions.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {quickActions.map((action) => (
             <Button
-              key={action.title}
+              key={action.titleKey}
               variant="outline"
               className="group h-auto flex-col items-start gap-2 border-slate-200 p-4 text-left transition-all duration-200 hover:border-blue-300 hover:bg-blue-50/50 dark:border-slate-700 dark:hover:border-blue-700 dark:hover:bg-blue-950/30"
             >
@@ -53,10 +56,10 @@ export function QuickActions() {
               </div>
               <div>
                 <p className="font-medium text-slate-900 dark:text-white">
-                  {action.title}
+                  {t(action.titleKey)}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {action.description}
+                  {t(action.descriptionKey)}
                 </p>
               </div>
             </Button>

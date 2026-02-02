@@ -2,6 +2,16 @@ import { render, screen } from "@testing-library/react";
 import { RecruitmentPage } from "../RecruitmentPage";
 import { describe, it, expect, vi } from "vitest";
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: {
+      language: 'zh-CN',
+    },
+  }),
+}));
+
 // Mock subcomponents
 vi.mock("../../../lib/parseResume", () => ({
   parseResume: vi.fn(),
@@ -37,16 +47,16 @@ vi.mock("../components/candidates/PdfPreview", () => ({
 describe("RecruitmentPage", () => {
   it("renders header title", () => {
     render(<RecruitmentPage />);
-    expect(screen.getByText("招聘管理")).toBeInTheDocument();
-    expect(screen.getByText("管理职位发布、候选人跟进及招聘数据分析")).toBeInTheDocument();
+    expect(screen.getByText("recruitment.title")).toBeInTheDocument();
+    expect(screen.getByText("recruitment.subtitle")).toBeInTheDocument();
   });
 
   it("renders tabs", () => {
     render(<RecruitmentPage />);
-    expect(screen.getByText("概览")).toBeInTheDocument();
-    expect(screen.getByText("职位管理")).toBeInTheDocument();
-    expect(screen.getByText("候选人")).toBeInTheDocument();
-    expect(screen.getByText("面试日程")).toBeInTheDocument();
+    expect(screen.getByText("recruitment.tabs.overview")).toBeInTheDocument();
+    expect(screen.getByText("recruitment.tabs.jobs")).toBeInTheDocument();
+    expect(screen.getByText("recruitment.tabs.candidates")).toBeInTheDocument();
+    expect(screen.getByText("recruitment.tabs.calendar")).toBeInTheDocument();
   });
 
   it("renders statistics and applications widgets in overview tab", () => {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FileText, Loader2, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PdfPreview } from "../PdfPreview";
@@ -18,6 +19,7 @@ export function CandidateResumeSection({
   onResumeUpload,
   onPreviewClick,
 }: CandidateResumeSectionProps) {
+  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -49,7 +51,7 @@ export function CandidateResumeSection({
     <section>
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-          <FileText className="h-4 w-4" /> 简历预览
+          <FileText className="h-4 w-4" /> {t("recruitment.candidates.detail.resumePreview")}
         </h4>
         <div className="flex gap-2">
           {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
@@ -59,7 +61,7 @@ export function CandidateResumeSection({
               className="h-8 text-xs"
               onClick={() => window.open(candidate.resumeUrl, "_blank")}
             >
-              下载简历
+              {t("recruitment.candidates.detail.downloadResume")}
             </Button>
           ) : null}
         </div>
@@ -91,7 +93,7 @@ export function CandidateResumeSection({
           {isUploadingResume ? (
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p>Uploading resume...</p>
+              <p>{t("recruitment.candidates.detail.uploadingResume")}</p>
             </div>
           ) : (
             <>
@@ -102,17 +104,17 @@ export function CandidateResumeSection({
                 )}
               />
               <p className="font-medium mb-1">
-                {isDragging ? "Drop to upload" : "暂无简历文件"}
+                {isDragging ? t("recruitment.candidates.detail.dropToUpload") : t("recruitment.candidates.detail.noResume")}
               </p>
               <p className="text-xs text-muted-foreground mb-4">
-                Click to upload or drag and drop
+                {t("recruitment.candidates.detail.uploadHint")}
               </p>
               <Button
                 variant={isDragging ? "default" : "outline"}
                 size="sm"
                 className="relative"
               >
-                Upload Resume
+                {t("recruitment.candidates.detail.uploadResume")}
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"

@@ -1,0 +1,390 @@
+{
+  "common": {
+    "appName": "HR System",
+    "appSubtitle": "Human Resources Management System",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset",
+    "submit": "Submit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "viewAll": "View All",
+    "comparedToLastMonth": "vs last month",
+    "people": "people",
+    "percentage": "Ratio",
+    "actions": "Actions",
+    "uncategorized": "Uncategorized",
+    "clearFilter": "Clear Filter",
+    "noResults": "No results found",
+    "resultsCount": "Found {{count}} results"
+  },
+  "nav": {
+    "overview": "Overview",
+    "recruitment": "Recruitment"
+  },
+  "header": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log Out",
+    "logoutSuccess": "Logged out successfully",
+    "logoutFailed": "Logout failed",
+    "retryLater": "Please try again later",
+    "admin": "Admin"
+  },
+  "home": {
+    "welcome": "Welcome back, Admin 👋",
+    "todayInfo": "Today is {{date}}. Here's your work overview.",
+    "stats": {
+      "totalEmployees": "Total Employees",
+      "monthlyOnboard": "New Hires This Month",
+      "pendingLeave": "Pending Leave Requests",
+      "todayAttendance": "Today's Attendance Rate"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Quick access to common functions",
+      "employeeManagement": "Employee Management",
+      "employeeManagementDesc": "View and manage employee info",
+      "attendanceManagement": "Attendance",
+      "attendanceManagementDesc": "Attendance records & statistics",
+      "leaveApproval": "Leave Approval",
+      "leaveApprovalDesc": "Process leave requests",
+      "performance": "Performance",
+      "performanceDesc": "Employee evaluations",
+      "departmentManagement": "Departments",
+      "departmentManagementDesc": "Organization structure",
+      "dataAnalysis": "Analytics",
+      "dataAnalysisDesc": "HR reports & insights"
+    },
+    "recentActivities": {
+      "title": "Recent Activities",
+      "description": "Employee activity updates",
+      "activityTypes": {
+        "leave": "Leave",
+        "onboard": "Onboard",
+        "update": "Update",
+        "expense": "Expense"
+      }
+    },
+    "departmentStats": {
+      "title": "Department Distribution",
+      "description": "Staff count and ratio by department",
+      "departments": {
+        "tech": "Engineering",
+        "product": "Product",
+        "marketing": "Marketing",
+        "operations": "Operations",
+        "hr": "Human Resources"
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "welcomeTitle": "Welcome Back",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "usernameRequired": "Please enter username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "passwordRequired": "Please enter password",
+      "forgotPassword": "Forgot password?",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submit": "Log In",
+      "success": "Login successful",
+      "welcomeBack": "Welcome back!",
+      "failed": "Login failed",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up",
+      "orContinueWith": "Or continue with"
+    },
+    "register": {
+      "title": "Sign Up",
+      "createAccount": "Create Account",
+      "subtitle": "Fill in the details below to create your account",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "usernameMin": "Username must be at least 3 characters",
+      "usernameMax": "Username must be at most 20 characters",
+      "usernamePattern": "Username can only contain letters, numbers and underscores",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email address",
+      "emailInvalid": "Please enter a valid email address",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password (at least 6 characters)",
+      "passwordMin": "Password must be at least 6 characters",
+      "passwordMax": "Password must be at most 50 characters",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "submit": "Sign Up",
+      "success": "Registration successful",
+      "welcomeMessage": "Welcome aboard!",
+      "failed": "Registration failed",
+      "hasAccount": "Already have an account?",
+      "login": "Log in",
+      "termsPrefix": "By signing up, you agree to our",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "social": {
+      "orContinueWith": "Or continue with",
+      "wechat": "WeChat",
+      "dingtalk": "DingTalk",
+      "feishu": "Feishu",
+      "comingSoon": "Third-party login coming soon"
+    }
+  },
+  "recruitment": {
+    "title": "Recruitment Management",
+    "subtitle": "Manage job postings, candidate tracking, and recruitment analytics",
+    "addJob": "Post Job",
+    "tabs": {
+      "overview": "Overview",
+      "jobs": "Job Listings",
+      "candidates": "Candidates",
+      "calendar": "Interview Schedule"
+    },
+    "stats": {
+      "activeJobs": "Active Jobs",
+      "activeCandidates": "Active Candidates",
+      "todayInterviews": "Today's Interviews",
+      "completionRate": "Completion Rate",
+      "totalCandidates": "Total Candidates",
+      "interviewsThisWeek": "Interviews This Week",
+      "offersSent": "Offers Sent",
+      "thisWeek": "This Week",
+      "lastMonth": "Last Month",
+      "upcoming": "Upcoming"
+    },
+    "overview": {
+      "funnel": {
+        "title": "Recruitment Funnel",
+        "screening": "Resume Screening",
+        "firstInterview": "First Interview",
+        "secondInterview": "Second Interview",
+        "offer": "Offer"
+      },
+      "recentApplications": {
+        "title": "Recent Applications",
+        "appliedFor": "Applied for:"
+      }
+    },
+    "candidates": {
+      "title": "Candidate Management",
+      "add": "Add Candidate",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "position": "Position Applied",
+      "status": "Status",
+      "source": "Source",
+      "resume": "Resume",
+      "notes": "Notes",
+      "education": "Education",
+      "experience": "Experience",
+      "experienceYears": "Years of Experience",
+      "channel": "Channel",
+      "note": "Note",
+      "statusOptions": {
+        "new": "New",
+        "screening": "Screening",
+        "interview": "Interview",
+        "offer": "Offer Sent",
+        "hired": "Hired",
+        "rejected": "Rejected"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Search by name or email...",
+        "statusFilter": "Status Filter",
+        "filterStatus": "Filter Status"
+      },
+      "sidebar": {
+        "title": "Filter by Position",
+        "searchPlaceholder": "Search positions...",
+        "allPositions": "All Positions"
+      },
+      "list": {
+        "noResults": "No matching candidates found"
+      },
+      "dialog": {
+        "addTitle": "Add New Candidate",
+        "editTitle": "Edit Candidate",
+        "uploadStep": "Upload a resume for the new candidate.",
+        "reviewStep": "Review and edit candidate information.",
+        "uploadResume": "Upload Resume",
+        "dragDropHint": "Drag and drop your PDF here, or click to browse.",
+        "selectFile": "Select File",
+        "skipUpload": "Skip Upload",
+        "parsingResume": "Parsing resume...",
+        "uploadError": "Please upload a PDF document (.pdf)",
+        "autoFilled": "Auto-filled: {{fields}}",
+        "parseError": "Could not extract candidate info. Please fill manually.",
+        "parseFailed": "Failed to parse resume. Please fill form manually.",
+        "addSuccess": "Candidate added successfully",
+        "updateSuccess": "Candidate updated successfully",
+        "deleteConfirmTitle": "Are you sure?",
+        "deleteConfirmDesc": "This action cannot be undone. This will permanently delete the candidate and remove their data from our servers.",
+        "deleteSuccess": "Candidate deleted",
+        "noteUpdated": "Note updated",
+        "resumeUploadSuccess": "Resume uploaded successfully",
+        "resumeUploadFailed": "Failed to upload resume",
+        "resumeFormatError": "Format error: Only PDF files are supported for resume upload."
+      },
+      "card": {
+        "yearsExp": "{{years}} yrs exp",
+        "appliedOn": "Applied {{date}}"
+      },
+      "detail": {
+        "appliedPosition": "Applied for:",
+        "basicInfo": "Basic Information",
+        "email": "Email",
+        "phone": "Phone",
+        "education": "Education",
+        "appliedAt": "Applied At",
+        "resumePreview": "Resume Preview",
+        "downloadResume": "Download Resume",
+        "noResume": "No resume file",
+        "uploadHint": "Click to upload or drag and drop",
+        "uploadingResume": "Uploading resume...",
+        "dropToUpload": "Drop to upload",
+        "uploadResume": "Upload Resume",
+        "interviewerNotes": "Interviewer Notes",
+        "addNotePlaceholder": "Add candidate notes...",
+        "noNotesYet": "No notes yet. Click to add..."
+      },
+      "viewMode": {
+        "list": "List View",
+        "board": "Kanban View"
+      },
+      "form": {
+        "namePlaceholder": "John Doe",
+        "emailPlaceholder": "john@example.com",
+        "phonePlaceholder": "+1 234 567 890",
+        "educationPlaceholder": "Degree, University",
+        "notePlaceholder": "Add a note...",
+        "selectChannel": "Select channel",
+        "selectPosition": "Select position",
+        "loadingJobs": "Loading jobs...",
+        "channels": {
+          "linkedin": "LinkedIn",
+          "referral": "Referral",
+          "official": "Official Site",
+          "headhunter": "Headhunter",
+          "other": "Other"
+        },
+        "validation": {
+          "nameMin": "Name must be at least 2 characters",
+          "emailInvalid": "Invalid email address",
+          "phoneMin": "Phone number must be at least 10 characters",
+          "educationRequired": "Education is required",
+          "experiencePositive": "Experience must be a positive number",
+          "channelRequired": "Please select a channel",
+          "positionRequired": "Please select a position"
+        }
+      }
+    },
+    "jobs": {
+      "title": "Job Listings",
+      "add": "Add Position",
+      "name": "Job Title",
+      "department": "Department",
+      "location": "Location",
+      "type": "Job Type",
+      "salary": "Salary Range",
+      "description": "Description",
+      "requirements": "Requirements",
+      "status": "Status",
+      "headCount": "Headcount",
+      "openDate": "Open Date",
+      "quickAction": "Quick Action",
+      "note": "Note",
+      "candidateCount": "{{count}} candidates",
+      "statusOptions": {
+        "open": "Open",
+        "closed": "Closed",
+        "paused": "Paused"
+      },
+      "table": {
+        "searchPlaceholder": "Search job titles...",
+        "allDepartments": "All Departments",
+        "allStatus": "All Status",
+        "noResults": "No matching jobs found",
+        "resultsCount": "Found {{count}} jobs",
+        "openMenu": "Open menu",
+        "statusOn": "On",
+        "statusOff": "Off"
+      },
+      "dialog": {
+        "addTitle": "Post New Job",
+        "editTitle": "Edit Job",
+        "description": "Fill in the job details, then click save.",
+        "detailTitle": "Job Details"
+      },
+      "detail": {
+        "jobDescription": "Job Description (JD)",
+        "headCountUnit": "people",
+        "fullscreen": "Fullscreen"
+      },
+      "form": {
+        "titleLabel": "Job Title",
+        "titlePlaceholder": "e.g., Senior Frontend Engineer",
+        "departmentLabel": "Department",
+        "departmentPlaceholder": "e.g., R&D",
+        "headCountLabel": "Headcount",
+        "openDateLabel": "Open Date",
+        "selectDate": "Select date",
+        "statusLabel": "Status",
+        "selectStatus": "Select status",
+        "jdLabel": "Job Description (JD)",
+        "jdPlaceholder": "Enter job responsibilities and requirements...",
+        "noteLabel": "Note",
+        "notePlaceholder": "Internal notes only...",
+        "cancel": "Cancel",
+        "save": "Save Job",
+        "validation": {
+          "titleMin": "Job title must be at least 2 characters",
+          "departmentRequired": "Please select or enter a department",
+          "headCountMin": "Headcount must be at least 1",
+          "jdMin": "Job description must be at least 10 characters"
+        },
+        "expandableTextarea": {
+          "fullscreenEdit": "Fullscreen Edit",
+          "editTitle": "Edit {{title}}",
+          "done": "Done"
+        }
+      }
+    },
+    "calendar": {
+      "title": "Interview Calendar",
+      "placeholder": "Interview schedule will be displayed here."
+    }
+  },
+  "pdf": {
+    "loadError": "Unable to load PDF",
+    "loadErrorHint": "Failed to load file. Please retry or check the link.",
+    "retry": "Retry",
+    "loading": "Loading...",
+    "noFile": "No PDF file provided"
+  },
+  "resumeModal": {
+    "resumeOf": "{{name}}'s Resume",
+    "download": "Download",
+    "noResume": "No resume file"
+  },
+  "footer": {
+    "copyright": "© 2026 HR System. All rights reserved."
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -42,6 +43,7 @@ export function PdfPreview({
   maxHeight = "600px",
   onFullscreen,
 }: PdfPreviewProps) {
+  const { t } = useTranslation();
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(initialScale);
@@ -252,8 +254,8 @@ export function PdfPreview({
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-4">
             <AlertCircle className="h-12 w-12 text-destructive/50" />
             <div className="text-center space-y-1">
-              <p className="font-medium">无法加载 PDF</p>
-              <p className="text-xs">文件加载失败，请重试或检查链接</p>
+              <p className="font-medium">{t("pdf.loadError")}</p>
+              <p className="text-xs">{t("pdf.loadErrorHint")}</p>
             </div>
             <Button
               variant="outline"
@@ -264,7 +266,7 @@ export function PdfPreview({
               }}
             >
               <RotateCw className="h-4 w-4 mr-2" />
-              重试
+              {t("pdf.retry")}
             </Button>
           </div>
         ) : (
@@ -276,13 +278,13 @@ export function PdfPreview({
             loading={
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-3">
                 <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="text-sm">加载中...</p>
+                <p className="text-sm">{t("pdf.loading")}</p>
               </div>
             }
             noData={
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-3">
                 <FileText className="h-12 w-12 opacity-20" />
-                <p className="text-sm">未提供 PDF 文件</p>
+                <p className="text-sm">{t("pdf.noFile")}</p>
               </div>
             }
             className="flex justify-center"

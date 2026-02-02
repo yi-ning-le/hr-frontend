@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   MoreHorizontal,
   Pencil,
@@ -39,6 +40,8 @@ export function CandidateDetailHeader({
   onEdit,
   onDelete,
 }: CandidateDetailHeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <DialogHeader className="p-6 pb-4 border-b shrink-0 bg-background z-10">
       <div className="flex items-start justify-between">
@@ -52,7 +55,7 @@ export function CandidateDetailHeader({
           <div className="space-y-1">
             <DialogTitle className="text-2xl">{candidate.name}</DialogTitle>
             <DialogDescription>
-              申请职位：
+              {t("recruitment.candidates.detail.appliedPosition")}
               <span className="font-medium text-foreground">
                 {candidate.appliedJobTitle}
               </span>
@@ -60,7 +63,7 @@ export function CandidateDetailHeader({
             <div className="flex gap-2">
               <Badge variant="secondary">{candidate.channel}</Badge>
               <Badge variant="outline">
-                {candidate.experienceYears}年经验
+                {t("recruitment.candidates.card.yearsExp", { years: candidate.experienceYears })}
               </Badge>
             </div>
           </div>
@@ -75,12 +78,12 @@ export function CandidateDetailHeader({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="new">新投递</SelectItem>
-              <SelectItem value="screening">筛选中</SelectItem>
-              <SelectItem value="interview">面试中</SelectItem>
-              <SelectItem value="offer">Offer</SelectItem>
-              <SelectItem value="hired">已入职</SelectItem>
-              <SelectItem value="rejected">已淘汰</SelectItem>
+              <SelectItem value="new">{t("recruitment.candidates.statusOptions.new")}</SelectItem>
+              <SelectItem value="screening">{t("recruitment.candidates.statusOptions.screening")}</SelectItem>
+              <SelectItem value="interview">{t("recruitment.candidates.statusOptions.interview")}</SelectItem>
+              <SelectItem value="offer">{t("recruitment.candidates.statusOptions.offer")}</SelectItem>
+              <SelectItem value="hired">{t("recruitment.candidates.statusOptions.hired")}</SelectItem>
+              <SelectItem value="rejected">{t("recruitment.candidates.statusOptions.rejected")}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -92,13 +95,13 @@ export function CandidateDetailHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={onEdit}>
-                <Pencil className="mr-2 h-4 w-4" /> Edit
+                <Pencil className="mr-2 h-4 w-4" /> {t("common.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={onDelete}
               >
-                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                <Trash2 className="mr-2 h-4 w-4" /> {t("common.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

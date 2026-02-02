@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,24 +24,24 @@ import {
 import { useJobStore } from "@/stores/useJobStore";
 import { Loader2 } from "lucide-react";
 
+const createCandidateSchema = (t: (key: string) => string) =>
+  z.object({
+    name: z.string().min(2, t("recruitment.candidates.form.validation.nameMin")),
+    email: z.string().email(t("recruitment.candidates.form.validation.emailInvalid")),
+    phone: z.string().min(10, t("recruitment.candidates.form.validation.phoneMin")),
+    education: z.string().min(2, t("recruitment.candidates.form.validation.educationRequired")),
+    experienceYears: z.coerce.number().min(0, t("recruitment.candidates.form.validation.experiencePositive")),
+    channel: z.string().min(1, t("recruitment.candidates.form.validation.channelRequired")),
+    note: z.string().default(""),
+    // Hidden/Auto fields
+    appliedJobId: z.string().min(1, t("recruitment.candidates.form.validation.positionRequired")),
+    appliedJobTitle: z.string().default("General Application"),
+    status: z.enum(["new", "screening", "interview", "offer", "hired", "rejected"]).default("new"),
+    resumeUrl: z.string().default("#"),
+    appliedAt: z.date().default(() => new Date()),
+  });
 
-const candidateSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 characters"),
-  education: z.string().min(2, "Education is required"),
-  experienceYears: z.coerce.number().min(0, "Experience must be a positive number"),
-  channel: z.string().min(1, "Please select a channel"),
-  note: z.string().default(""),
-  // Hidden/Auto fields
-  appliedJobId: z.string().min(1, "Please select a position"),
-  appliedJobTitle: z.string().default("General Application"),
-  status: z.enum(["new", "screening", "interview", "offer", "hired", "rejected"]).default("new"),
-  resumeUrl: z.string().default("#"),
-  appliedAt: z.date().default(() => new Date()),
-});
-
-export type CandidateFormValues = z.infer<typeof candidateSchema>;
+export type CandidateFormValues = z.infer<ReturnType<typeof createCandidateSchema>>;
 
 interface CandidateFormProps {
   defaultValues?: Partial<CandidateFormValues>;
@@ -54,10 +55,13 @@ export function CandidateForm({
   defaultValues,
   onSubmit,
   onCancel,
-  submitLabel = "Save",
+  submitLabel,
   hideNote = false,
 }: CandidateFormProps) {
+  const { t } = useTranslation();
   const { jobs, fetchJobs, isLoading: isLoadingJobs } = useJobStore();
+
+  const candidateSchema = createCandidateSchema(t);
 
   useEffect(() => {
     if (jobs.length === 0) {
@@ -103,9 +107,9 @@ export function CandidateForm({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{t("recruitment.candidates.name")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder={t("recruitment.candidates.form.namePlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,9 +120,9 @@ export function CandidateForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("recruitment.candidates.email")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="john@example.com" {...field} />
+                  <Input placeholder={t("recruitment.candidates.form.emailPlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -132,9 +136,9 @@ export function CandidateForm({
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel>{t("recruitment.candidates.phone")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="+1 234 567 890" {...field} />
+                  <Input placeholder={t("recruitment.candidates.form.phonePlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -145,7 +149,7 @@ export function CandidateForm({
             name="channel"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Channel</FormLabel>
+                <FormLabel>{t("recruitment.candidates.channel")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -153,15 +157,15 @@ export function CandidateForm({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select channel" />
+                      <SelectValue placeholder={t("recruitment.candidates.form.selectChannel")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                    <SelectItem value="Referral">Referral</SelectItem>
-                    <SelectItem value="Official Site">Official Site</SelectItem>
-                    <SelectItem value="Hunter">Headhunter</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    <SelectItem value="LinkedIn">{t("recruitment.candidates.form.channels.linkedin")}</SelectItem>
+                    <SelectItem value="Referral">{t("recruitment.candidates.form.channels.referral")}</SelectItem>
+                    <SelectItem value="Official Site">{t("recruitment.candidates.form.channels.official")}</SelectItem>
+                    <SelectItem value="Hunter">{t("recruitment.candidates.form.channels.headhunter")}</SelectItem>
+                    <SelectItem value="Other">{t("recruitment.candidates.form.channels.other")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -176,7 +180,7 @@ export function CandidateForm({
             name="appliedJobId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Applying Position</FormLabel>
+                <FormLabel>{t("recruitment.candidates.position")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -188,10 +192,10 @@ export function CandidateForm({
                       {isLoadingJobs ? (
                         <div className="flex items-center gap-2">
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Loading jobs...</span>
+                          <span>{t("recruitment.candidates.form.loadingJobs")}</span>
                         </div>
                       ) : (
-                        <SelectValue placeholder="Select position" />
+                        <SelectValue placeholder={t("recruitment.candidates.form.selectPosition")} />
                       )}
                     </SelectTrigger>
                   </FormControl>
@@ -212,9 +216,9 @@ export function CandidateForm({
             name="education"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Education</FormLabel>
+                <FormLabel>{t("recruitment.candidates.education")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Degree, University" {...field} />
+                  <Input placeholder={t("recruitment.candidates.form.educationPlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -228,7 +232,7 @@ export function CandidateForm({
             name="experienceYears"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Experience (Years)</FormLabel>
+                <FormLabel>{t("recruitment.candidates.experienceYears")}</FormLabel>
                 <FormControl>
                   <Input type="number" min={0} {...field} />
                 </FormControl>
@@ -244,9 +248,9 @@ export function CandidateForm({
             name="note"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Note</FormLabel>
+                <FormLabel>{t("recruitment.candidates.note")}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Add a note..." {...field} />
+                  <Textarea placeholder={t("recruitment.candidates.form.notePlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -257,10 +261,10 @@ export function CandidateForm({
         <div className="flex justify-end gap-2">
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
+              {t("common.cancel")}
             </Button>
           )}
-          <Button type="submit">{submitLabel}</Button>
+          <Button type="submit">{submitLabel || t("common.save")}</Button>
         </div>
       </form>
     </Form>

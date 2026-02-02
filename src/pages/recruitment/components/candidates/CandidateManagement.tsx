@@ -1,4 +1,5 @@
 import { useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { LayoutGrid, List as ListIcon } from "lucide-react";
 import type { DropResult } from "@hello-pangea/dnd";
 
@@ -21,6 +22,7 @@ import { useCandidateStore } from "@/stores/useCandidateStore";
 import { useJobStore } from "@/stores/useJobStore";
 
 export function CandidateManagement() {
+  const { t } = useTranslation();
   const jobs = useJobStore((state) => state.jobs);
 
 
@@ -116,10 +118,10 @@ export function CandidateManagement() {
             />
           </div>
           <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "list" | "board")}>
-            <ToggleGroupItem value="list" aria-label="List View">
+            <ToggleGroupItem value="list" aria-label={t("recruitment.candidates.viewMode.list")}>
               <ListIcon className="h-4 w-4" />
             </ToggleGroupItem>
-            <ToggleGroupItem value="board" aria-label="Kanban View">
+            <ToggleGroupItem value="board" aria-label={t("recruitment.candidates.viewMode.board")}>
               <LayoutGrid className="h-4 w-4" />
             </ToggleGroupItem>
           </ToggleGroup>

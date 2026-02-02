@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { isAxiosError } from "axios";
 import { AuthAPI, setAuthToken } from "@/lib/api";
 
 // User type definition
@@ -77,9 +78,15 @@ export const useAuthStore = create<AuthStore>()(
           return { success: true };
         } catch (error) {
           set({ isLoading: false });
+          let errorMessage = "Login failed";
+          if (isAxiosError(error) && error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+          } else if (error instanceof Error) {
+            errorMessage = error.message;
+          }
           return {
             success: false,
-            error: error.response?.data?.message || "Login failed",
+            error: errorMessage,
           };
         }
       },
@@ -89,15 +96,21 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true });
         try {
           await AuthAPI.register({ username, password, email });
-          
+
           // Registration successful - user needs to login separately
           set({ isLoading: false });
           return { success: true };
         } catch (error) {
           set({ isLoading: false });
+          let errorMessage = "Registration failed";
+          if (isAxiosError(error) && error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+          } else if (error instanceof Error) {
+            errorMessage = error.message;
+          }
           return {
             success: false,
-            error: error.response?.data?.message || "Registration failed",
+            error: errorMessage,
           };
         }
       },
@@ -119,11 +132,19 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error) {
           set({ isLoading: false });
           console.error("Logout API call failed:", error);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const err = error as any;
-          return { 
-            success: false, 
-            error: err.response?.data?.message || `Logout failed: ${err.response?.status || "Unknown error"}`
+
+          let errorMessage = "Logout failed";
+          if (isAxiosError(error)) {
+            errorMessage =
+              error.response?.data?.message ||
+              `Logout failed: ${error.response?.status || "Unknown error"}`;
+          } else if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+
+          return {
+            success: false,
+            error: errorMessage,
           };
         }
       },

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,8 @@ interface ResumePreviewModalProps {
 }
 
 export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePreviewModalProps) {
+  const { t } = useTranslation()
+
   if (!candidate) return null
 
   return (
@@ -27,7 +30,7 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
               <FileText className="h-5 w-5 text-blue-500" />
             </div>
             <div>
-              <DialogTitle>{candidate.name} 的简历</DialogTitle>
+              <DialogTitle>{t("resumeModal.resumeOf", { name: candidate.name })}</DialogTitle>
               <div className="text-sm text-muted-foreground">
                 {candidate.appliedJobTitle} · {candidate.email}
               </div>
@@ -36,7 +39,7 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
           <div className="flex items-center gap-2 pr-8">
             <Button variant="outline" size="sm" onClick={() => window.open(candidate.resumeUrl, "_blank")}>
               <Download className="h-4 w-4 mr-2" />
-              下载
+              {t("resumeModal.download")}
             </Button>
           </div>
         </DialogHeader>
@@ -53,7 +56,7 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
           ) : (
             <div className="flex flex-col items-center justify-center h-full bg-slate-100 dark:bg-slate-900 text-muted-foreground space-y-4 rounded-lg">
               <FileText className="h-16 w-16 opacity-20" />
-              <p>暂无简历文件</p>
+              <p>{t("resumeModal.noResume")}</p>
             </div>
           )}
         </div>
@@ -61,5 +64,3 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
     </Dialog>
   )
 }
-
-

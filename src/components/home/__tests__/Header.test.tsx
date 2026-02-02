@@ -1,21 +1,20 @@
 import { Header } from "@/components/layout/Header";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { createRootRoute, createRouter, RouterProvider, createMemoryHistory } from "@tanstack/react-router";
+import { describe, it, expect, vi } from "vitest";
 
-// Mock router setup
-const rootRoute = createRootRoute({
-  component: Header,
-});
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'zh-CN', changeLanguage: vi.fn() },
+  }),
+}));
 
-const history = createMemoryHistory({
-  initialEntries: ['/'],
-});
-
-const router = createRouter({
-  routeTree: rootRoute,
-  history,
-});
+// Mock react-router
+vi.mock("@tanstack/react-router", () => ({
+  Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
+  useNavigate: () => vi.fn(),
+}));
 
 vi.mock("@/stores/useAuthStore", () => ({
   useAuthStore: () => ({
@@ -28,27 +27,27 @@ vi.mock("@/stores/useAuthStore", () => ({
   }),
 }));
 
-function renderWithRouter() {
-  return render(<RouterProvider router={router} />);
+function renderHeader() {
+  return render(<Header />);
 }
 
 describe("Header", () => {
   it("renders the HR System title", () => {
-    renderWithRouter(<Header />);
+    renderHeader();
 
-    // expect(screen.getByText("HR System")).toBeInTheDocument();
-    // expect(screen.getByText("人力资源管理系统")).toBeInTheDocument();
+    expect(screen.getByText("common.appName")).toBeInTheDocument();
+    expect(screen.getByText("common.appSubtitle")).toBeInTheDocument();
   });
 
   it("renders the notification bell with badge", () => {
-    renderWithRouter(<Header />);
+    renderHeader();
 
     // The badge shows "3" notifications
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 
   it("renders the user avatar with fallback", () => {
-    renderWithRouter(<Header />);
+    renderHeader();
 
     expect(screen.getByText("管理")).toBeInTheDocument();
   });

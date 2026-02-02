@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { format } from "date-fns"
+import { useTranslation } from "react-i18next"
 import { MoreHorizontal, Pencil, Trash2, Search, Filter } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -51,6 +52,7 @@ export function JobPositionList({
   onView,
   onStatusToggle
 }: JobPositionListProps) {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState("")
   const [departmentFilter, setDepartmentFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
@@ -74,7 +76,7 @@ export function JobPositionList({
         <div className="relative w-full sm:w-72">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="搜索职位名称..."
+            placeholder={t("recruitment.jobs.table.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8"
@@ -82,14 +84,14 @@ export function JobPositionList({
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-full sm:w-fit sm:min-w-[160px]">
               <div className="flex items-center gap-2">
                 <Filter className="h-3.5 w-3.5" />
-                <SelectValue placeholder="部门" />
+                <SelectValue placeholder={t("recruitment.jobs.department")} />
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">所有部门</SelectItem>
+              <SelectItem value="all">{t("recruitment.jobs.table.allDepartments")}</SelectItem>
               {departments.map(dept => (
                 <SelectItem key={dept} value={dept}>{dept}</SelectItem>
               ))}
@@ -97,13 +99,13 @@ export function JobPositionList({
           </Select>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="状态" />
+            <SelectTrigger className="w-full sm:w-fit sm:min-w-[130px]">
+              <SelectValue placeholder={t("recruitment.jobs.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">所有状态</SelectItem>
-              <SelectItem value="OPEN">招聘中</SelectItem>
-              <SelectItem value="CLOSED">已关闭</SelectItem>
+              <SelectItem value="all">{t("recruitment.jobs.table.allStatus")}</SelectItem>
+              <SelectItem value="OPEN">{t("recruitment.jobs.statusOptions.open")}</SelectItem>
+              <SelectItem value="CLOSED">{t("recruitment.jobs.statusOptions.closed")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -114,13 +116,13 @@ export function JobPositionList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>职位名称</TableHead>
-              <TableHead>部门</TableHead>
-              <TableHead>需求人数</TableHead>
-              <TableHead>启动日期</TableHead>
-              <TableHead>状态</TableHead>
-              <TableHead>快速操作</TableHead>
-              <TableHead>备注</TableHead>
+              <TableHead>{t("recruitment.jobs.name")}</TableHead>
+              <TableHead>{t("recruitment.jobs.department")}</TableHead>
+              <TableHead>{t("recruitment.jobs.headCount")}</TableHead>
+              <TableHead>{t("recruitment.jobs.openDate")}</TableHead>
+              <TableHead>{t("recruitment.jobs.status")}</TableHead>
+              <TableHead>{t("recruitment.jobs.quickAction")}</TableHead>
+              <TableHead>{t("recruitment.jobs.note")}</TableHead>
               <TableHead className="w-[70px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -128,7 +130,7 @@ export function JobPositionList({
             {filteredJobs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-24 text-center">
-                  没有找到符合条件的职位
+                  {t("recruitment.jobs.table.noResults")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -143,7 +145,7 @@ export function JobPositionList({
                   <TableCell>
                     {job.headCount}
                     <span className="ml-2 text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
-                      {candidateCounts[job.id] || 0} 候选人
+                      {t("recruitment.jobs.candidateCount", { count: candidateCounts[job.id] || 0 })}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -151,7 +153,7 @@ export function JobPositionList({
                   </TableCell>
                   <TableCell>
                     <Badge variant={job.status === "OPEN" ? "default" : "secondary"}>
-                      {job.status === "OPEN" ? "招聘中" : "已关闭"}
+                      {job.status === "OPEN" ? t("recruitment.jobs.statusOptions.open") : t("recruitment.jobs.statusOptions.closed")}
                     </Badge>
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
@@ -161,7 +163,7 @@ export function JobPositionList({
                         onCheckedChange={() => onStatusToggle?.(job)}
                       />
                       <span className="text-xs text-muted-foreground">
-                        {job.status === "OPEN" ? "开启" : "关闭"}
+                        {job.status === "OPEN" ? t("recruitment.jobs.table.statusOn") : t("recruitment.jobs.table.statusOff")}
                       </span>
                     </div>
                   </TableCell>
@@ -172,15 +174,15 @@ export function JobPositionList({
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">打开菜单</span>
+                          <span className="sr-only">{t("recruitment.jobs.table.openMenu")}</span>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>操作</DropdownMenuLabel>
+                        <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => onEdit(job)}>
                           <Pencil className="mr-2 h-4 w-4" />
-                          编辑
+                          {t("common.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -188,7 +190,7 @@ export function JobPositionList({
                           className="text-red-600 focus:text-red-600"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          删除
+                          {t("common.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -200,7 +202,7 @@ export function JobPositionList({
         </Table>
       </div>
       <div className="text-xs text-muted-foreground">
-        共找到 {filteredJobs.length} 个职位
+        {t("recruitment.jobs.table.resultsCount", { count: filteredJobs.length })}
       </div>
     </div>
   )

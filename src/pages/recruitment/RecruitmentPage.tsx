@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CandidateManagement } from "./components/candidates/CandidateManagement";
 import { RecruitmentHeader } from "./components/layout/RecruitmentHeader";
@@ -8,6 +9,7 @@ import { useJobStore } from "@/stores/useJobStore";
 import { Route } from "@/routes/_protected/recruitment";
 
 export function RecruitmentPage() {
+  const { t } = useTranslation();
   const { tab: activeTab = "overview" } = Route.useSearch();
   const navigate = Route.useNavigate();
   const { setIsAddDialogOpen } = useJobStore();
@@ -30,10 +32,10 @@ export function RecruitmentPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-slate-100 dark:bg-slate-800 p-1">
-          <TabsTrigger value="overview">概览</TabsTrigger>
-          <TabsTrigger value="jobs">职位管理</TabsTrigger>
-          <TabsTrigger value="candidates">候选人</TabsTrigger>
-          <TabsTrigger value="calendar">面试日程</TabsTrigger>
+          <TabsTrigger value="overview">{t("recruitment.tabs.overview")}</TabsTrigger>
+          <TabsTrigger value="jobs">{t("recruitment.tabs.jobs")}</TabsTrigger>
+          <TabsTrigger value="candidates">{t("recruitment.tabs.candidates")}</TabsTrigger>
+          <TabsTrigger value="calendar">{t("recruitment.tabs.calendar")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">

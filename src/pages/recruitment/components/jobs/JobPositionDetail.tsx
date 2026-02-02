@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { format } from "date-fns"
+import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 import { Maximize2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +17,7 @@ interface JobPositionDetailProps {
   job: JobPosition
 }
 
-function ExpandableText({ title, content, className }: { title: string; content: string; className?: string }) {
+function ExpandableText({ title, content, className, fullscreenLabel }: { title: string; content: string; className?: string; fullscreenLabel: string }) {
   const [isFullScreen, setIsFullScreen] = useState(false)
 
   return (
@@ -28,7 +29,7 @@ function ExpandableText({ title, content, className }: { title: string; content:
           size="icon"
           className="h-6 w-6"
           onClick={() => setIsFullScreen(true)}
-          title="全屏查看"
+          title={fullscreenLabel}
         >
           <Maximize2 className="h-3.5 w-3.5" />
         </Button>
@@ -52,39 +53,51 @@ function ExpandableText({ title, content, className }: { title: string; content:
 }
 
 export function JobPositionDetail({ job }: JobPositionDetailProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">职位名称</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.name")}</h4>
           <p className="text-sm font-medium leading-none">{job.title}</p>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">状态</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.status")}</h4>
           <Badge variant={job.status === "OPEN" ? "default" : "secondary"}>
-            {job.status === "OPEN" ? "招聘中" : "已关闭"}
+            {job.status === "OPEN" ? t("recruitment.jobs.statusOptions.open") : t("recruitment.jobs.statusOptions.closed")}
           </Badge>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">部门</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.department")}</h4>
           <p className="text-sm font-medium leading-none">{job.department}</p>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">需求人数</h4>
-          <p className="text-sm font-medium leading-none">{job.headCount} 人</p>
+          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.headCount")}</h4>
+          <p className="text-sm font-medium leading-none">{job.headCount} {t("recruitment.jobs.detail.headCountUnit")}</p>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">启动日期</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.openDate")}</h4>
           <p className="text-sm font-medium leading-none">
             {job.openDate ? format(job.openDate, "yyyy-MM-dd") : "-"}
           </p>
         </div>
       </div>
 
-      <ExpandableText title="职位描述 (JD)" content={job.jobDescription} className="h-[200px]" />
+      <ExpandableText
+        title={t("recruitment.jobs.detail.jobDescription")}
+        content={job.jobDescription}
+        className="h-[200px]"
+        fullscreenLabel={t("recruitment.jobs.detail.fullscreen")}
+      />
 
       {job.note && (
-        <ExpandableText title="备注" content={job.note} className="h-[80px]" />
+        <ExpandableText
+          title={t("recruitment.jobs.note")}
+          content={job.note}
+          className="h-[80px]"
+          fullscreenLabel={t("recruitment.jobs.detail.fullscreen")}
+        />
       )}
     </div>
   )

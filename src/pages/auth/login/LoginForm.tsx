@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,21 +19,24 @@ import {
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
 
-const loginSchema = z.object({
-  username: z.string().min(1, "请输入用户名"),
-  password: z.string().min(1, "请输入密码"),
+const createLoginSchema = (t: (key: string) => string) => z.object({
+  username: z.string().min(1, t("auth.login.usernameRequired")),
+  password: z.string().min(1, t("auth.login.passwordRequired")),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = z.infer<ReturnType<typeof createLoginSchema>>;
 
 interface LoginFormProps {
   onSuccess?: () => void;
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login, isLoading } = useAuthStore();
+
+  const loginSchema = createLoginSchema(t);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -46,15 +50,15 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     const result = await login(data.username, data.password);
 
     if (result.success) {
-      toast.success("登录成功", {
-        description: "欢迎回来！",
+      toast.success(t("auth.login.success"), {
+        description: t("auth.login.welcomeBack"),
       });
       onSuccess?.();
       // Remove router.invalidate() as it might cause race conditions or unnecessary revalidations
       // during navigation. The target route's beforeLoad will handle auth checks.
       await navigate({ to: "/", replace: true });
     } else {
-      toast.error("登录失败", {
+      toast.error(t("auth.login.failed"), {
         description: result.error,
       });
     }
@@ -68,10 +72,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>用户名</FormLabel>
+              <FormLabel>{t("auth.login.username")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="请输入用户名"
+                  placeholder={t("auth.login.usernamePlaceholder")}
                   autoComplete="username"
                   disabled={isLoading}
                   {...field}
@@ -88,19 +92,19 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel>密码</FormLabel>
+                <FormLabel>{t("auth.login.password")}</FormLabel>
                 <Link
                   to="/login"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  忘记密码?
+                  {t("auth.login.forgotPassword")}
                 </Link>
               </div>
               <FormControl>
                 <div className="relative">
                   <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder="请输入密码"
+                    placeholder={t("auth.login.passwordPlaceholder")}
                     autoComplete="current-password"
                     disabled={isLoading}
                     className="pr-10"
@@ -120,7 +124,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                       <Eye className="size-4" />
                     )}
                     <span className="sr-only">
-                      {showPassword ? "隐藏密码" : "显示密码"}
+                      {showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
                     </span>
                   </Button>
                 </div>
@@ -132,7 +136,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
         <Button type="submit" className="w-full mt-2" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-          登录
+          {t("auth.login.submit")}
         </Button>
       </form>
     </Form>
