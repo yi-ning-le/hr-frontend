@@ -7,6 +7,6 @@ describe("Footer", () => {
   it("renders the copyright text", () => {
     render(<Footer />);
 
-    expect(screen.getByText("© 2026 HR System. All rights reserved.")).toBeInTheDocument();
+    expect(screen.getByText("footer.copyright")).toBeInTheDocument();
   });
 });
