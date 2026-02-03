@@ -51,4 +51,11 @@ describe("Header", () => {
 
     expect(screen.getByText("管理")).toBeInTheDocument();
   });
+
+  it("does not render the LanguageSwitcher (moved to Footer)", () => {
+    renderHeader();
+
+    // LanguageSwitcher should NOT be in Header anymore
+    expect(screen.queryByText("Switch language")).not.toBeInTheDocument();
+  });
 });

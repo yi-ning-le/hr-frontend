@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Header() {
   const { t } = useTranslation();
@@ -67,7 +66,6 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <LanguageSwitcher />
 
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="size-5 text-slate-600 dark:text-slate-400" />

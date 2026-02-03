@@ -7,6 +7,11 @@ vi.mock("@tanstack/react-router", () => ({
   Outlet: () => <div data-testid="outlet">Outlet Content</div>,
 }));
 
+// Mock LanguageSwitcher component
+vi.mock("../LanguageSwitcher", () => ({
+  LanguageSwitcher: () => <div data-testid="language-switcher">Language Switcher</div>,
+}));
+
 describe("AuthLayout", () => {
   it("renders the layout container", () => {
     render(<AuthLayout />);
@@ -36,5 +41,12 @@ describe("AuthLayout", () => {
     // The outlet should be rendered within the centered container
     const outlet = screen.getByTestId("outlet");
     expect(outlet.closest(".justify-center")).toBeInTheDocument();
+  });
+
+  it("renders the LanguageSwitcher at the bottom", () => {
+    render(<AuthLayout />);
+
+    // Verify LanguageSwitcher is rendered
+    expect(screen.getByTestId("language-switcher")).toBeInTheDocument();
   });
 });
