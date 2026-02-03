@@ -79,19 +79,20 @@ vi.mock("@/stores/useCandidateStore", () => ({
 }));
 
 interface JobStoreState {
-  jobs: Array<{ id: string; title: string; department: string; status: string }>;
+  jobs: Array<{ id: string; title: string; department: string; status: string; jobDescription?: string; headCount?: number; openDate?: Date }>;
   fetchJobs: ReturnType<typeof vi.fn>;
   isLoading: boolean;
 }
 
 vi.mock("@/stores/useJobStore", () => ({
-  useJobStore: <T,>(selector: (state: JobStoreState) => T): T => {
+  useJobStore: <T,>(selector?: (state: JobStoreState) => T): T | JobStoreState => {
     const state: JobStoreState = {
-      jobs: [{ id: "job1", title: "Developer", department: "Engineering", status: "OPEN" }],
+      jobs: [{ id: "job1", title: "Developer", department: "Engineering", status: "OPEN", jobDescription: "Test description", headCount: 1, openDate: new Date() }],
       fetchJobs: vi.fn(),
       isLoading: false,
     };
-    return selector(state);
+    // Handle both selector and non-selector usage
+    return selector ? selector(state) : state;
   },
 }));
 

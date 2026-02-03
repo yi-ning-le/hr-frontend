@@ -382,7 +382,11 @@
   "resumeModal": {
     "resumeOf": "{{name}}'s Resume",
     "download": "Download",
-    "noResume": "No resume file"
+    "noResume": "No resume file",
+    "jobDescription": "Job Description",
+    "noJobDescription": "Job description not available",
+    "viewJD": "View JD",
+    "hideJD": "Hide JD"
   },
   "footer": {
     "copyright": "© 2026 HR System. All rights reserved."

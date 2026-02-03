@@ -382,7 +382,11 @@
   "resumeModal": {
     "resumeOf": "{{name}} 的简历",
     "download": "下载",
-    "noResume": "暂无简历文件"
+    "noResume": "暂无简历文件",
+    "jobDescription": "职位描述",
+    "noJobDescription": "暂无职位描述",
+    "viewJD": "查看JD",
+    "hideJD": "隐藏JD"
   },
   "footer": {
     "copyright": "© 2026 HR System. 保留所有权利。"
