@@ -32,6 +32,7 @@ interface AuthActions {
     email: string,
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<{ success: boolean; error?: string }>;
+  reset: () => void;
   // Reserved for future third-party login
   loginWithProvider: (
     provider: "wechat" | "dingtalk" | "feishu",
@@ -45,12 +46,23 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // Initial state
       user: null,
       token: null,
       isAuthenticated: false,
       isLoading: false,
+
+      // Reset action (client-side logout)
+      reset: () => {
+        setAuthToken(null);
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
+      },
 
       // Login action
       login: async (username: string, password: string) => {
@@ -120,17 +132,12 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true });
         try {
           await AuthAPI.logout();
-          // Only clear state if API call succeeds
-          setAuthToken(null);
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
+          // Clear state
+          get().reset();
           return { success: true };
         } catch (error) {
-          set({ isLoading: false });
+          // Even if API fails, we should clear local session to prevent stuck state
+          get().reset();
           console.error("Logout API call failed:", error);
 
           let errorMessage = "Logout failed";

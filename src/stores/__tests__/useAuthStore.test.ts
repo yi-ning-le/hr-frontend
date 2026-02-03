@@ -77,8 +77,28 @@ describe("useAuthStore", () => {
     });
   });
 
+  describe("reset", () => {
+    it("should clear all auth state", () => {
+      // Setup logged in state
+      useAuthStore.setState({
+        user: { id: "1", username: "test", createdAt: "" },
+        token: "token",
+        isAuthenticated: true,
+        isLoading: true,
+      });
+
+      useAuthStore.getState().reset();
+
+      expect(useAuthStore.getState().user).toBeNull();
+      expect(useAuthStore.getState().token).toBeNull();
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+      expect(useAuthStore.getState().isLoading).toBe(false);
+      expect(setAuthToken).toHaveBeenCalledWith(null);
+    });
+  });
+
   describe("logout", () => {
-    it("should handle logout", async () => {
+    it("should handle successful logout", async () => {
       // Setup logged in state
       useAuthStore.setState({
         user: { id: "1", username: "test", createdAt: "" },
@@ -91,6 +111,27 @@ describe("useAuthStore", () => {
       const result = await useAuthStore.getState().logout();
 
       expect(result.success).toBe(true);
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+      expect(useAuthStore.getState().user).toBeNull();
+      expect(useAuthStore.getState().token).toBeNull();
+      expect(setAuthToken).toHaveBeenCalledWith(null);
+    });
+
+    it("should clear local state even when API call fails", async () => {
+      // Setup logged in state
+      useAuthStore.setState({
+        user: { id: "1", username: "test", createdAt: "" },
+        token: "token",
+        isAuthenticated: true,
+      });
+
+      vi.mocked(AuthAPI.logout).mockRejectedValue(new Error("Network error"));
+
+      const result = await useAuthStore.getState().logout();
+
+      // Even though API failed, local state should be cleared
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Network error");
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
       expect(useAuthStore.getState().user).toBeNull();
       expect(useAuthStore.getState().token).toBeNull();

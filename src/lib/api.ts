@@ -13,9 +13,14 @@ const api = axios.create({
 
 // Token management
 let authToken: string | null = null;
+let unauthorizedCallback: () => void = () => {};
 
 export const setAuthToken = (token: string | null) => {
   authToken = token;
+};
+
+export const setUnauthorizedCallback = (callback: () => void) => {
+  unauthorizedCallback = callback;
 };
 
 // Request interceptor to add JWT token
@@ -47,7 +52,10 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Optional: Handle 401 Unauthorized globally (e.g., redirect to login)
+    // Handle 401 Unauthorized globally
+    if (error.response?.status === 401) {
+      unauthorizedCallback();
+    }
     return Promise.reject(error);
   },
 );

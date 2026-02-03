@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import axios from "axios";
-import { setAuthToken, AuthAPI, JobsAPI, CandidatesAPI } from "../api";
+import {
+  setAuthToken,
+  setUnauthorizedCallback,
+  AuthAPI,
+  JobsAPI,
+  CandidatesAPI,
+} from "../api";
 
 // Mock axios
 vi.mock("axios", () => {
@@ -43,6 +49,17 @@ describe("lib/api", () => {
 
     it("should accept null token", () => {
       expect(() => setAuthToken(null)).not.toThrow();
+    });
+  });
+
+  describe("setUnauthorizedCallback", () => {
+    it("should set the unauthorized callback without errors", () => {
+      const callback = vi.fn();
+      expect(() => setUnauthorizedCallback(callback)).not.toThrow();
+    });
+
+    it("should accept an empty function", () => {
+      expect(() => setUnauthorizedCallback(() => {})).not.toThrow();
     });
   });
 
