@@ -207,3 +207,76 @@ export const CandidatesAPI = {
     };
   },
 };
+
+// Employee Types for API
+interface EmployeeAPIResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  department: string;
+  position: string;
+  status: string;
+  employmentType: string;
+  joinDate: string;
+  managerId?: string;
+  userId?: string;
+}
+
+interface EmployeeListAPIResponse {
+  employees: EmployeeAPIResponse[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export const EmployeesAPI = {
+  list: async (
+    params: {
+      status?: string;
+      department?: string;
+      search?: string;
+      page?: number;
+      limit?: number;
+    } = {},
+  ): Promise<EmployeeListAPIResponse> => {
+    const response = await api.get<EmployeeListAPIResponse>("/employees", {
+      params,
+    });
+    return {
+      ...response.data,
+      employees: response.data.employees.map((e) => ({
+        ...e,
+        joinDate: e.joinDate,
+      })),
+    };
+  },
+
+  get: async (id: string): Promise<EmployeeAPIResponse> => {
+    const response = await api.get<EmployeeAPIResponse>(`/employees/${id}`);
+    return response.data;
+  },
+
+  create: async (
+    data: Omit<EmployeeAPIResponse, "id">,
+  ): Promise<EmployeeAPIResponse> => {
+    const response = await api.post<EmployeeAPIResponse>("/employees", data);
+    return response.data;
+  },
+
+  update: async (
+    id: string,
+    data: Omit<EmployeeAPIResponse, "id">,
+  ): Promise<EmployeeAPIResponse> => {
+    const response = await api.put<EmployeeAPIResponse>(
+      `/employees/${id}`,
+      data,
+    );
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/employees/${id}`);
+  },
+};

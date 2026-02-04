@@ -62,6 +62,12 @@ export function Header() {
             >
               {t("nav.recruitment")}
             </Link>
+            <Link
+              to="/employees"
+              className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white [&.active]:bg-slate-100 [&.active]:text-slate-900 dark:[&.active]:bg-slate-800 dark:[&.active]:text-white"
+            >
+              {t("nav.employees", "Employees")}
+            </Link>
           </nav>
         </div>
 

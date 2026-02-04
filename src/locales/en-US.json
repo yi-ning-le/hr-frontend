@@ -29,7 +29,8 @@
   },
   "nav": {
     "overview": "Overview",
-    "recruitment": "Recruitment"
+    "recruitment": "Recruitment",
+    "employees": "Employees"
   },
   "header": {
     "profile": "Profile",
@@ -387,6 +388,48 @@
     "noJobDescription": "Job description not available",
     "viewJD": "View JD",
     "hideJD": "Hide JD"
+  },
+  "employees": {
+    "title": "Employees",
+    "subtitle": "Manage your team members",
+    "addEmployee": "Add Employee",
+    "editEmployee": "Edit Employee",
+    "searchPlaceholder": "Search by name or email...",
+    "filterStatus": "Status",
+    "allStatuses": "All Statuses",
+    "noEmployees": "No employees found",
+    "noEmployeesDescription": "Add your first team member to get started.",
+    "details": "Details",
+    "columns": {
+      "name": "Name",
+      "department": "Department",
+      "position": "Position",
+      "status": "Status",
+      "joinDate": "Join Date"
+    },
+    "status": {
+      "active": "Active",
+      "onLeave": "On Leave",
+      "resigned": "Resigned",
+      "terminated": "Terminated"
+    },
+    "type": {
+      "fullTime": "Full Time",
+      "partTime": "Part Time",
+      "contract": "Contract",
+      "intern": "Intern"
+    },
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "department": "Department",
+      "position": "Position",
+      "status": "Status",
+      "employmentType": "Employment Type",
+      "joinDate": "Join Date"
+    }
   },
   "footer": {
     "copyright": "© 2026 HR System. All rights reserved."

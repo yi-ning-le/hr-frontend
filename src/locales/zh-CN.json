@@ -29,7 +29,8 @@
   },
   "nav": {
     "overview": "概览",
-    "recruitment": "招聘管理"
+    "recruitment": "招聘管理",
+    "employees": "员工档案"
   },
   "header": {
     "profile": "个人资料",
@@ -387,6 +388,48 @@
     "noJobDescription": "暂无职位描述",
     "viewJD": "查看JD",
     "hideJD": "隐藏JD"
+  },
+  "employees": {
+    "title": "员工档案",
+    "subtitle": "管理您的团队成员",
+    "addEmployee": "添加员工",
+    "editEmployee": "编辑员工",
+    "searchPlaceholder": "搜索姓名或邮箱...",
+    "filterStatus": "状态",
+    "allStatuses": "所有状态",
+    "noEmployees": "暂无员工",
+    "noEmployeesDescription": "添加第一位团队成员开始管理。",
+    "details": "详细信息",
+    "columns": {
+      "name": "姓名",
+      "department": "部门",
+      "position": "职位",
+      "status": "状态",
+      "joinDate": "入职日期"
+    },
+    "status": {
+      "active": "在职",
+      "onLeave": "休假中",
+      "resigned": "已离职",
+      "terminated": "已解除"
+    },
+    "type": {
+      "fullTime": "全职",
+      "partTime": "兼职",
+      "contract": "合同工",
+      "intern": "实习生"
+    },
+    "form": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "邮箱",
+      "phone": "电话",
+      "department": "部门",
+      "position": "职位",
+      "status": "状态",
+      "employmentType": "雇佣类型",
+      "joinDate": "入职日期"
+    }
   },
   "footer": {
     "copyright": "© 2026 HR System. 保留所有权利。"
