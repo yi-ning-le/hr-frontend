@@ -429,6 +429,18 @@
       "status": "Status",
       "employmentType": "Employment Type",
       "joinDate": "Join Date"
+    },
+    "deleteTitle": "Delete Employee",
+    "deleteConfirmation": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+    "viewDetails": "Employee Details",
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailInvalid": "Invalid email address",
+      "phoneMin": "Phone must be at least 10 characters",
+      "departmentRequired": "Department is required",
+      "positionRequired": "Position is required",
+      "joinDateRequired": "Join date is required"
     }
   },
   "footer": {

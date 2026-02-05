@@ -1,6 +1,16 @@
 import { useTranslation } from "react-i18next";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -11,14 +21,22 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Employee } from "@/types/employee";
-import { Link } from "@tanstack/react-router";
 
 interface EmployeeListProps {
   employees: Employee[];
   isLoading: boolean;
+  onEdit: (employee: Employee) => void;
+  onDelete?: (employee: Employee) => void;
+  onView?: (employee: Employee) => void;
 }
 
-export function EmployeeList({ employees, isLoading }: EmployeeListProps) {
+export function EmployeeList({
+  employees,
+  isLoading,
+  onEdit,
+  onDelete,
+  onView,
+}: EmployeeListProps) {
   const { t } = useTranslation();
 
   const getStatusVariant = (status: Employee["status"]) => {
@@ -68,7 +86,10 @@ export function EmployeeList({ employees, isLoading }: EmployeeListProps) {
           {t("employees.noEmployees", "No employees found")}
         </h3>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          {t("employees.noEmployeesDescription", "Add your first team member to get started.")}
+          {t(
+            "employees.noEmployeesDescription",
+            "Add your first team member to get started.",
+          )}
         </p>
       </div>
     );
@@ -79,21 +100,24 @@ export function EmployeeList({ employees, isLoading }: EmployeeListProps) {
       <TableHeader>
         <TableRow>
           <TableHead>{t("employees.columns.name", "Name")}</TableHead>
-          <TableHead>{t("employees.columns.department", "Department")}</TableHead>
+          <TableHead>
+            {t("employees.columns.department", "Department")}
+          </TableHead>
           <TableHead>{t("employees.columns.position", "Position")}</TableHead>
           <TableHead>{t("employees.columns.status", "Status")}</TableHead>
           <TableHead>{t("employees.columns.joinDate", "Join Date")}</TableHead>
+          <TableHead className="w-[70px]"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {employees.map((employee) => (
-          <TableRow key={employee.id} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50">
+          <TableRow
+            key={employee.id}
+            className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50"
+            onClick={() => onView?.(employee)}
+          >
             <TableCell>
-              <Link
-                to="/employees/$employeeId"
-                params={{ employeeId: employee.id }}
-                className="flex items-center gap-3"
-              >
+              <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
                     {employee.firstName[0]}
@@ -108,7 +132,7 @@ export function EmployeeList({ employees, isLoading }: EmployeeListProps) {
                     {employee.email}
                   </div>
                 </div>
-              </Link>
+              </div>
             </TableCell>
             <TableCell>{employee.department}</TableCell>
             <TableCell>{employee.position}</TableCell>
@@ -123,6 +147,35 @@ export function EmployeeList({ employees, isLoading }: EmployeeListProps) {
                 month: "short",
                 day: "numeric",
               }).format(new Date(employee.joinDate))}
+            </TableCell>
+            <TableCell onClick={(e) => e.stopPropagation()}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">
+                      {t("common.actions", "Open menu")}
+                    </span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {t("common.actions", "Actions")}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => onEdit(employee)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {t("common.edit", "Edit")}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => onDelete?.(employee)}
+                    className="text-red-600 focus:text-red-600"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t("common.delete", "Delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </TableCell>
           </TableRow>
         ))}

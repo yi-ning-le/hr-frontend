@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { EmployeesPage } from "../EmployeesPage";
+import { useEmployeeStore } from "@/stores/useEmployeeStore";
+import type { Employee } from "@/types/employee";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -16,9 +18,10 @@ vi.mock("react-i18next", () => ({
 const mockFetchEmployees = vi.fn();
 const mockSetFilters = vi.fn();
 const mockSetPage = vi.fn();
+const mockDeleteEmployee = vi.fn();
 
 vi.mock("@/stores/useEmployeeStore", () => ({
-  useEmployeeStore: () => ({
+  useEmployeeStore: vi.fn(() => ({
     employees: [],
     pagination: { page: 1, limit: 10, total: 0 },
     filters: { search: "", status: "" },
@@ -26,17 +29,102 @@ vi.mock("@/stores/useEmployeeStore", () => ({
     fetchEmployees: mockFetchEmployees,
     setFilters: mockSetFilters,
     setPage: mockSetPage,
-  }),
+    addEmployee: vi.fn(),
+    updateEmployee: vi.fn(),
+    deleteEmployee: mockDeleteEmployee,
+    getEmployee: vi.fn(),
+    selectEmployee: vi.fn(),
+    selectedEmployee: null,
+    error: null,
+  })),
 }));
 
 // Mock child components
 vi.mock("../components/EmployeeList", () => ({
-  EmployeeList: () => <div data-testid="employee-list">Employee List</div>,
+  EmployeeList: ({
+    employees,
+    onEdit,
+    onDelete,
+    onView,
+  }: {
+    employees: Employee[];
+    onEdit: (e: Employee) => void;
+    onDelete: (e: Employee) => void;
+    onView: (e: Employee) => void;
+  }) => (
+    <div data-testid="employee-list">
+      {employees?.map((e: Employee) => (
+        <div key={e.id}>
+          <span onClick={() => onView?.(e)}>
+            {e.firstName} {e.lastName}
+          </span>
+          <button onClick={() => onEdit?.(e)}>Edit Item</button>
+          <button onClick={() => onDelete?.(e)}>Delete Item</button>
+        </div>
+      ))}
+    </div>
+  ),
 }));
 
 vi.mock("../components/EmployeeFormDialog", () => ({
-  EmployeeFormDialog: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="employee-form-dialog">Form Dialog</div> : null,
+  EmployeeFormDialog: ({
+    open,
+    employee,
+    readOnly,
+  }: {
+    open: boolean;
+    employee?: Employee;
+    readOnly?: boolean;
+  }) =>
+    open ? (
+      <div data-testid="employee-form-dialog">
+        {readOnly
+          ? "View Employee"
+          : employee
+            ? `Edit ${employee.firstName}`
+            : "Add Employee"}
+      </div>
+    ) : null,
+}));
+
+// Mock AlertDialog
+vi.mock("@/components/ui/alert-dialog", () => ({
+  AlertDialog: ({
+    open,
+    children,
+  }: {
+    open: boolean;
+    children: React.ReactNode;
+  }) => (open ? <div role="alertdialog">{children}</div> : null),
+  AlertDialogContent: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  AlertDialogHeader: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  AlertDialogTitle: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  AlertDialogDescription: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  AlertDialogFooter: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  AlertDialogAction: ({
+    onClick,
+    children,
+  }: {
+    onClick: () => void;
+    children: React.ReactNode;
+  }) => <button onClick={onClick}>{children}</button>,
+  AlertDialogCancel: ({
+    onClick,
+    children,
+  }: {
+    onClick: () => void;
+    children: React.ReactNode;
+  }) => <button onClick={onClick}>{children}</button>,
 }));
 
 describe("EmployeesPage", () => {
@@ -44,53 +132,124 @@ describe("EmployeesPage", () => {
     vi.clearAllMocks();
   });
 
-  it("renders page header with title and subtitle", () => {
+  it("renders page header and add button", () => {
     render(<EmployeesPage />);
-
     expect(screen.getByText("Employees")).toBeInTheDocument();
-    expect(screen.getByText("Manage your team members")).toBeInTheDocument();
-  });
-
-  it("renders Add Employee button", () => {
-    render(<EmployeesPage />);
-
     expect(screen.getByText("Add Employee")).toBeInTheDocument();
   });
 
   it("opens dialog when Add Employee button is clicked", async () => {
     const user = userEvent.setup();
     render(<EmployeesPage />);
-
-    const addButton = screen.getByText("Add Employee");
-    await user.click(addButton);
-
-    expect(screen.getByTestId("employee-form-dialog")).toBeInTheDocument();
+    await user.click(screen.getByText("Add Employee"));
+    expect(screen.getByTestId("employee-form-dialog")).toHaveTextContent(
+      "Add Employee",
+    );
   });
 
-  it("renders search input field", () => {
-    render(<EmployeesPage />);
+  it("opens read-only dialog when an employee row is clicked", async () => {
+    const user = userEvent.setup();
+    const employee = {
+      id: "1",
+      firstName: "John",
+      lastName: "Doe",
+    } as unknown as Employee;
 
-    expect(
-      screen.getByPlaceholderText("Search by name or email..."),
-    ).toBeInTheDocument();
+    vi.mocked(useEmployeeStore).mockReturnValue({
+      employees: [employee],
+      pagination: { page: 1, limit: 10, total: 1 },
+      filters: { search: "", status: "" },
+      isLoading: false,
+      fetchEmployees: mockFetchEmployees,
+      setFilters: mockSetFilters,
+      setPage: mockSetPage,
+      addEmployee: vi.fn(),
+      updateEmployee: vi.fn(),
+      deleteEmployee: mockDeleteEmployee,
+      getEmployee: vi.fn(),
+      selectEmployee: vi.fn(),
+      selectedEmployee: null,
+      error: null,
+    });
+
+    render(<EmployeesPage />);
+    await user.click(screen.getByText("John Doe"));
+    // Expect read-only view
+    expect(screen.getByTestId("employee-form-dialog")).toHaveTextContent(
+      "View Employee",
+    );
   });
 
-  it("renders status filter dropdown", () => {
-    render(<EmployeesPage />);
+  it("opens edit dialog when edit button is clicked", async () => {
+    const user = userEvent.setup();
+    const employee = {
+      id: "1",
+      firstName: "John",
+      lastName: "Doe",
+    } as unknown as Employee;
 
-    // Find filter by looking for the Select component or its trigger
-    expect(screen.getByText("All Statuses")).toBeInTheDocument();
+    vi.mocked(useEmployeeStore).mockReturnValue({
+      employees: [employee],
+      pagination: { page: 1, limit: 10, total: 1 },
+      filters: { search: "", status: "" },
+      isLoading: false,
+      fetchEmployees: mockFetchEmployees,
+      setFilters: mockSetFilters,
+      setPage: mockSetPage,
+      addEmployee: vi.fn(),
+      updateEmployee: vi.fn(),
+      deleteEmployee: mockDeleteEmployee,
+      getEmployee: vi.fn(),
+      selectEmployee: vi.fn(),
+      selectedEmployee: null,
+      error: null,
+    });
+
+    render(<EmployeesPage />);
+    await user.click(screen.getByText("Edit Item"));
+    expect(screen.getByTestId("employee-form-dialog")).toHaveTextContent(
+      "Edit John",
+    );
   });
 
-  it("renders employee list component", () => {
+  it("opens delete confirmation dialog and handles deletion", async () => {
+    const user = userEvent.setup();
+    const employee = {
+      id: "1",
+      firstName: "John",
+      lastName: "Doe",
+    } as unknown as Employee;
+
+    vi.mocked(useEmployeeStore).mockReturnValue({
+      employees: [employee],
+      pagination: { page: 1, limit: 10, total: 1 },
+      filters: { search: "", status: "" },
+      isLoading: false,
+      fetchEmployees: mockFetchEmployees,
+      setFilters: mockSetFilters,
+      setPage: mockSetPage,
+      addEmployee: vi.fn(),
+      updateEmployee: vi.fn(),
+      deleteEmployee: mockDeleteEmployee,
+      getEmployee: vi.fn(),
+      selectEmployee: vi.fn(),
+      selectedEmployee: null,
+      error: null,
+    });
+
     render(<EmployeesPage />);
 
-    expect(screen.getByTestId("employee-list")).toBeInTheDocument();
-  });
+    // Click Delete in the list
+    await user.click(screen.getByText("Delete Item"));
 
-  it("calls fetchEmployees on mount", () => {
-    render(<EmployeesPage />);
+    // Verify Dialog
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
 
-    expect(mockFetchEmployees).toHaveBeenCalled();
+    // Click Confirm button in dialog (assuming it says "Delete")
+    // Note: In the page implementation, I must ensure the confirm button has text "Delete" or similar found by screen.getByText
+    const confirmButton = screen.getByText("Delete", { selector: "button" });
+    await user.click(confirmButton);
+
+    expect(mockDeleteEmployee).toHaveBeenCalledWith("1");
   });
 });

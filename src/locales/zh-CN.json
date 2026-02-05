@@ -429,6 +429,18 @@
       "status": "状态",
       "employmentType": "雇佣类型",
       "joinDate": "入职日期"
+    },
+    "deleteTitle": "删除员工",
+    "deleteConfirmation": "您确定要删除 {{name}} 吗？此操作无法撤销。",
+    "viewDetails": "员工详情",
+    "validation": {
+      "firstNameRequired": "请输入名字",
+      "lastNameRequired": "请输入姓氏",
+      "emailInvalid": "请输入有效的邮箱地址",
+      "phoneMin": "电话至少10位",
+      "departmentRequired": "请输入部门",
+      "positionRequired": "请输入职位",
+      "joinDateRequired": "请选择入职日期"
     }
   },
   "footer": {
