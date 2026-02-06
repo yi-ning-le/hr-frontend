@@ -445,5 +445,9 @@
   },
   "footer": {
     "copyright": "© 2026 HR System. All rights reserved."
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account settings and preferences."
   }
 }

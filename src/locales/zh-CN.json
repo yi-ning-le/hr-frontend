@@ -445,5 +445,9 @@
   },
   "footer": {
     "copyright": "© 2026 HR System. 保留所有权利。"
+  },
+  "settings": {
+    "title": "设置",
+    "description": "管理您的账户设置和偏好。"
   }
 }

@@ -11,6 +11,7 @@ import { Route as IndexRoute } from "./routes/_protected/index";
 import { Route as RecruitmentRoute } from "./routes/_protected/recruitment";
 import { Route as EmployeesRoute } from "./routes/_protected/employees";
 import { Route as EmployeeProfileRoute } from "./routes/_protected/employees.$employeeId";
+import { Route as SettingsRoute } from "./routes/_protected/settings";
 
 // Auth route tree
 const authRouteTree = AuthLayoutRoute.addChildren([LoginRoute, RegisterRoute]);
@@ -21,6 +22,7 @@ const protectedRouteTree = ProtectedLayoutRoute.addChildren([
   RecruitmentRoute,
   EmployeesRoute,
   EmployeeProfileRoute,
+  SettingsRoute,
 ]);
 
 // Main route tree

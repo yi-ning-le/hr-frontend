@@ -1,5 +1,11 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Building2, Bell, LogOut, Settings, User as UserIcon } from "lucide-react";
+import {
+  Building2,
+  Bell,
+  LogOut,
+  Settings,
+  User as UserIcon,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -72,7 +78,6 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="size-5 text-slate-600 dark:text-slate-400" />
             <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
@@ -82,7 +87,11 @@ export function Header() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+              <Button
+                variant="ghost"
+                className="relative h-9 w-9 rounded-full"
+                aria-label={user?.username || t("header.admin", "Admin")}
+              >
                 <Avatar className="size-9 ring-2 ring-slate-200 ring-offset-2 dark:ring-slate-700">
                   <AvatarImage src={user?.avatar} alt={user?.username} />
                   <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-sm font-medium text-white">
@@ -107,10 +116,12 @@ export function Header() {
                 <UserIcon className="mr-2 size-4" />
                 <span>{t("header.profile")}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 size-4" />
-                <span>{t("header.settings")}</span>
-              </DropdownMenuItem>
+              <Link to="/settings">
+                <DropdownMenuItem>
+                  <Settings className="mr-2 size-4" />
+                  <span>{t("header.settings")}</span>
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50"
