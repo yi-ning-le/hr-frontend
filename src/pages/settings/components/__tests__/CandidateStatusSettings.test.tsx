@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CandidateStatusSettings } from "../CandidateStatusSettings";
 import type { CandidateStatusDefinition } from "@/types/candidate";
 
@@ -47,6 +48,9 @@ vi.mock("@/hooks/useCandidateStatuses", () => ({
   }),
 }));
 
+// Mock scrollIntoView for Radix primitives
+window.HTMLElement.prototype.scrollIntoView = vi.fn();
+
 // Mock UI components with Context for Dialog
 const DialogContext = React.createContext<{
   open: boolean;
@@ -64,6 +68,14 @@ vi.mock("@/components/ui/dialog", () => {
       open?: boolean;
       onOpenChange?: (open: boolean) => void;
     }) => {
+      // Manage internal state if open prop is not provided (uncontrolled)
+      // or rely on the parent providing it.
+      // In this test, the key is that DialogTrigger needs to update the state.
+      // But CandidateStatusSettings CONTROLS the state.
+
+      // Wait, CandidateStatusSettings uses controlled Dialog: <Dialog open={open} onOpenChange={setOpen}>
+      // So the mock should respect the props.
+
       return (
         <DialogContext.Provider
           value={{ open: !!open, setOpen: onOpenChange || (() => {}) }}
@@ -73,11 +85,8 @@ vi.mock("@/components/ui/dialog", () => {
       );
     },
     DialogContent: ({ children }: { children: React.ReactNode }) => {
-      return (
-        <DialogContext.Consumer>
-          {({ open }) => (open ? <div>{children}</div> : null)}
-        </DialogContext.Consumer>
-      );
+      const { open } = React.useContext(DialogContext);
+      return open ? <div role="dialog">{children}</div> : null;
     },
     DialogHeader: ({ children }: { children: React.ReactNode }) => (
       <div>{children}</div>
@@ -91,8 +100,12 @@ vi.mock("@/components/ui/dialog", () => {
       children: React.ReactNode;
       asChild?: boolean;
     }) => {
-      // Simple mock that renders children
-      return <div data-testid="dialog-trigger">{children}</div>;
+      const { setOpen } = React.useContext(DialogContext);
+      return (
+        <div data-testid="dialog-trigger" onClick={() => setOpen(true)}>
+          {children}
+        </div>
+      );
     },
     DialogFooter: ({ children }: { children: React.ReactNode }) => (
       <div>{children}</div>
@@ -175,6 +188,10 @@ vi.mock("@hello-pangea/dnd", () => ({
 }));
 
 describe("CandidateStatusSettings", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders status list correctly", () => {
     render(<CandidateStatusSettings />);
 
@@ -182,7 +199,6 @@ describe("CandidateStatusSettings", () => {
       screen.getByText(/settings.candidateStatus.title/),
     ).toBeInTheDocument();
 
-    // Check system status translation
     expect(
       screen.getByText("recruitment.candidates.statusOptions.new"),
     ).toBeInTheDocument();
@@ -191,8 +207,6 @@ describe("CandidateStatusSettings", () => {
   it("renders add status button correctly", () => {
     render(<CandidateStatusSettings />);
 
-    // Check that the add button exists with correct translation key
-    // We use getAllByTestId because our mock renders a specific wrapper
     const triggers = screen.getAllByTestId("dialog-trigger");
     const addTrigger = triggers.find((t) =>
       t.textContent?.includes("settings.candidateStatus.addStatus"),
@@ -200,5 +214,43 @@ describe("CandidateStatusSettings", () => {
 
     expect(addTrigger).toBeDefined();
     expect(addTrigger).toHaveTextContent("settings.candidateStatus.addStatus");
+  });
+
+  it("allows adding a new status", async () => {
+    const user = userEvent.setup();
+    render(<CandidateStatusSettings />);
+
+    // Find and click the Add Status button
+    const triggers = screen.getAllByTestId("dialog-trigger");
+    const addTrigger = triggers.find((t) =>
+      t.textContent?.includes("settings.candidateStatus.addStatus"),
+    );
+
+    expect(addTrigger).toBeDefined();
+    await user.click(addTrigger!);
+
+    // Check if dialog content appears
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(
+      screen.getByText("settings.candidateStatus.addNew"),
+    ).toBeInTheDocument();
+
+    // Form interactions
+    // In our implementation we used:
+    // <FormLabel className="text-right">{t("settings.candidateStatus.name", "Name")}</FormLabel>
+    // The mock returns the key "settings.candidateStatus.name".
+
+    const nameInput = screen.getByLabelText("settings.candidateStatus.name");
+    await user.type(nameInput, "New Status Name");
+
+    const createButton = screen.getByRole("button", { name: "common.create" });
+    await user.click(createButton);
+
+    await waitFor(() => {
+      expect(mockCreateStatus).toHaveBeenCalledWith(
+        "New Status Name",
+        "#000000",
+      );
+    });
   });
 });

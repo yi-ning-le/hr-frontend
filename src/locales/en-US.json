@@ -25,7 +25,10 @@
     "uncategorized": "Uncategorized",
     "clearFilter": "Clear Filter",
     "noResults": "No results found",
-    "resultsCount": "Found {{count}} results"
+    "resultsCount": "Found {{count}} results",
+    "saveChanges": "Save Changes",
+    "areYouSure": "Are you sure?",
+    "create": "Create"
   },
   "nav": {
     "overview": "Overview",

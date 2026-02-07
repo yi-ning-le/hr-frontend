@@ -1,9 +1,23 @@
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CandidateStatusSettings } from "@/pages/settings/components/CandidateStatusSettings";
+import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
 
 export function SettingsPage() {
   const { t } = useTranslation();
+
+  const TABS = [
+    {
+      id: "candidate-statuses",
+      label: t("settings.tabs.candidateStatuses", "Candidate Statuses"),
+      component: <CandidateStatusSettings />,
+    },
+    {
+      id: "general",
+      label: t("settings.tabs.general", "General"),
+      component: <GeneralSettings />,
+    },
+  ] as const;
 
   return (
     <div className="space-y-6">
@@ -19,23 +33,19 @@ export function SettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="candidate-statuses" className="space-y-4">
+      <Tabs defaultValue={TABS[0].id} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="candidate-statuses">
-            {t("settings.tabs.candidateStatuses", "Candidate Statuses")}
-          </TabsTrigger>
-          <TabsTrigger value="general">
-            {t("settings.tabs.general", "General")}
-          </TabsTrigger>
+          {TABS.map((tab) => (
+            <TabsTrigger key={tab.id} value={tab.id}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
-        <TabsContent value="candidate-statuses" className="space-y-4">
-          <CandidateStatusSettings />
-        </TabsContent>
-        <TabsContent value="general">
-          <div className="settings-content min-h-[400px] rounded-xl border border-dashed border-slate-200 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900/50 flex items-center justify-center text-muted-foreground">
-            {t("settings.general.placeholder", "General Settings Placeholder")}
-          </div>
-        </TabsContent>
+        {TABS.map((tab) => (
+          <TabsContent key={tab.id} value={tab.id} className="space-y-4">
+            {tab.component}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );

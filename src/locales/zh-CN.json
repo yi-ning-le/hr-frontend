@@ -25,7 +25,10 @@
     "uncategorized": "未分类",
     "clearFilter": "清除筛选",
     "noResults": "没有找到结果",
-    "resultsCount": "共找到 {{count}} 条结果"
+    "resultsCount": "共找到 {{count}} 条结果",
+    "saveChanges": "保存修改",
+    "areYouSure": "您确定吗？",
+    "create": "创建"
   },
   "nav": {
     "overview": "概览",
