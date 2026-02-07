@@ -448,6 +448,27 @@
   },
   "settings": {
     "title": "Settings",
-    "description": "Manage your account settings and preferences."
+    "description": "Manage your account settings and preferences.",
+    "tabs": {
+      "candidateStatuses": "Candidate Statuses",
+      "general": "General"
+    },
+    "general": {
+      "placeholder": "General Settings Placeholder"
+    },
+    "candidateStatus": {
+      "title": "Candidate Statuses",
+      "description": "Manage the candidate pipeline statuses. Drag to reorder.",
+      "addStatus": "Add Status",
+      "addNew": "Add New Status",
+      "name": "Name",
+      "color": "Color",
+      "editStatus": "Edit Status",
+      "deleteConfirm": "This action cannot be undone. This will permanently delete the status \"{{name}}\".",
+      "type": {
+        "system": "System",
+        "custom": "Custom"
+      }
+    }
   }
 }

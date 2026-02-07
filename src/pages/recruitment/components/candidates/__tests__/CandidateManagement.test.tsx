@@ -1,4 +1,3 @@
-
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -7,7 +6,9 @@ import { CandidateManagement } from "../CandidateManagement";
 // Mock react-pdf before it imports pdfjs-dist
 vi.mock("react-pdf", () => ({
   pdfjs: { GlobalWorkerOptions: { workerSrc: "" } },
-  Document: ({ children }: { children?: React.ReactNode }) => <div data-testid="pdf-document">{children}</div>,
+  Document: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="pdf-document">{children}</div>
+  ),
   Page: () => <div data-testid="pdf-page">Page</div>,
 }));
 
@@ -21,6 +22,24 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: "zh-CN", changeLanguage: vi.fn() },
+  }),
+}));
+
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [
+      { id: "1", slug: "new", name: "New", type: "system", color: "#000000" },
+    ],
+    statusMap: {
+      new: {
+        id: "1",
+        slug: "new",
+        name: "New",
+        type: "system",
+        color: "#000000",
+      },
+    },
+    fetchStatuses: vi.fn(),
   }),
 }));
 
@@ -45,7 +64,9 @@ interface CandidateMgmtStoreState {
 }
 
 vi.mock("@/stores/useCandidateStore", () => ({
-  useCandidateStore: <T,>(selector: (state: CandidateMgmtStoreState) => T): T => {
+  useCandidateStore: <T,>(
+    selector: (state: CandidateMgmtStoreState) => T,
+  ): T => {
     const state: CandidateMgmtStoreState = {
       candidates: [],
       selectedJobId: "all",
@@ -81,11 +102,14 @@ vi.mock("@/stores/useJobStore", () => ({
 }));
 
 // Mock ResizeObserver
-vi.stubGlobal('ResizeObserver', class ResizeObserver {
-  observe() { }
-  unobserve() { }
-  disconnect() { }
-} as typeof globalThis.ResizeObserver);
+vi.stubGlobal(
+  "ResizeObserver",
+  class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as typeof globalThis.ResizeObserver,
+);
 
 describe("CandidateManagement", () => {
   beforeEach(() => {
@@ -101,12 +125,16 @@ describe("CandidateManagement", () => {
   it("renders main layout container", () => {
     const { container } = render(<CandidateManagement />);
     // Check that the main container is rendered
-    expect(container.querySelector('.flex.h-\\[calc\\(100vh-200px\\)\\]')).toBeInTheDocument();
+    expect(
+      container.querySelector(".flex.h-\\[calc\\(100vh-200px\\)\\]"),
+    ).toBeInTheDocument();
   });
 
   it("renders sidebar with job positions title", () => {
     render(<CandidateManagement />);
     // The sidebar title should be visible
-    expect(screen.getByText("recruitment.candidates.sidebar.title")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.sidebar.title"),
+    ).toBeInTheDocument();
   });
 });

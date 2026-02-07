@@ -1,4 +1,3 @@
-
 // @vitest-environment jsdom
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -9,9 +8,28 @@ import type { Candidate } from "@/types/candidate";
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: { years?: number; date?: string }) => {
-      if (key === "recruitment.candidates.card.yearsExp") return `${options?.years} years`;
-      if (key === "recruitment.candidates.card.appliedOn") return `Applied on ${options?.date}`;
+      if (key === "recruitment.candidates.card.yearsExp")
+        return `${options?.years} years`;
+      if (key === "recruitment.candidates.card.appliedOn")
+        return `Applied on ${options?.date}`;
       return key;
+    },
+  }),
+}));
+
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [
+      { id: "1", slug: "new", name: "New", type: "system", color: "#000000" },
+    ],
+    statusMap: {
+      new: {
+        id: "1",
+        slug: "new",
+        name: "New",
+        type: "system",
+        color: "#000000",
+      },
     },
   }),
 }));
@@ -31,7 +49,7 @@ describe("CandidateCard", () => {
     phone: "1234567890",
     education: "BS CS",
     channel: "LinkedIn",
-    note: "Candidate note"
+    note: "Candidate note",
   };
 
   const defaultProps = {
@@ -52,7 +70,9 @@ describe("CandidateCard", () => {
   it("calls onClick when clicked", () => {
     render(<CandidateCard {...defaultProps} />);
 
-    fireEvent.click(screen.getByText("John Doe").closest("div[class*='cursor-pointer']")!);
+    fireEvent.click(
+      screen.getByText("John Doe").closest("div[class*='cursor-pointer']")!,
+    );
 
     expect(defaultProps.onClick).toHaveBeenCalled();
   });
@@ -61,6 +81,8 @@ describe("CandidateCard", () => {
     render(<CandidateCard {...defaultProps} />);
 
     // Status text (mocked translation key)
-    expect(screen.getByText(/recruitment.candidates.statusOptions/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/recruitment.candidates.statusOptions/),
+    ).toBeInTheDocument();
   });
 });

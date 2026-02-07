@@ -1,10 +1,15 @@
-export type CandidateStatus =
-  | "new"
-  | "screening"
-  | "interview"
-  | "offer"
-  | "hired"
-  | "rejected";
+// CandidateStatus is now dynamic, so we just use string.
+// However, keeping the type alias helps with readability.
+export type CandidateStatus = string;
+
+export interface CandidateStatusDefinition {
+  id: string;
+  name: string;
+  slug: string;
+  type: "system" | "custom";
+  sort_order: number;
+  color: string;
+}
 
 export interface Candidate {
   id: string;

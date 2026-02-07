@@ -1,6 +1,10 @@
 import axios from "axios";
 import type { JobPosition } from "@/types/job";
-import type { Candidate, CandidateStatus } from "@/types/candidate";
+import type {
+  Candidate,
+  CandidateStatus,
+  CandidateStatusDefinition,
+} from "@/types/candidate"; // CandidateStatus is string, Definition is object
 
 // Create Axios instance with default config
 const api = axios.create({
@@ -278,5 +282,51 @@ export const EmployeesAPI = {
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`/employees/${id}`);
+  },
+};
+
+export const CandidateStatusesAPI = {
+  list: async (): Promise<CandidateStatusDefinition[]> => {
+    const response = await api.get<CandidateStatusDefinition[]>(
+      "/candidate-statuses",
+    );
+    return response.data;
+  },
+
+  create: async (
+    name: string,
+    color: string,
+  ): Promise<CandidateStatusDefinition> => {
+    const response = await api.post<CandidateStatusDefinition>(
+      "/candidate-statuses",
+      {
+        name,
+        color,
+      },
+    );
+    return response.data;
+  },
+
+  update: async (
+    id: string,
+    name: string,
+    color: string,
+  ): Promise<CandidateStatusDefinition> => {
+    const response = await api.put<CandidateStatusDefinition>(
+      `/candidate-statuses/${id}`,
+      {
+        name,
+        color,
+      },
+    );
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/candidate-statuses/${id}`);
+  },
+
+  reorder: async (ids: string[]): Promise<void> => {
+    await api.patch("/candidate-statuses/reorder", { ids });
   },
 };

@@ -448,6 +448,27 @@
   },
   "settings": {
     "title": "设置",
-    "description": "管理您的账户设置和偏好。"
+    "description": "管理您的账户设置和偏好。",
+    "tabs": {
+      "candidateStatuses": "候选人状态",
+      "general": "常规设置"
+    },
+    "general": {
+      "placeholder": "常规设置占位符"
+    },
+    "candidateStatus": {
+      "title": "候选人状态",
+      "description": "管理候选人流程状态。拖拽可调整顺序。",
+      "addStatus": "添加状态",
+      "addNew": "添加新状态",
+      "name": "名称",
+      "color": "颜色",
+      "editStatus": "编辑状态",
+      "deleteConfirm": "此操作无法撤销。这将永久删除状态“{{name}}”。",
+      "type": {
+        "system": "系统预设",
+        "custom": "自定义"
+      }
+    }
   }
 }

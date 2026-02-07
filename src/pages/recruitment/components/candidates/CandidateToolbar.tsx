@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { AddCandidateDialog } from "./AddCandidateDialog";
 import type { CandidateStatus } from "@/types/candidate";
+import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 
 interface CandidateToolbarProps {
   searchQuery: string;
@@ -28,15 +29,15 @@ export function CandidateToolbar({
   onStatusFilterChange,
 }: CandidateToolbarProps) {
   const { t } = useTranslation();
+  const { statuses } = useCandidateStatuses();
 
-  const STATUS_OPTIONS: { labelKey: string; value: CandidateStatus }[] = [
-    { labelKey: "recruitment.candidates.statusOptions.new", value: "new" },
-    { labelKey: "recruitment.candidates.statusOptions.screening", value: "screening" },
-    { labelKey: "recruitment.candidates.statusOptions.interview", value: "interview" },
-    { labelKey: "recruitment.candidates.statusOptions.offer", value: "offer" },
-    { labelKey: "recruitment.candidates.statusOptions.hired", value: "hired" },
-    { labelKey: "recruitment.candidates.statusOptions.rejected", value: "rejected" },
-  ];
+  const statusOptions = statuses.map((status) => ({
+    value: status.slug,
+    label:
+      status.type === "system"
+        ? t(`recruitment.candidates.statusOptions.${status.slug}`, status.name)
+        : status.name,
+  }));
 
   return (
     <div className="flex items-center justify-between gap-4 w-full">
@@ -69,9 +70,11 @@ export function CandidateToolbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuLabel>{t("recruitment.candidates.toolbar.filterStatus")}</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {t("recruitment.candidates.toolbar.filterStatus")}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {STATUS_OPTIONS.map((option) => {
+            {statusOptions.map((option) => {
               const isSelected = statusFilter.includes(option.value);
               return (
                 <DropdownMenuCheckboxItem
@@ -82,12 +85,12 @@ export function CandidateToolbar({
                       onStatusFilterChange([...statusFilter, option.value]);
                     } else {
                       onStatusFilterChange(
-                        statusFilter.filter((s) => s !== option.value)
+                        statusFilter.filter((s) => s !== option.value),
                       );
                     }
                   }}
                 >
-                  {t(option.labelKey)}
+                  {option.label}
                 </DropdownMenuCheckboxItem>
               );
             })}
@@ -108,4 +111,3 @@ export function CandidateToolbar({
     </div>
   );
 }
-

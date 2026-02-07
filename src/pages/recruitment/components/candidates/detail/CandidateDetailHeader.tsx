@@ -1,9 +1,5 @@
 import { useTranslation } from "react-i18next";
-import {
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,7 +21,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Candidate, CandidateStatus } from "@/types/candidate";
+import type {
+  Candidate,
+  CandidateStatus,
+  CandidateStatusDefinition as ApiCandidateStatus,
+} from "@/types/candidate";
+import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 
 interface CandidateDetailHeaderProps {
   candidate: Candidate;
@@ -41,6 +42,7 @@ export function CandidateDetailHeader({
   onDelete,
 }: CandidateDetailHeaderProps) {
   const { t } = useTranslation();
+  const { statuses } = useCandidateStatuses();
 
   return (
     <DialogHeader className="p-6 pb-4 border-b shrink-0 bg-background z-10">
@@ -63,7 +65,9 @@ export function CandidateDetailHeader({
             <div className="flex gap-2">
               <Badge variant="secondary">{candidate.channel}</Badge>
               <Badge variant="outline">
-                {t("recruitment.candidates.card.yearsExp", { years: candidate.experienceYears })}
+                {t("recruitment.candidates.card.yearsExp", {
+                  years: candidate.experienceYears,
+                })}
               </Badge>
             </div>
           </div>
@@ -78,12 +82,16 @@ export function CandidateDetailHeader({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="new">{t("recruitment.candidates.statusOptions.new")}</SelectItem>
-              <SelectItem value="screening">{t("recruitment.candidates.statusOptions.screening")}</SelectItem>
-              <SelectItem value="interview">{t("recruitment.candidates.statusOptions.interview")}</SelectItem>
-              <SelectItem value="offer">{t("recruitment.candidates.statusOptions.offer")}</SelectItem>
-              <SelectItem value="hired">{t("recruitment.candidates.statusOptions.hired")}</SelectItem>
-              <SelectItem value="rejected">{t("recruitment.candidates.statusOptions.rejected")}</SelectItem>
+              {statuses.map((status: ApiCandidateStatus) => (
+                <SelectItem key={status.slug} value={status.slug}>
+                  {status.type === "system"
+                    ? t(
+                        `recruitment.candidates.statusOptions.${status.slug}`,
+                        status.name,
+                      )
+                    : status.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 

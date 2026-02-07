@@ -1,4 +1,3 @@
-
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -14,14 +13,33 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [
+      { id: "1", slug: "new", name: "New", type: "system", color: "#000000" },
+    ],
+    statusMap: {
+      new: {
+        id: "1",
+        slug: "new",
+        name: "New",
+        type: "system",
+        color: "#000000",
+      },
+    },
+  }),
+}));
+
 // Mock react-pdf to prevent import errors
 vi.mock("react-pdf", () => ({
   pdfjs: { GlobalWorkerOptions: { workerSrc: "" } },
-  Document: ({ children }: { children?: React.ReactNode }) => <div data-testid="pdf-document">{children}</div>,
+  Document: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="pdf-document">{children}</div>
+  ),
   Page: () => <div data-testid="pdf-page">Page</div>,
 }));
 
-// Mock parseResume  
+// Mock parseResume
 vi.mock("@/lib/parseResume", () => ({
   parseResume: vi.fn().mockResolvedValue({ name: "Parsed" }),
 }));
@@ -79,15 +97,35 @@ vi.mock("@/stores/useCandidateStore", () => ({
 }));
 
 interface JobStoreState {
-  jobs: Array<{ id: string; title: string; department: string; status: string; jobDescription?: string; headCount?: number; openDate?: Date }>;
+  jobs: Array<{
+    id: string;
+    title: string;
+    department: string;
+    status: string;
+    jobDescription?: string;
+    headCount?: number;
+    openDate?: Date;
+  }>;
   fetchJobs: ReturnType<typeof vi.fn>;
   isLoading: boolean;
 }
 
 vi.mock("@/stores/useJobStore", () => ({
-  useJobStore: <T,>(selector?: (state: JobStoreState) => T): T | JobStoreState => {
+  useJobStore: <T,>(
+    selector?: (state: JobStoreState) => T,
+  ): T | JobStoreState => {
     const state: JobStoreState = {
-      jobs: [{ id: "job1", title: "Developer", department: "Engineering", status: "OPEN", jobDescription: "Test description", headCount: 1, openDate: new Date() }],
+      jobs: [
+        {
+          id: "job1",
+          title: "Developer",
+          department: "Engineering",
+          status: "OPEN",
+          jobDescription: "Test description",
+          headCount: 1,
+          openDate: new Date(),
+        },
+      ],
       fetchJobs: vi.fn(),
       isLoading: false,
     };
@@ -97,11 +135,14 @@ vi.mock("@/stores/useJobStore", () => ({
 }));
 
 // Mock ResizeObserver
-vi.stubGlobal('ResizeObserver', class ResizeObserver {
-  observe() { }
-  unobserve() { }
-  disconnect() { }
-} as typeof globalThis.ResizeObserver);
+vi.stubGlobal(
+  "ResizeObserver",
+  class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as typeof globalThis.ResizeObserver,
+);
 
 // Helper to render with Dialog context
 const renderInDialog = () => {
@@ -110,7 +151,7 @@ const renderInDialog = () => {
       <DialogContent className="max-w-4xl">
         <CandidateDetail />
       </DialogContent>
-    </Dialog>
+    </Dialog>,
   );
 };
 

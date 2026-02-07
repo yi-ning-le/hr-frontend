@@ -13,12 +13,43 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [
+      { id: "1", slug: "new", name: "New", type: "system", color: "#000000" },
+      {
+        id: "2",
+        slug: "interview",
+        name: "Interview",
+        type: "system",
+        color: "#00FF00",
+      },
+    ],
+    statusMap: {
+      new: {
+        id: "1",
+        slug: "new",
+        name: "New",
+        type: "system",
+        color: "#000000",
+      },
+      interview: {
+        id: "2",
+        slug: "interview",
+        name: "Interview",
+        type: "system",
+        color: "#00FF00",
+      },
+    },
+  }),
+}));
+
 // Mock DOM APIs for Radix UI in jsdom
 beforeAll(() => {
   globalThis.ResizeObserver = class ResizeObserver {
-    observe() { }
-    unobserve() { }
-    disconnect() { }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
   } as typeof globalThis.ResizeObserver;
 
   // Mock scrollIntoView for Radix Select
@@ -43,7 +74,7 @@ const mockCandidate: Candidate = {
 
 // Helper to render with Dialog context
 const renderWithDialog = (
-  props: Partial<React.ComponentProps<typeof CandidateDetailHeader>> = {}
+  props: Partial<React.ComponentProps<typeof CandidateDetailHeader>> = {},
 ) => {
   const defaultProps = {
     candidate: mockCandidate,
@@ -57,7 +88,7 @@ const renderWithDialog = (
       <DialogContent>
         <CandidateDetailHeader {...defaultProps} {...props} />
       </DialogContent>
-    </Dialog>
+    </Dialog>,
   );
 };
 
@@ -74,7 +105,7 @@ describe("CandidateDetailHeader", () => {
 
     expect(screen.getByText("Frontend Developer")).toBeInTheDocument();
     expect(
-      screen.getByText("recruitment.candidates.detail.appliedPosition")
+      screen.getByText("recruitment.candidates.detail.appliedPosition"),
     ).toBeInTheDocument();
   });
 
@@ -83,7 +114,7 @@ describe("CandidateDetailHeader", () => {
 
     expect(screen.getByText("LinkedIn")).toBeInTheDocument();
     expect(
-      screen.getByText("recruitment.candidates.card.yearsExp")
+      screen.getByText("recruitment.candidates.card.yearsExp"),
     ).toBeInTheDocument();
   });
 
@@ -92,7 +123,7 @@ describe("CandidateDetailHeader", () => {
 
     // The select trigger should show current status text
     expect(
-      screen.getByText("recruitment.candidates.statusOptions.new")
+      screen.getByText("recruitment.candidates.statusOptions.new"),
     ).toBeInTheDocument();
   });
 

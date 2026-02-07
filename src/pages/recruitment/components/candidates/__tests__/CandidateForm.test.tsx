@@ -1,4 +1,3 @@
-
 // @vitest-environment jsdom
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -9,6 +8,37 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: "zh-CN", changeLanguage: vi.fn() },
+  }),
+}));
+
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [
+      { id: "1", slug: "new", name: "New", type: "system", color: "#000000" },
+      {
+        id: "2",
+        slug: "interview",
+        name: "Interview",
+        type: "system",
+        color: "#00FF00",
+      },
+    ],
+    statusMap: {
+      new: {
+        id: "1",
+        slug: "new",
+        name: "New",
+        type: "system",
+        color: "#000000",
+      },
+      interview: {
+        id: "2",
+        slug: "interview",
+        name: "Interview",
+        type: "system",
+        color: "#00FF00",
+      },
+    },
   }),
 }));
 
@@ -33,12 +63,24 @@ describe("CandidateForm", () => {
 
     // Use the actual translation keys from the component
     expect(screen.getByText("recruitment.candidates.name")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.email")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.phone")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.channel")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.position")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.education")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.experienceYears")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.email"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.phone"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.channel"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.position"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.education"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.experienceYears"),
+    ).toBeInTheDocument();
   });
 
   it("calls onCancel when cancel button clicked", () => {
@@ -51,12 +93,22 @@ describe("CandidateForm", () => {
   it("renders submit button with default label", () => {
     render(<CandidateForm onSubmit={mockSubmit} onCancel={mockCancel} />);
 
-    expect(screen.getByRole("button", { name: "common.save" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "common.save" }),
+    ).toBeInTheDocument();
   });
 
   it("renders submit button with custom label", () => {
-    render(<CandidateForm onSubmit={mockSubmit} onCancel={mockCancel} submitLabel="Custom Submit" />);
+    render(
+      <CandidateForm
+        onSubmit={mockSubmit}
+        onCancel={mockCancel}
+        submitLabel="Custom Submit"
+      />,
+    );
 
-    expect(screen.getByRole("button", { name: "Custom Submit" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Custom Submit" }),
+    ).toBeInTheDocument();
   });
 });
