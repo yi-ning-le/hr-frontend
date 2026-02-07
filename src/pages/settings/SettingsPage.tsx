@@ -5,7 +5,12 @@ import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
 import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
 import { useUserRole } from "@/hooks/useUserRole";
 
-export function SettingsPage() {
+export interface SettingsPageProps {
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
+}
+
+export function SettingsPage({ activeTab, onTabChange }: SettingsPageProps) {
   const { t } = useTranslation();
   const { isAdmin } = useUserRole();
 
@@ -32,6 +37,8 @@ export function SettingsPage() {
       : []),
   ];
 
+  const defaultTab = TABS[0]?.id;
+
   return (
     <div className="space-y-6">
       <div>
@@ -46,7 +53,12 @@ export function SettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue={TABS[0].id} className="space-y-4">
+      <Tabs
+        defaultValue={defaultTab}
+        value={activeTab}
+        onValueChange={onTabChange}
+        className="space-y-4"
+      >
         <TabsList>
           {TABS.map((tab) => (
             <TabsTrigger key={tab.id} value={tab.id}>

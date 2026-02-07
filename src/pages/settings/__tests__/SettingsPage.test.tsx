@@ -74,7 +74,7 @@ describe("SettingsPage", () => {
     expect(screen.getByText("Recruiters")).toBeInTheDocument();
   });
 
-  it("switches content when tabs are clicked", async () => {
+  it("switches content when tabs are clicked (uncontrolled)", async () => {
     const user = userEvent.setup();
     render(<SettingsPage />);
 
@@ -85,8 +85,31 @@ describe("SettingsPage", () => {
     const generalTab = screen.getByRole("tab", { name: "General" });
     await user.click(generalTab);
 
-    // Radix Tabs might need some wait or we can check presence if they stay in DOM
-    // In our case, they are rendered via TABS.map(({component}) => component)
     expect(screen.getByTestId("general-settings")).toBeInTheDocument();
+  });
+
+  it("respects activeTab prop (controlled)", () => {
+    render(<SettingsPage activeTab="general" />);
+    // Should show General tab content immediately
+    expect(screen.getByTestId("general-settings")).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("candidate-status-settings"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("calls onTabChange when tab is clicked (controlled)", async () => {
+    const user = userEvent.setup();
+    const handleTabChange = vi.fn();
+    render(
+      <SettingsPage
+        activeTab="candidate-statuses"
+        onTabChange={handleTabChange}
+      />,
+    );
+
+    const generalTab = screen.getByRole("tab", { name: "General" });
+    await user.click(generalTab);
+
+    expect(handleTabChange).toHaveBeenCalledWith("general");
   });
 });
