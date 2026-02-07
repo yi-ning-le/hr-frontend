@@ -1,30 +1,43 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import type { JobPosition } from "@/types/job";
 import { JobPositionList } from "./JobPositionList";
 import { JobDialogs } from "./JobDialogs";
 import type { JobFormValues } from "./forms/JobPositionForm";
 import { useJobStore } from "@/stores/useJobStore";
-import { useCandidateStore } from "@/stores/useCandidateStore";
+import {
+  useJobs,
+  useCreateJob,
+  useUpdateJob,
+  useDeleteJob,
+  useToggleJobStatus,
+} from "@/hooks/queries/useJobs";
+import { useCandidates } from "@/hooks/queries/useCandidates";
+import type { Candidate } from "@/types/candidate";
 
 /**
  * JobManagementTab component extracts the job-related logic and UI from RecruitmentPage.
  * It manages its own dialog state and uses useJobStore for job-related actions.
  */
 export function JobManagementTab() {
-  const { jobs, addJob, updateJob, deleteJob, toggleJobStatus, isAddDialogOpen, setIsAddDialogOpen, fetchJobs } = useJobStore();
-  const { candidates, fetchCandidates } = useCandidateStore();
+  const { isAddDialogOpen, setIsAddDialogOpen } = useJobStore();
+  const { data: jobs = [] } = useJobs();
+  const { data: candidates = [] } = useCandidates();
 
-  const [editingJob, setEditingJob] = useState<JobPosition | undefined>(undefined);
-  const [viewingJob, setViewingJob] = useState<JobPosition | undefined>(undefined);
+  const { mutate: addJob } = useCreateJob();
+  const { mutate: updateJob } = useUpdateJob();
+  const { mutate: deleteJob } = useDeleteJob();
+  const { mutate: toggleJobStatus } = useToggleJobStatus();
 
-  useEffect(() => {
-    fetchJobs();
-    fetchCandidates();
-  }, [fetchJobs, fetchCandidates]);
+  const [editingJob, setEditingJob] = useState<JobPosition | undefined>(
+    undefined,
+  );
+  const [viewingJob, setViewingJob] = useState<JobPosition | undefined>(
+    undefined,
+  );
 
   const jobCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    candidates.forEach((c) => {
+    candidates.forEach((c: Candidate) => {
       counts[c.appliedJobId] = (counts[c.appliedJobId] || 0) + 1;
     });
     return counts;
@@ -49,7 +62,7 @@ export function JobManagementTab() {
 
   const handleSaveJob = (data: JobFormValues) => {
     if (editingJob) {
-      updateJob(editingJob.id, data);
+      updateJob({ id: editingJob.id, data });
     } else {
       addJob(data);
     }

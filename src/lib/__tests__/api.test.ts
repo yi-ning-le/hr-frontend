@@ -6,6 +6,7 @@ import {
   AuthAPI,
   JobsAPI,
   CandidatesAPI,
+  RecruitmentAPI,
 } from "../api";
 
 // Mock axios
@@ -326,6 +327,75 @@ describe("lib/api", () => {
         );
         expect(result.resumeUrl).toBe("https://example.com/resume.pdf");
         expect(result.candidate.appliedAt).toBeInstanceOf(Date);
+      });
+    });
+  });
+
+  describe("RecruitmentAPI", () => {
+    describe("getMyRole", () => {
+      it("should fetch my recruitment role", async () => {
+        const mockRole = {
+          isAdmin: true,
+          isRecruiter: true,
+          isInterviewer: false,
+        };
+        mockAxios.get.mockResolvedValueOnce({ data: mockRole });
+
+        const result = await RecruitmentAPI.getMyRole();
+
+        expect(mockAxios.get).toHaveBeenCalledWith("/recruitment/role");
+        expect(result).toEqual(mockRole);
+      });
+    });
+
+    describe("getRecruiters", () => {
+      it("should fetch recruiters list", async () => {
+        const mockRecruiters = [
+          {
+            employeeId: "123",
+            firstName: "John",
+            lastName: "Doe",
+            department: "HR",
+          },
+        ];
+        mockAxios.get.mockResolvedValueOnce({ data: mockRecruiters });
+
+        const result = await RecruitmentAPI.getRecruiters();
+
+        expect(mockAxios.get).toHaveBeenCalledWith(
+          "/recruitment/admin/recruiters",
+        );
+        expect(result).toEqual(mockRecruiters);
+      });
+    });
+
+    describe("assignRecruiter", () => {
+      it("should assign recruiter role", async () => {
+        mockAxios.post.mockResolvedValueOnce({ data: {} });
+
+        await RecruitmentAPI.assignRecruiter("emp-123");
+
+        expect(mockAxios.post).toHaveBeenCalledWith(
+          "/recruitment/admin/recruiters",
+          {
+            employeeId: "emp-123",
+          },
+        );
+      });
+    });
+
+    describe("revokeRecruiter", () => {
+      it("should revoke recruiter role by sending employeeId in body", async () => {
+        mockAxios.delete.mockResolvedValueOnce({ data: {} });
+
+        await RecruitmentAPI.revokeRecruiter("emp-123");
+
+        expect(mockAxios.delete).toHaveBeenCalledWith(
+          "/recruitment/admin/recruiters",
+          {
+            data: { employeeId: "emp-123" },
+          },
+        );
       });
     });
   });

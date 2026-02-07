@@ -18,7 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEmployeeStore } from "@/stores/useEmployeeStore";
+import {
+  useCreateEmployee,
+  useUpdateEmployee,
+} from "@/hooks/queries/useEmployees";
 import type { Employee } from "@/types/employee";
 import { useEffect } from "react";
 
@@ -36,7 +39,11 @@ export function EmployeeFormDialog({
   readOnly = false,
 }: EmployeeFormDialogProps) {
   const { t } = useTranslation();
-  const { addEmployee, updateEmployee, isLoading } = useEmployeeStore();
+  const { mutateAsync: createEmployee, isPending: isCreating } =
+    useCreateEmployee();
+  const { mutateAsync: updateEmployee, isPending: isUpdating } =
+    useUpdateEmployee();
+  const isLoading = isCreating || isUpdating;
 
   const employeeSchema = z.object({
     firstName: z
@@ -142,9 +149,9 @@ export function EmployeeFormDialog({
     };
 
     if (isEditing && employee) {
-      await updateEmployee(employee.id, payload);
+      await updateEmployee({ id: employee.id, data: payload });
     } else {
-      await addEmployee(payload);
+      await createEmployee(payload);
     }
 
     reset();

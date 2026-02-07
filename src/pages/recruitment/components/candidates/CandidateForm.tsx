@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useJobStore } from "@/stores/useJobStore";
+import { useJobs } from "@/hooks/queries/useJobs";
 import { Loader2 } from "lucide-react";
 import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 import type { CandidateStatusDefinition as CandidateStatus } from "@/types/candidate";
@@ -31,9 +31,7 @@ const createCandidateSchema = (t: (key: string) => string) =>
     name: z
       .string()
       .min(2, t("recruitment.candidates.form.validation.nameMin")),
-    email: z
-      .string()
-      .email(t("recruitment.candidates.form.validation.emailInvalid")),
+    email: z.email(t("recruitment.candidates.form.validation.emailInvalid")),
     phone: z
       .string()
       .min(10, t("recruitment.candidates.form.validation.phoneMin")),
@@ -77,20 +75,13 @@ export function CandidateForm({
   hideNote = false,
 }: CandidateFormProps) {
   const { t } = useTranslation();
-  const { jobs, fetchJobs, isLoading: isLoadingJobs } = useJobStore();
+  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
   const { statuses } = useCandidateStatuses();
 
   const candidateSchema = createCandidateSchema(t);
 
-  useEffect(() => {
-    if (jobs.length === 0) {
-      fetchJobs();
-    }
-  }, [jobs.length, fetchJobs]);
-
   const form = useForm<CandidateFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(candidateSchema) as any,
+    resolver: zodResolver(candidateSchema) as Resolver<CandidateFormValues>,
     defaultValues: {
       name: "",
       email: "",

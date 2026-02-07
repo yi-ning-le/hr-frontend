@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
@@ -13,22 +12,22 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEmployeeStore } from "@/stores/useEmployeeStore";
+import { useEmployees } from "@/hooks/queries/useEmployees";
 import { Link } from "@tanstack/react-router";
 import { Route } from "@/routes/_protected/employees.$employeeId";
+import { useMemo } from "react";
 
 export function EmployeeProfilePage() {
   const { t } = useTranslation();
   const { employeeId } = Route.useParams();
-  const { selectedEmployee, getEmployee, isLoading } = useEmployeeStore();
+  const { data, isLoading } = useEmployees();
 
-  useEffect(() => {
-    if (employeeId) {
-      getEmployee(employeeId);
-    }
-  }, [employeeId, getEmployee]);
+  const employee = useMemo(
+    () => data?.employees.find((e) => e.id === employeeId) ?? null,
+    [data?.employees, employeeId],
+  );
 
-  if (isLoading || !selectedEmployee) {
+  if (isLoading || !employee) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-12 w-48" />
@@ -39,8 +38,6 @@ export function EmployeeProfilePage() {
       </div>
     );
   }
-
-  const employee = selectedEmployee;
 
   const getStatusVariant = (status: typeof employee.status) => {
     switch (status) {

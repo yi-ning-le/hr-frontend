@@ -2,9 +2,12 @@ import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CandidateStatusSettings } from "@/pages/settings/components/CandidateStatusSettings";
 import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
+import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export function SettingsPage() {
   const { t } = useTranslation();
+  const { isAdmin } = useUserRole();
 
   const TABS = [
     {
@@ -17,7 +20,17 @@ export function SettingsPage() {
       label: t("settings.tabs.general", "General"),
       component: <GeneralSettings />,
     },
-  ] as const;
+    // Admin-only tab
+    ...(isAdmin
+      ? [
+          {
+            id: "recruiters",
+            label: t("settings.tabs.recruiters", "Recruiters"),
+            component: <RecruiterManagement />,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div className="space-y-6">

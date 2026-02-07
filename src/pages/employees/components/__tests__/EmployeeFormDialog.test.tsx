@@ -13,14 +13,17 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-// Mock useEmployeeStore
-const mockAddEmployee = vi.fn();
+// Mock useCreateEmployee and useUpdateEmployee hooks
+const mockCreateEmployee = vi.fn();
 const mockUpdateEmployee = vi.fn();
-vi.mock("@/stores/useEmployeeStore", () => ({
-  useEmployeeStore: () => ({
-    addEmployee: mockAddEmployee,
-    updateEmployee: mockUpdateEmployee,
-    isLoading: false,
+vi.mock("@/hooks/queries/useEmployees", () => ({
+  useCreateEmployee: () => ({
+    mutateAsync: mockCreateEmployee,
+    isPending: false,
+  }),
+  useUpdateEmployee: () => ({
+    mutateAsync: mockUpdateEmployee,
+    isPending: false,
   }),
 }));
 

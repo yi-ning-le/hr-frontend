@@ -48,33 +48,51 @@ const mockEmployees: Employee[] = [
 
 describe("EmployeeList", () => {
   it("renders loading state with skeletons", () => {
-    render(<EmployeeList employees={[]} isLoading={true} />);
+    render(<EmployeeList employees={[]} isLoading={true} onEdit={vi.fn()} />);
 
     // Loading state should show skeleton elements
-    const skeletons = document.querySelectorAll('[class*="animate-pulse"], [data-slot="skeleton"]');
+    const skeletons = document.querySelectorAll(
+      '[class*="animate-pulse"], [data-slot="skeleton"]',
+    );
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it("renders empty state when no employees", () => {
-    render(<EmployeeList employees={[]} isLoading={false} />);
+    render(<EmployeeList employees={[]} isLoading={false} onEdit={vi.fn()} />);
 
     expect(screen.getByText("employees.noEmployees")).toBeInTheDocument();
-    expect(screen.getByText("employees.noEmployeesDescription")).toBeInTheDocument();
+    expect(
+      screen.getByText("employees.noEmployeesDescription"),
+    ).toBeInTheDocument();
     expect(screen.getByText("👥")).toBeInTheDocument();
   });
 
   it("renders table headers correctly", () => {
-    render(<EmployeeList employees={mockEmployees} isLoading={false} />);
+    render(
+      <EmployeeList
+        employees={mockEmployees}
+        isLoading={false}
+        onEdit={vi.fn()}
+      />,
+    );
 
     expect(screen.getByText("employees.columns.name")).toBeInTheDocument();
-    expect(screen.getByText("employees.columns.department")).toBeInTheDocument();
+    expect(
+      screen.getByText("employees.columns.department"),
+    ).toBeInTheDocument();
     expect(screen.getByText("employees.columns.position")).toBeInTheDocument();
     expect(screen.getByText("employees.columns.status")).toBeInTheDocument();
     expect(screen.getByText("employees.columns.joinDate")).toBeInTheDocument();
   });
 
   it("renders employee data in table rows", () => {
-    render(<EmployeeList employees={mockEmployees} isLoading={false} />);
+    render(
+      <EmployeeList
+        employees={mockEmployees}
+        isLoading={false}
+        onEdit={vi.fn()}
+      />,
+    );
 
     // Check employee names are displayed
     expect(screen.getByText("John Doe")).toBeInTheDocument();
@@ -94,14 +112,26 @@ describe("EmployeeList", () => {
   });
 
   it("renders status badges with translated labels", () => {
-    render(<EmployeeList employees={mockEmployees} isLoading={false} />);
+    render(
+      <EmployeeList
+        employees={mockEmployees}
+        isLoading={false}
+        onEdit={vi.fn()}
+      />,
+    );
 
     expect(screen.getByText("employees.status.active")).toBeInTheDocument();
     expect(screen.getByText("employees.status.onLeave")).toBeInTheDocument();
   });
 
   it("renders employee avatars with initials", () => {
-    render(<EmployeeList employees={mockEmployees} isLoading={false} />);
+    render(
+      <EmployeeList
+        employees={mockEmployees}
+        isLoading={false}
+        onEdit={vi.fn()}
+      />,
+    );
 
     // Check for avatar fallback initials
     expect(screen.getByText("JD")).toBeInTheDocument();

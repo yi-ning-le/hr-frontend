@@ -1,4 +1,3 @@
-
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -25,15 +24,8 @@ describe("JobPositionDetail", () => {
     status: "OPEN",
     headCount: 5,
     jobDescription: "Detailed description of the job which might be long...",
-    requirements: "Requirements...",
-    location: "New York",
-    type: "Full-time",
-    salaryRange: "150k-200k",
-    hiringManager: "Jane Doe",
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
     openDate: new Date("2024-02-01"),
-    note: "Internal notes"
+    note: "Internal notes",
   };
 
   it("renders job basic details correctly", () => {
@@ -41,7 +33,9 @@ describe("JobPositionDetail", () => {
 
     expect(screen.getByText("Senior Engineer")).toBeInTheDocument();
     // Status text (mocked translation key)
-    expect(screen.getByText("recruitment.jobs.statusOptions.open")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.statusOptions.open"),
+    ).toBeInTheDocument();
 
     expect(screen.getByText("Engineering")).toBeInTheDocument();
     expect(screen.getByText(/5/)).toBeInTheDocument();
@@ -51,14 +45,20 @@ describe("JobPositionDetail", () => {
   it("renders description and notes", () => {
     render(<JobPositionDetail job={mockJob} />);
 
-    expect(screen.getByText("Detailed description of the job which might be long...")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Detailed description of the job which might be long...",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("Internal notes")).toBeInTheDocument();
   });
 
   it("renders closed status correctly", () => {
     render(<JobPositionDetail job={{ ...mockJob, status: "CLOSED" }} />);
 
-    expect(screen.getByText("recruitment.jobs.statusOptions.closed")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.statusOptions.closed"),
+    ).toBeInTheDocument();
   });
 
   it("renders dash for missing openDate", () => {
@@ -68,7 +68,11 @@ describe("JobPositionDetail", () => {
     // Looking at the component: {job.openDate ? format(job.openDate, "yyyy-MM-dd") : "-"}
     // It seems to handle falsy values.
     // Tests often check edge cases.
-    render(<JobPositionDetail job={{ ...mockJob, openDate: undefined as unknown as Date }} />);
+    render(
+      <JobPositionDetail
+        job={{ ...mockJob, openDate: undefined as unknown as Date }}
+      />,
+    );
 
     expect(screen.getByText("-")).toBeInTheDocument();
   });

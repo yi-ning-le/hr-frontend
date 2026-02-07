@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CandidateManagement } from "../CandidateManagement";
 
-// Mock react-pdf before it imports pdfjs-dist
+// Mock react-pdf
 vi.mock("react-pdf", () => ({
   pdfjs: { GlobalWorkerOptions: { workerSrc: "" } },
   Document: ({ children }: { children?: React.ReactNode }) => (
@@ -43,62 +43,45 @@ vi.mock("@/hooks/useCandidateStatuses", () => ({
   }),
 }));
 
-// Mock stores
-const mockFetchCandidates = vi.fn();
-const mockFetchJobs = vi.fn();
-
-interface CandidateMgmtStoreState {
-  candidates: never[];
-  selectedJobId: string;
-  searchQuery: string;
-  selectedCandidateId: null;
-  viewMode: string;
-  statusFilter: never[];
-  updateCandidateStatus: ReturnType<typeof vi.fn>;
-  selectCandidate: ReturnType<typeof vi.fn>;
-  setSearchQuery: ReturnType<typeof vi.fn>;
-  setSelectedJobId: ReturnType<typeof vi.fn>;
-  setViewMode: ReturnType<typeof vi.fn>;
-  setStatusFilter: ReturnType<typeof vi.fn>;
-  fetchCandidates: ReturnType<typeof vi.fn>;
-}
-
+// Mock useCandidateStore for UI state only
 vi.mock("@/stores/useCandidateStore", () => ({
-  useCandidateStore: <T,>(
-    selector: (state: CandidateMgmtStoreState) => T,
-  ): T => {
-    const state: CandidateMgmtStoreState = {
-      candidates: [],
+  useCandidateStore: vi.fn((selector) =>
+    selector({
       selectedJobId: "all",
       searchQuery: "",
       selectedCandidateId: null,
       viewMode: "list",
       statusFilter: [],
-      updateCandidateStatus: vi.fn(),
       selectCandidate: vi.fn(),
       setSearchQuery: vi.fn(),
       setSelectedJobId: vi.fn(),
       setViewMode: vi.fn(),
       setStatusFilter: vi.fn(),
-      fetchCandidates: mockFetchCandidates,
-    };
-    return selector(state);
-  },
+    }),
+  ),
 }));
 
-interface JobMgmtStoreState {
-  jobs: never[];
-  fetchJobs: ReturnType<typeof vi.fn>;
-}
+// Mock TanStack Query hooks
+const mockUpdateCandidateStatus = vi.fn();
+vi.mock("@/hooks/queries/useJobs", () => ({
+  useJobs: vi.fn(() => ({
+    data: [],
+    isLoading: false,
+  })),
+}));
 
-vi.mock("@/stores/useJobStore", () => ({
-  useJobStore: <T,>(selector: (state: JobMgmtStoreState) => T): T => {
-    const state: JobMgmtStoreState = {
-      jobs: [],
-      fetchJobs: mockFetchJobs,
-    };
-    return selector(state);
-  },
+vi.mock("@/hooks/queries/useCandidates", () => ({
+  useCandidates: vi.fn(() => ({
+    data: [],
+    isLoading: false,
+  })),
+  useUpdateCandidateStatus: vi.fn(() => ({
+    mutate: mockUpdateCandidateStatus,
+  })),
+  useCreateCandidate: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  })),
 }));
 
 // Mock ResizeObserver
@@ -116,15 +99,8 @@ describe("CandidateManagement", () => {
     vi.clearAllMocks();
   });
 
-  it("fetches data on mount", () => {
-    render(<CandidateManagement />);
-    expect(mockFetchCandidates).toHaveBeenCalled();
-    expect(mockFetchJobs).toHaveBeenCalled();
-  });
-
   it("renders main layout container", () => {
     const { container } = render(<CandidateManagement />);
-    // Check that the main container is rendered
     expect(
       container.querySelector(".flex.h-\\[calc\\(100vh-200px\\)\\]"),
     ).toBeInTheDocument();
@@ -132,7 +108,6 @@ describe("CandidateManagement", () => {
 
   it("renders sidebar with job positions title", () => {
     render(<CandidateManagement />);
-    // The sidebar title should be visible
     expect(
       screen.getByText("recruitment.candidates.sidebar.title"),
     ).toBeInTheDocument();

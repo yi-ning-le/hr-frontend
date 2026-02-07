@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Users, UserPlus, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,19 +24,23 @@ import { useState } from "react";
 import { EmployeeList } from "./components/EmployeeList";
 import { EmployeeFormDialog } from "./components/EmployeeFormDialog";
 import type { Employee } from "@/types/employee";
+import { useEmployees, useDeleteEmployee } from "@/hooks/queries/useEmployees";
+import { toast } from "sonner";
 
 export function EmployeesPage() {
   const { t } = useTranslation();
-  const {
-    employees,
-    pagination,
-    filters,
-    isLoading,
-    fetchEmployees,
-    setFilters,
-    setPage,
-    deleteEmployee,
-  } = useEmployeeStore();
+  const { filters, pagination, setFilters, setPage } = useEmployeeStore();
+
+  const { data, isLoading, isError } = useEmployees({
+    status: filters.status || undefined,
+    department: filters.department || undefined,
+    search: filters.search || undefined,
+    page: pagination.page,
+    limit: pagination.limit,
+  });
+
+  const { mutateAsync: deleteEmployee, isPending: isDeleting } =
+    useDeleteEmployee();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
@@ -48,10 +51,6 @@ export function EmployeesPage() {
     null,
   );
   const [searchInput, setSearchInput] = useState(filters.search || "");
-
-  useEffect(() => {
-    fetchEmployees();
-  }, [fetchEmployees, filters, pagination.page]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,8 +81,15 @@ export function EmployeesPage() {
 
   const handleConfirmDelete = async () => {
     if (employeeToDelete) {
-      await deleteEmployee(employeeToDelete.id);
-      setEmployeeToDelete(null);
+      try {
+        await deleteEmployee(employeeToDelete.id);
+        toast.success(
+          t("employees.deleteSuccess", "Employee deleted successfully"),
+        );
+        setEmployeeToDelete(null);
+      } catch {
+        toast.error(t("employees.deleteError", "Failed to delete employee"));
+      }
     }
   };
 
@@ -95,7 +101,22 @@ export function EmployeesPage() {
     }
   };
 
-  const totalPages = Math.ceil(pagination.total / pagination.limit);
+  const employees = data?.employees || [];
+  const total = data?.total || 0;
+  const totalPages = Math.ceil(total / pagination.limit);
+
+  if (isError) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center gap-4">
+        <p className="text-red-500">
+          {t("common.error.fetch", "Failed to fetch data")}
+        </p>
+        <Button onClick={() => window.location.reload()}>
+          {t("common.retry", "Retry")}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -170,7 +191,7 @@ export function EmployeesPage() {
       <div className="rounded-xl bg-white shadow-sm dark:bg-slate-800">
         <EmployeeList
           employees={employees}
-          isLoading={isLoading}
+          isLoading={isLoading || isDeleting}
           onEdit={handleEditEmployee}
           onDelete={handleDeleteClick}
           onView={handleViewEmployee}

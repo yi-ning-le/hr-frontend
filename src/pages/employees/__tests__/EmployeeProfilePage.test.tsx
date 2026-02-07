@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { EmployeeProfilePage } from "../EmployeeProfilePage";
 import type { Employee } from "@/types/employee";
 
@@ -39,14 +39,17 @@ const mockEmployee: Employee = {
   joinDate: new Date("2024-01-15"),
 };
 
-// Mock useEmployeeStore with loading false and employee data
-const mockGetEmployee = vi.fn();
-
-vi.mock("@/stores/useEmployeeStore", () => ({
-  useEmployeeStore: () => ({
-    selectedEmployee: mockEmployee,
-    getEmployee: mockGetEmployee,
+// Mock useEmployees hook
+vi.mock("@/hooks/queries/useEmployees", () => ({
+  useEmployees: () => ({
+    data: {
+      employees: [mockEmployee],
+      total: 1,
+      page: 1,
+      limit: 20,
+    },
     isLoading: false,
+    isError: false,
   }),
 }));
 
@@ -98,11 +101,5 @@ describe("EmployeeProfilePage", () => {
     expect(screen.getByText("Department")).toBeInTheDocument();
     expect(screen.getByText("Employment Type")).toBeInTheDocument();
     expect(screen.getByText("Join Date")).toBeInTheDocument();
-  });
-
-  it("calls getEmployee on mount", () => {
-    render(<EmployeeProfilePage />);
-
-    expect(mockGetEmployee).toHaveBeenCalledWith("emp-1");
   });
 });

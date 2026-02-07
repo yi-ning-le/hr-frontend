@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/components/ui/separator";
-import {
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,8 +13,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-// Type only, data from store
 import { useCandidateStore } from "@/stores/useCandidateStore";
+import {
+  useCandidates,
+  useUpdateCandidate,
+  useUpdateCandidateStatus,
+  useUpdateCandidateNote,
+  useDeleteCandidate,
+  useUploadResume,
+} from "@/hooks/queries/useCandidates";
 import { ResumePreviewModal } from "./ResumePreviewModal";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { toast } from "sonner";
@@ -25,6 +29,7 @@ import { CandidateDetailHeader } from "./detail/CandidateDetailHeader";
 import { CandidateInfoSection } from "./detail/CandidateInfoSection";
 import { CandidateResumeSection } from "./detail/CandidateResumeSection";
 import { CandidateNoteSection } from "./detail/CandidateNoteSection";
+import type { Candidate } from "@/types/candidate";
 
 export function CandidateDetail() {
   const { t } = useTranslation();
@@ -39,17 +44,23 @@ export function CandidateDetail() {
   // Resume Upload State
   const [isUploadingResume, setIsUploadingResume] = useState(false);
 
-  // Use store
-  const selectedCandidateId = useCandidateStore((state) => state.selectedCandidateId);
-  const candidates = useCandidateStore((state) => state.candidates);
-  const updateCandidateStatus = useCandidateStore((state) => state.updateCandidateStatus);
-  const updateCandidateNote = useCandidateStore((state) => state.updateCandidateNote);
-  const updateCandidate = useCandidateStore((state) => state.updateCandidate);
-  const removeCandidate = useCandidateStore((state) => state.removeCandidate);
+  // Get selectedCandidateId from UI store
+  const selectedCandidateId = useCandidateStore(
+    (state) => state.selectedCandidateId,
+  );
   const selectCandidate = useCandidateStore((state) => state.selectCandidate);
-  const uploadResume = useCandidateStore((state) => state.uploadResume);
 
-  const candidate = candidates.find((c) => c.id === selectedCandidateId);
+  // Use TanStack Query
+  const { data: candidates = [] } = useCandidates();
+  const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
+  const { mutate: updateCandidateNote } = useUpdateCandidateNote();
+  const { mutate: updateCandidate } = useUpdateCandidate();
+  const { mutate: deleteCandidate } = useDeleteCandidate();
+  const { mutateAsync: uploadResumeAsync } = useUploadResume();
+
+  const candidate = candidates.find(
+    (c: Candidate) => c.id === selectedCandidateId,
+  );
 
   if (!candidate) return null;
 
@@ -59,7 +70,7 @@ export function CandidateDetail() {
   }
 
   const handleNoteSave = () => {
-    updateCandidateNote(candidate.id, noteContent);
+    updateCandidateNote({ id: candidate.id, note: noteContent });
     setIsEditingNote(false);
     toast.success(t("recruitment.candidates.dialog.noteUpdated"));
   };
@@ -79,7 +90,7 @@ export function CandidateDetail() {
     setIsUploadingResume(true);
 
     try {
-      await uploadResume(candidate.id, file);
+      await uploadResumeAsync({ id: candidate.id, file });
       toast.success(t("recruitment.candidates.dialog.resumeUploadSuccess"));
     } catch (error) {
       console.error(error);
@@ -90,13 +101,13 @@ export function CandidateDetail() {
   };
 
   const handleEditSubmit = (values: CandidateFormValues) => {
-    updateCandidate(candidate.id, values);
+    updateCandidate({ id: candidate.id, updates: values });
     setIsEditing(false);
     toast.success(t("recruitment.candidates.dialog.updateSuccess"));
   };
 
   const handleDelete = () => {
-    removeCandidate(candidate.id);
+    deleteCandidate(candidate.id);
     selectCandidate(null); // Close the detail view
     toast.success(t("recruitment.candidates.dialog.deleteSuccess"));
   };
@@ -105,7 +116,9 @@ export function CandidateDetail() {
     return (
       <div className="flex flex-col h-full min-h-0">
         <DialogHeader className="p-6 border-b shrink-0">
-          <DialogTitle>{t("recruitment.candidates.dialog.editTitle")}</DialogTitle>
+          <DialogTitle>
+            {t("recruitment.candidates.dialog.editTitle")}
+          </DialogTitle>
         </DialogHeader>
         <ScrollArea className="flex-1 p-6">
           <CandidateForm
@@ -123,7 +136,9 @@ export function CandidateDetail() {
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
       <CandidateDetailHeader
         candidate={candidate}
-        onStatusChange={(status) => updateCandidateStatus(candidate.id, status)}
+        onStatusChange={(status) =>
+          updateCandidateStatus({ id: candidate.id, status })
+        }
         onEdit={() => setIsEditing(true)}
         onDelete={() => setShowDeleteAlert(true)}
       />
@@ -166,14 +181,19 @@ export function CandidateDetail() {
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("recruitment.candidates.dialog.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("recruitment.candidates.dialog.deleteConfirmTitle")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t("recruitment.candidates.dialog.deleteConfirmDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -182,4 +202,3 @@ export function CandidateDetail() {
     </div>
   );
 }
-

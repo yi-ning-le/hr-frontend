@@ -1,25 +1,33 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { UploadCloud, Loader2, Plus } from "lucide-react";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
-import { useCandidateStore } from "@/stores/useCandidateStore";
+import { useCreateCandidate } from "@/hooks/queries/useCandidates";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { parseResume } from "@/lib/parseResume";
-
 
 export function AddCandidateDialog() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"upload" | "form">("upload");
   const [isParsing, setIsParsing] = useState(false);
-  const [parsedData, setParsedData] = useState<Partial<CandidateFormValues>>({});
+  const [parsedData, setParsedData] = useState<Partial<CandidateFormValues>>(
+    {},
+  );
   const [isDragging, setIsDragging] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
 
-  const addCandidate = useCandidateStore((state) => state.addCandidate);
+  const { mutateAsync: createCandidate } = useCreateCandidate();
 
   const resetState = () => {
     setStep("upload");
@@ -51,10 +59,14 @@ export function AddCandidateDialog() {
       setParsedData(parsed);
 
       const filledFields = Object.keys(parsed).filter(
-        (key) => parsed[key as keyof typeof parsed]
+        (key) => parsed[key as keyof typeof parsed],
       );
       if (filledFields.length > 0) {
-        toast.success(t("recruitment.candidates.dialog.autoFilled", { fields: filledFields.join(", ") }));
+        toast.success(
+          t("recruitment.candidates.dialog.autoFilled", {
+            fields: filledFields.join(", "),
+          }),
+        );
       } else {
         toast.info(t("recruitment.candidates.dialog.parseError"));
       }
@@ -92,13 +104,16 @@ export function AddCandidateDialog() {
     }
   };
 
-  const handleSubmit = (values: CandidateFormValues) => {
+  const handleSubmit = async (values: CandidateFormValues) => {
     const newCandidate = {
       ...values,
       appliedAt: new Date(),
     };
 
-    addCandidate(newCandidate, resumeFile || undefined);
+    await createCandidate({
+      data: newCandidate,
+      file: resumeFile || undefined,
+    });
     toast.success(t("recruitment.candidates.dialog.addSuccess"));
     setOpen(false);
   };
@@ -113,7 +128,9 @@ export function AddCandidateDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>{t("recruitment.candidates.dialog.addTitle")}</DialogTitle>
+          <DialogTitle>
+            {t("recruitment.candidates.dialog.addTitle")}
+          </DialogTitle>
           <DialogDescription>
             {step === "upload"
               ? t("recruitment.candidates.dialog.uploadStep")
@@ -125,7 +142,7 @@ export function AddCandidateDialog() {
           <div
             className={cn(
               "flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-10 mt-4 transition-colors",
-              isDragging ? "border-primary bg-primary/10" : "hover:bg-muted/50"
+              isDragging ? "border-primary bg-primary/10" : "hover:bg-muted/50",
             )}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -134,19 +151,25 @@ export function AddCandidateDialog() {
             {isParsing ? (
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">{t("recruitment.candidates.dialog.parsingResume")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("recruitment.candidates.dialog.parsingResume")}
+                </p>
               </div>
             ) : (
               <>
                 <div className="bg-primary/10 p-4 rounded-full mb-4">
                   <UploadCloud className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">{t("recruitment.candidates.dialog.uploadResume")}</h3>
+                <h3 className="text-lg font-semibold mb-1">
+                  {t("recruitment.candidates.dialog.uploadResume")}
+                </h3>
                 <p className="text-sm text-muted-foreground mb-4 text-center max-w-xs">
                   {t("recruitment.candidates.dialog.dragDropHint")}
                 </p>
                 <div className="relative">
-                  <Button variant="outline">{t("recruitment.candidates.dialog.selectFile")}</Button>
+                  <Button variant="outline">
+                    {t("recruitment.candidates.dialog.selectFile")}
+                  </Button>
                   <input
                     type="file"
                     accept=".pdf,.doc,.docx"
@@ -155,7 +178,11 @@ export function AddCandidateDialog() {
                   />
                 </div>
                 <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                  <Button variant="ghost" size="sm" onClick={() => setStep("form")}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setStep("form")}
+                  >
                     {t("recruitment.candidates.dialog.skipUpload")}
                   </Button>
                 </div>

@@ -1,35 +1,42 @@
-import { useTranslation } from "react-i18next"
-import { useState, useMemo } from "react"
+import { useTranslation } from "react-i18next";
+import { useState, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Download, FileText, Briefcase, X } from "lucide-react"
-import type { Candidate } from "@/types/candidate"
-import { PdfPreview } from "./PdfPreview"
-import { useJobStore } from "@/stores/useJobStore"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Download, FileText, Briefcase, X } from "lucide-react";
+import type { Candidate } from "@/types/candidate";
+import { PdfPreview } from "./PdfPreview";
+import { useJobs } from "@/hooks/queries/useJobs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { JobPosition } from "@/types/job";
 
 interface ResumePreviewModalProps {
-  candidate: Candidate | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  candidate: Candidate | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePreviewModalProps) {
-  const { t } = useTranslation()
-  const { jobs } = useJobStore()
-  const [jdOpen, setJdOpen] = useState(false)
+export function ResumePreviewModal({
+  candidate,
+  open,
+  onOpenChange,
+}: ResumePreviewModalProps) {
+  const { t } = useTranslation();
+  const { data: jobs = [] } = useJobs();
+  const [jdOpen, setJdOpen] = useState(false);
 
   const job = useMemo(() => {
-    if (!candidate) return null
-    return jobs.find((j) => j.id === candidate.appliedJobId) || null
-  }, [candidate, jobs])
+    if (!candidate) return null;
+    return (
+      jobs.find((j: JobPosition) => j.id === candidate.appliedJobId) || null
+    );
+  }, [candidate, jobs]);
 
-  if (!candidate) return null
+  if (!candidate) return null;
 
   // Ensure JD view is closed when reopening modal for different candidate
   // (Optional logic, or keep state if preferred)
@@ -42,18 +49,22 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
       >
         <div className="flex gap-4 h-full pointer-events-none">
           {/* Resume Card (Left) */}
-          <div className={`
+          <div
+            className={`
             bg-background border rounded-lg shadow-lg flex flex-col pointer-events-auto transition-all duration-300
             ${jdOpen ? "w-[45vw]" : "w-[60vw] max-w-4xl"}
             h-full
-          `}>
+          `}
+          >
             <DialogHeader className="p-4 border-b flex-shrink-0 flex flex-row items-center justify-between space-y-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
                   <FileText className="h-5 w-5 text-blue-500" />
                 </div>
                 <div className="text-left">
-                  <DialogTitle>{t("resumeModal.resumeOf", { name: candidate.name })}</DialogTitle>
+                  <DialogTitle>
+                    {t("resumeModal.resumeOf", { name: candidate.name })}
+                  </DialogTitle>
                   <div className="text-sm text-muted-foreground">
                     {candidate.appliedJobTitle} · {candidate.email}
                   </div>
@@ -70,11 +81,19 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
                     {jdOpen ? t("resumeModal.hideJD") : t("resumeModal.viewJD")}
                   </Button>
                 )}
-                <Button variant="outline" size="sm" onClick={() => window.open(candidate.resumeUrl, "_blank")}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(candidate.resumeUrl, "_blank")}
+                >
                   <Download className="h-4 w-4 mr-2" />
                   {t("resumeModal.download")}
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onOpenChange(false)}
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -107,7 +126,9 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
                     <Briefcase className="h-5 w-5 text-blue-500" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold leading-none tracking-tight">{t("resumeModal.jobDescription")}</h2>
+                    <h2 className="text-lg font-semibold leading-none tracking-tight">
+                      {t("resumeModal.jobDescription")}
+                    </h2>
                     <div className="text-sm text-muted-foreground mt-1">
                       {job.title} · {job.department}
                     </div>
@@ -125,5 +146,5 @@ export function ResumePreviewModal({ candidate, open, onOpenChange }: ResumePrev
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -213,7 +213,7 @@ export const CandidatesAPI = {
 };
 
 // Employee Types for API
-interface EmployeeAPIResponse {
+export interface EmployeeAPIResponse {
   id: string;
   firstName: string;
   lastName: string;
@@ -228,7 +228,7 @@ interface EmployeeAPIResponse {
   userId?: string;
 }
 
-interface EmployeeListAPIResponse {
+export interface EmployeeListAPIResponse {
   employees: EmployeeAPIResponse[];
   total: number;
   page: number;
@@ -328,5 +328,53 @@ export const CandidateStatusesAPI = {
 
   reorder: async (ids: string[]): Promise<void> => {
     await api.patch("/candidate-statuses/reorder", { ids });
+  },
+};
+
+// Recruitment Role Response type
+export interface RecruitmentRoleResponse {
+  isAdmin: boolean;
+  isRecruiter: boolean;
+  isInterviewer: boolean;
+}
+
+// Recruiter type
+export interface Recruiter {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  avatar?: string;
+}
+
+export const RecruitmentAPI = {
+  getMyRole: async (): Promise<RecruitmentRoleResponse> => {
+    const response =
+      await api.get<RecruitmentRoleResponse>("/recruitment/role");
+    return response.data;
+  },
+
+  getRecruiters: async (): Promise<Recruiter[]> => {
+    const response = await api.get<Recruiter[]>(
+      "/recruitment/admin/recruiters",
+    );
+    return response.data;
+  },
+
+  assignRecruiter: async (employeeId: string): Promise<void> => {
+    await api.post("/recruitment/admin/recruiters", { employeeId });
+  },
+
+  revokeRecruiter: async (employeeId: string): Promise<void> => {
+    await api.delete("/recruitment/admin/recruiters", { data: { employeeId } });
+  },
+
+  transferInterview: async (
+    interviewId: string,
+    newInterviewerId: string,
+  ): Promise<void> => {
+    await api.post(`/recruitment/interviews/${interviewId}/transfer`, {
+      newInterviewerId,
+    });
   },
 };

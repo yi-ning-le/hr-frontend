@@ -1,4 +1,3 @@
-
 // @vitest-environment jsdom
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -12,7 +11,9 @@ vi.mock("pdfjs-dist", () => ({
 
 // Mock parseResume before the component imports it
 vi.mock("@/lib/parseResume", () => ({
-  parseResume: vi.fn().mockResolvedValue({ name: "Parsed", email: "parsed@test.com" }),
+  parseResume: vi
+    .fn()
+    .mockResolvedValue({ name: "Parsed", email: "parsed@test.com" }),
 }));
 
 // Mock react-i18next
@@ -28,12 +29,12 @@ vi.mock("../CandidateForm", () => ({
   CandidateForm: () => <div data-testid="candidate-form">Form</div>,
 }));
 
-// Mock stores
-vi.mock("@/stores/useCandidateStore", () => ({
-  useCandidateStore: <T,>(selector: (state: { addCandidate: ReturnType<typeof vi.fn> }) => T): T => {
-    const state = { addCandidate: vi.fn() };
-    return selector(state);
-  },
+// Mock useCreateCandidate hook
+vi.mock("@/hooks/queries/useCandidates", () => ({
+  useCreateCandidate: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
 }));
 
 // Mock sonner toast
@@ -58,7 +59,11 @@ describe("AddCandidateDialog", () => {
     fireEvent.click(triggerButton);
 
     // After clicking trigger, dialog content should appear
-    expect(await screen.findByText("recruitment.candidates.dialog.addTitle")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.dialog.uploadResume")).toBeInTheDocument();
+    expect(
+      await screen.findByText("recruitment.candidates.dialog.addTitle"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.dialog.uploadResume"),
+    ).toBeInTheDocument();
   });
 });

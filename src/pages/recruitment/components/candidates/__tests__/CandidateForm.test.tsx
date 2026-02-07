@@ -42,15 +42,31 @@ vi.mock("@/hooks/useCandidateStatuses", () => ({
   }),
 }));
 
-// Mock stores
-vi.mock("@/stores/useJobStore", () => ({
-  useJobStore: () => ({
-    jobs: [
-      { id: "j1", title: "Job 1", department: "Dept 1", status: "OPEN" },
-      { id: "j2", title: "Job 2", department: "Dept 2", status: "OPEN" },
+// Mock useJobs hook
+vi.mock("@/hooks/queries/useJobs", () => ({
+  useJobs: () => ({
+    data: [
+      {
+        id: "j1",
+        title: "Job 1",
+        department: "Dept 1",
+        status: "OPEN",
+        headCount: 1,
+        openDate: new Date(),
+        jobDescription: "Test",
+      },
+      {
+        id: "j2",
+        title: "Job 2",
+        department: "Dept 2",
+        status: "OPEN",
+        headCount: 1,
+        openDate: new Date(),
+        jobDescription: "Test",
+      },
     ],
-    fetchJobs: vi.fn(),
     isLoading: false,
+    isError: false,
   }),
 }));
 

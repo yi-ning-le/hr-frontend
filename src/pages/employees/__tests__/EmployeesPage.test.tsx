@@ -3,8 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { EmployeesPage } from "../EmployeesPage";
-import { useEmployeeStore } from "@/stores/useEmployeeStore";
 import type { Employee } from "@/types/employee";
+import { useEmployees } from "@/hooks/queries/useEmployees";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -14,28 +14,27 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-// Mock useEmployeeStore
-const mockFetchEmployees = vi.fn();
-const mockSetFilters = vi.fn();
-const mockSetPage = vi.fn();
-const mockDeleteEmployee = vi.fn();
-
+// Mock useEmployeeStore for filters and pagination
 vi.mock("@/stores/useEmployeeStore", () => ({
   useEmployeeStore: vi.fn(() => ({
-    employees: [],
-    pagination: { page: 1, limit: 10, total: 0 },
     filters: { search: "", status: "" },
+    pagination: { page: 1, limit: 10, total: 0 },
+    setFilters: vi.fn(),
+    setPage: vi.fn(),
+  })),
+}));
+
+// Mock TanStack Query hooks
+const mockDeleteEmployee = vi.fn();
+vi.mock("@/hooks/queries/useEmployees", () => ({
+  useEmployees: vi.fn(() => ({
+    data: { employees: [], total: 0 },
     isLoading: false,
-    fetchEmployees: mockFetchEmployees,
-    setFilters: mockSetFilters,
-    setPage: mockSetPage,
-    addEmployee: vi.fn(),
-    updateEmployee: vi.fn(),
-    deleteEmployee: mockDeleteEmployee,
-    getEmployee: vi.fn(),
-    selectEmployee: vi.fn(),
-    selectedEmployee: null,
-    error: null,
+    isError: false,
+  })),
+  useDeleteEmployee: vi.fn(() => ({
+    mutateAsync: mockDeleteEmployee,
+    isPending: false,
   })),
 }));
 
@@ -46,13 +45,16 @@ vi.mock("../components/EmployeeList", () => ({
     onEdit,
     onDelete,
     onView,
+    isLoading,
   }: {
     employees: Employee[];
     onEdit: (e: Employee) => void;
     onDelete: (e: Employee) => void;
     onView: (e: Employee) => void;
+    isLoading?: boolean;
   }) => (
     <div data-testid="employee-list">
+      {isLoading && <div data-testid="loading-indicator">Loading...</div>}
       {employees?.map((e: Employee) => (
         <div key={e.id}>
           <span onClick={() => onView?.(e)}>
@@ -155,22 +157,11 @@ describe("EmployeesPage", () => {
       lastName: "Doe",
     } as unknown as Employee;
 
-    vi.mocked(useEmployeeStore).mockReturnValue({
-      employees: [employee],
-      pagination: { page: 1, limit: 10, total: 1 },
-      filters: { search: "", status: "" },
+    vi.mocked(useEmployees).mockReturnValue({
+      data: { employees: [employee], total: 1 },
       isLoading: false,
-      fetchEmployees: mockFetchEmployees,
-      setFilters: mockSetFilters,
-      setPage: mockSetPage,
-      addEmployee: vi.fn(),
-      updateEmployee: vi.fn(),
-      deleteEmployee: mockDeleteEmployee,
-      getEmployee: vi.fn(),
-      selectEmployee: vi.fn(),
-      selectedEmployee: null,
-      error: null,
-    });
+      isError: false,
+    } as unknown as ReturnType<typeof useEmployees>);
 
     render(<EmployeesPage />);
     await user.click(screen.getByText("John Doe"));
@@ -188,22 +179,11 @@ describe("EmployeesPage", () => {
       lastName: "Doe",
     } as unknown as Employee;
 
-    vi.mocked(useEmployeeStore).mockReturnValue({
-      employees: [employee],
-      pagination: { page: 1, limit: 10, total: 1 },
-      filters: { search: "", status: "" },
+    vi.mocked(useEmployees).mockReturnValue({
+      data: { employees: [employee], total: 1 },
       isLoading: false,
-      fetchEmployees: mockFetchEmployees,
-      setFilters: mockSetFilters,
-      setPage: mockSetPage,
-      addEmployee: vi.fn(),
-      updateEmployee: vi.fn(),
-      deleteEmployee: mockDeleteEmployee,
-      getEmployee: vi.fn(),
-      selectEmployee: vi.fn(),
-      selectedEmployee: null,
-      error: null,
-    });
+      isError: false,
+    } as unknown as ReturnType<typeof useEmployees>);
 
     render(<EmployeesPage />);
     await user.click(screen.getByText("Edit Item"));
@@ -220,22 +200,11 @@ describe("EmployeesPage", () => {
       lastName: "Doe",
     } as unknown as Employee;
 
-    vi.mocked(useEmployeeStore).mockReturnValue({
-      employees: [employee],
-      pagination: { page: 1, limit: 10, total: 1 },
-      filters: { search: "", status: "" },
+    vi.mocked(useEmployees).mockReturnValue({
+      data: { employees: [employee], total: 1 },
       isLoading: false,
-      fetchEmployees: mockFetchEmployees,
-      setFilters: mockSetFilters,
-      setPage: mockSetPage,
-      addEmployee: vi.fn(),
-      updateEmployee: vi.fn(),
-      deleteEmployee: mockDeleteEmployee,
-      getEmployee: vi.fn(),
-      selectEmployee: vi.fn(),
-      selectedEmployee: null,
-      error: null,
-    });
+      isError: false,
+    } as unknown as ReturnType<typeof useEmployees>);
 
     render(<EmployeesPage />);
 
@@ -246,7 +215,6 @@ describe("EmployeesPage", () => {
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
 
     // Click Confirm button in dialog (assuming it says "Delete")
-    // Note: In the page implementation, I must ensure the confirm button has text "Delete" or similar found by screen.getByText
     const confirmButton = screen.getByText("Delete", { selector: "button" });
     await user.click(confirmButton);
 

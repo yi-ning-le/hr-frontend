@@ -68,70 +68,68 @@ const mockCandidate: Candidate = {
   note: "Good candidate",
 };
 
-// Mock stores with selectors pattern
+// Mock stores with selectors pattern (for UI state only)
 interface CandidateStoreState {
   selectedCandidateId: string;
-  candidates: Candidate[];
-  updateCandidateStatus: ReturnType<typeof vi.fn>;
-  updateCandidateNote: ReturnType<typeof vi.fn>;
-  updateCandidate: ReturnType<typeof vi.fn>;
-  removeCandidate: ReturnType<typeof vi.fn>;
   selectCandidate: ReturnType<typeof vi.fn>;
-  uploadResume: ReturnType<typeof vi.fn>;
 }
 
 vi.mock("@/stores/useCandidateStore", () => ({
   useCandidateStore: <T,>(selector: (state: CandidateStoreState) => T): T => {
     const state: CandidateStoreState = {
       selectedCandidateId: "1",
-      candidates: [mockCandidate],
-      updateCandidateStatus: vi.fn(),
-      updateCandidateNote: vi.fn(),
-      updateCandidate: vi.fn(),
-      removeCandidate: vi.fn(),
       selectCandidate: vi.fn(),
-      uploadResume: vi.fn().mockResolvedValue(undefined),
     };
     return selector(state);
   },
 }));
 
-interface JobStoreState {
-  jobs: Array<{
-    id: string;
-    title: string;
-    department: string;
-    status: string;
-    jobDescription?: string;
-    headCount?: number;
-    openDate?: Date;
-  }>;
-  fetchJobs: ReturnType<typeof vi.fn>;
-  isLoading: boolean;
-}
+// Mock TanStack Query hooks
+vi.mock("@/hooks/queries/useCandidates", () => ({
+  useCandidates: () => ({
+    data: [mockCandidate],
+    isLoading: false,
+    isError: false,
+  }),
+  useUpdateCandidateStatus: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useUpdateCandidateNote: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useUpdateCandidate: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useDeleteCandidate: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useUploadResume: () => ({
+    mutateAsync: vi.fn().mockResolvedValue(undefined),
+    isPending: false,
+  }),
+}));
 
-vi.mock("@/stores/useJobStore", () => ({
-  useJobStore: <T,>(
-    selector?: (state: JobStoreState) => T,
-  ): T | JobStoreState => {
-    const state: JobStoreState = {
-      jobs: [
-        {
-          id: "job1",
-          title: "Developer",
-          department: "Engineering",
-          status: "OPEN",
-          jobDescription: "Test description",
-          headCount: 1,
-          openDate: new Date(),
-        },
-      ],
-      fetchJobs: vi.fn(),
-      isLoading: false,
-    };
-    // Handle both selector and non-selector usage
-    return selector ? selector(state) : state;
-  },
+// Mock useJobs hook
+vi.mock("@/hooks/queries/useJobs", () => ({
+  useJobs: () => ({
+    data: [
+      {
+        id: "job1",
+        title: "Developer",
+        department: "Engineering",
+        status: "OPEN",
+        jobDescription: "Test description",
+        headCount: 1,
+        openDate: new Date(),
+      },
+    ],
+    isLoading: false,
+    isError: false,
+  }),
 }));
 
 // Mock ResizeObserver

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { JobManagementTab } from "../JobManagementTab";
@@ -12,49 +13,69 @@ vi.mock("react-i18next", () => ({
 
 // Mock child components
 vi.mock("../JobPositionList", () => ({
-  JobPositionList: ({ onEdit }: { onEdit: (job: { id: string; title: string }) => void }) => (
+  JobPositionList: ({
+    onEdit,
+  }: {
+    onEdit: (job: { id: string; title: string }) => void;
+  }) => (
     <div data-testid="job-list">
-      <button onClick={() => onEdit({ id: "1", title: "Test Job" })}>Edit Job</button>
+      <button onClick={() => onEdit({ id: "1", title: "Test Job" })}>
+        Edit Job
+      </button>
     </div>
   ),
 }));
 
 vi.mock("../JobDialogs", () => ({
-  JobDialogs: ({ isDialogOpen, handleSaveJob }: { isDialogOpen: boolean; handleSaveJob: (data: { title: string }) => void }) => (
+  JobDialogs: ({
+    isDialogOpen,
+    handleSaveJob,
+  }: {
+    isDialogOpen: boolean;
+    handleSaveJob: (data: { title: string }) => void;
+  }) => (
     <div data-testid="job-dialogs">
       {isDialogOpen && <div data-testid="dialog-open">Dialog Open</div>}
-      <button onClick={() => handleSaveJob({ title: "New Job" })}>Save Job</button>
+      <button onClick={() => handleSaveJob({ title: "New Job" })}>
+        Save Job
+      </button>
     </div>
   ),
 }));
 
-// Mock stores
-const mockFetchJobs = vi.fn();
-const mockFetchCandidates = vi.fn();
-const mockAddJob = vi.fn();
-const mockUpdateJob = vi.fn();
-const mockDeleteJob = vi.fn();
-const mockToggleJobStatus = vi.fn();
-const mockSetIsAddDialogOpen = vi.fn();
-
+// Mock useJobStore
 vi.mock("@/stores/useJobStore", () => ({
-  useJobStore: () => ({
-    jobs: [],
-    addJob: mockAddJob,
-    updateJob: mockUpdateJob,
-    deleteJob: mockDeleteJob,
-    toggleJobStatus: mockToggleJobStatus,
+  useJobStore: vi.fn(() => ({
     isAddDialogOpen: false,
-    setIsAddDialogOpen: mockSetIsAddDialogOpen,
-    fetchJobs: mockFetchJobs,
-  }),
+    setIsAddDialogOpen: vi.fn(),
+  })),
 }));
 
-vi.mock("@/stores/useCandidateStore", () => ({
-  useCandidateStore: () => ({
-    candidates: [],
-    fetchCandidates: mockFetchCandidates,
-  }),
+// Mock TanStack Query hooks
+vi.mock("@/hooks/queries/useJobs", () => ({
+  useJobs: vi.fn(() => ({
+    data: [],
+    isLoading: false,
+  })),
+  useCreateJob: vi.fn(() => ({
+    mutate: vi.fn(),
+  })),
+  useUpdateJob: vi.fn(() => ({
+    mutate: vi.fn(),
+  })),
+  useDeleteJob: vi.fn(() => ({
+    mutate: vi.fn(),
+  })),
+  useToggleJobStatus: vi.fn(() => ({
+    mutate: vi.fn(),
+  })),
+}));
+
+vi.mock("@/hooks/queries/useCandidates", () => ({
+  useCandidates: vi.fn(() => ({
+    data: [],
+    isLoading: false,
+  })),
 }));
 
 describe("JobManagementTab", () => {
@@ -62,16 +83,8 @@ describe("JobManagementTab", () => {
     vi.clearAllMocks();
   });
 
-  it("fetches jobs and candidates on mount", () => {
-    render(<JobManagementTab />);
-
-    expect(mockFetchJobs).toHaveBeenCalledTimes(1);
-    expect(mockFetchCandidates).toHaveBeenCalledTimes(1);
-  });
-
   it("renders JobPositionList and JobDialogs", () => {
     render(<JobManagementTab />);
-
     expect(screen.getByTestId("job-list")).toBeInTheDocument();
     expect(screen.getByTestId("job-dialogs")).toBeInTheDocument();
   });
