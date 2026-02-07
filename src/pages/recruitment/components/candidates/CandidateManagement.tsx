@@ -43,14 +43,26 @@ export function CandidateManagement() {
   const setViewMode = useCandidateStore((state) => state.setViewMode);
   const setStatusFilter = useCandidateStore((state) => state.setStatusFilter);
 
-  // Derived state
+  // Filter out closed jobs and their candidates
+  const openJobs = useMemo(
+    () => jobs.filter((j) => j.status === "OPEN"),
+    [jobs],
+  );
+
+  const candidatesInOpenJobs = useMemo(() => {
+    const openJobIds = new Set(openJobs.map((j) => j.id));
+    return candidates.filter((c) => openJobIds.has(c.appliedJobId));
+  }, [candidates, openJobs]);
+
+  // Derived state for the main view
   const selectedCandidate = useMemo(
-    () => candidates.find((c) => c.id === selectedCandidateId) || null,
-    [candidates, selectedCandidateId],
+    () =>
+      candidatesInOpenJobs.find((c) => c.id === selectedCandidateId) || null,
+    [candidatesInOpenJobs, selectedCandidateId],
   );
 
   const filteredCandidates = useMemo(() => {
-    return candidates.filter((candidate: Candidate) => {
+    return candidatesInOpenJobs.filter((candidate: Candidate) => {
       const matchesJob =
         selectedJobId === "all" || candidate.appliedJobId === selectedJobId;
       const matchesSearch =
@@ -58,20 +70,21 @@ export function CandidateManagement() {
         candidate.email.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus =
         statusFilter.length === 0 || statusFilter.includes(candidate.status);
+
       return matchesJob && matchesSearch && matchesStatus;
     });
-  }, [candidates, selectedJobId, searchQuery, statusFilter]);
+  }, [candidatesInOpenJobs, selectedJobId, searchQuery, statusFilter]);
 
-  // Aggregate counts
+  // Aggregate counts based on OPEN jobs only
   const jobCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    candidates.forEach((c: Candidate) => {
+    candidatesInOpenJobs.forEach((c: Candidate) => {
       counts[c.appliedJobId] = (counts[c.appliedJobId] || 0) + 1;
     });
     return counts;
-  }, [candidates]);
+  }, [candidatesInOpenJobs]);
 
-  const totalCandidates = candidates.length;
+  const totalCandidates = candidatesInOpenJobs.length;
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -93,7 +106,7 @@ export function CandidateManagement() {
     <div className="flex h-[calc(100vh-200px)] rounded-lg border bg-background shadow-sm overflow-hidden">
       {/* Sidebar - Job List */}
       <JobSidebar
-        jobs={jobs}
+        jobs={openJobs}
         selectedJobId={selectedJobId}
         onSelectJob={setSelectedJobId}
         jobCounts={jobCounts}
