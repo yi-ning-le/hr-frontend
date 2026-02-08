@@ -73,8 +73,8 @@ export function EmployeeList({
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
-        {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className="h-16 w-full" />
+        {[1, 2, 3, 4, 5].map((id) => (
+          <Skeleton key={id} className="h-16 w-full" />
         ))}
       </div>
     );

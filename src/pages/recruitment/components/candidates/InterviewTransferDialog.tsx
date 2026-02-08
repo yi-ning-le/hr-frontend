@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -91,9 +92,9 @@ export function InterviewTransferDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <label className="text-sm font-medium mb-2 block">
+          <Label className="text-sm font-medium mb-2 block">
             {t("recruitment.transfer.selectEmployee", "Select New Interviewer")}
-          </label>
+          </Label>
           <Select
             value={selectedEmployeeId}
             onValueChange={setSelectedEmployeeId}

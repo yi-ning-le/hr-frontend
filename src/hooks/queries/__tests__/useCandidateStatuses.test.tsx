@@ -43,7 +43,7 @@ describe("useCandidateStatuses", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.statuses).toEqual(mockStatuses);
-    expect(result.current.data?.statusMap["new"]).toEqual(mockStatuses[0]);
+    expect(result.current.data?.statusMap.new).toEqual(mockStatuses[0]);
     expect(result.current.data?.statusMap["1"]).toEqual(mockStatuses[0]);
   });
 });

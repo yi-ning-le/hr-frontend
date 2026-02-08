@@ -14,8 +14,8 @@ vi.mock("react-i18next", () => ({
 
 // Mock PdfPreview
 vi.mock("../PdfPreview", () => ({
-  PdfPreview: ({ url }: { url: string }) => (
-    <div data-testid="pdf-preview">{url}</div>
+  PdfPreview: ({ pdfUrl }: { pdfUrl: string }) => (
+    <div data-testid="pdf-preview">{pdfUrl}</div>
   ),
 }));
 

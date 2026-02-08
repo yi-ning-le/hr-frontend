@@ -14,11 +14,12 @@ export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
   const { t } = useTranslation();
 
   return (
-    <div
-      className="group relative flex flex-col gap-3 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md cursor-pointer hover:border-primary/50"
+    <button
+      className="group relative flex flex-col gap-3 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md cursor-pointer hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 text-left w-full"
       onClick={onClick}
+      type="button"
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between w-full">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={candidate.avatar} />
@@ -38,7 +39,7 @@ export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
         <StatusBadge status={candidate.status} />
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mt-1">
+      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mt-1 w-full">
         <div className="flex items-center gap-1">
           <Briefcase className="h-3 w-3" />
           {t("recruitment.candidates.card.yearsExp", {
@@ -56,11 +57,11 @@ export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-1 pt-3 border-t">
+      <div className="flex items-center justify-between mt-1 pt-3 border-t w-full">
         <span className="text-xs text-muted-foreground bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
           {candidate.channel}
         </span>
       </div>
-    </div>
+    </button>
   );
 }

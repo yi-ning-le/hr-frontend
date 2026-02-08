@@ -70,9 +70,7 @@ describe("CandidateCard", () => {
   it("calls onClick when clicked", () => {
     render(<CandidateCard {...defaultProps} />);
 
-    fireEvent.click(
-      screen.getByText("John Doe").closest("div[class*='cursor-pointer']")!,
-    );
+    fireEvent.click(screen.getByRole("button", { name: /John Doe/i }));
 
     expect(defaultProps.onClick).toHaveBeenCalled();
   });

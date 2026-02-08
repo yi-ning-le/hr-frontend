@@ -139,7 +139,8 @@ export function AddCandidateDialog() {
         </DialogHeader>
 
         {step === "upload" ? (
-          <div
+          <article
+            aria-label={t("recruitment.candidates.dialog.uploadResume")}
             className={cn(
               "flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-10 mt-4 transition-colors",
               isDragging ? "border-primary bg-primary/10" : "hover:bg-muted/50",
@@ -188,7 +189,7 @@ export function AddCandidateDialog() {
                 </div>
               </>
             )}
-          </div>
+          </article>
         ) : (
           <CandidateForm
             defaultValues={parsedData}

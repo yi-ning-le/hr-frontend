@@ -45,6 +45,6 @@ describe("useCandidateStatuses", () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.statuses).toEqual(mockStatuses);
-    expect(result.current.statusMap["new"]).toEqual(mockStatuses[0]);
+    expect(result.current.statusMap.new).toEqual(mockStatuses[0]);
   });
 });

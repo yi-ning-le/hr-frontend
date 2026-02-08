@@ -18,33 +18,33 @@ export function CandidateInfoSection({ candidate }: CandidateInfoSectionProps) {
       </h4>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground font-medium">
             {t("recruitment.candidates.detail.email")}
-          </label>
+          </span>
           <div className="flex items-center gap-2 font-medium">
             <Mail className="h-4 w-4 text-muted-foreground" />
             {candidate.email}
           </div>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground font-medium">
             {t("recruitment.candidates.detail.phone")}
-          </label>
+          </span>
           <div className="flex items-center gap-2 font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             {candidate.phone}
           </div>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground font-medium">
             {t("recruitment.candidates.detail.education")}
-          </label>
+          </span>
           <div className="font-medium">{candidate.education}</div>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground font-medium">
             {t("recruitment.candidates.detail.appliedAt")}
-          </label>
+          </span>
           <div className="font-medium">
             {format(new Date(candidate.appliedAt), "yyyy-MM-dd HH:mm")}
           </div>

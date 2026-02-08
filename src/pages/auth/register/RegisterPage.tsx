@@ -30,13 +30,21 @@ export function RegisterPage() {
 
       <p className="text-center text-xs text-muted-foreground">
         {t("auth.register.termsPrefix")}{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-primary">
+        <button
+          type="button"
+          className="underline underline-offset-4 hover:text-primary"
+          onClick={() => {}}
+        >
           {t("auth.register.termsOfService")}
-        </a>{" "}
+        </button>{" "}
         {t("auth.register.and")}{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-primary">
+        <button
+          type="button"
+          className="underline underline-offset-4 hover:text-primary"
+          onClick={() => {}}
+        >
           {t("auth.register.privacyPolicy")}
-        </a>
+        </button>
       </p>
     </div>
   );

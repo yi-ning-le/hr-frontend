@@ -71,7 +71,7 @@ describe("CandidateNoteSection", () => {
     it("renders edit button in display mode", () => {
       render(<CandidateNoteSection {...defaultProps} />);
 
-      const editButton = screen.getByRole("button");
+      const editButton = screen.getByLabelText("common.edit");
       expect(editButton).toBeInTheDocument();
     });
 
@@ -81,7 +81,7 @@ describe("CandidateNoteSection", () => {
         <CandidateNoteSection {...defaultProps} onEditClick={onEditClick} />,
       );
 
-      const editButton = screen.getByRole("button");
+      const editButton = screen.getByLabelText("common.edit");
       fireEvent.click(editButton);
 
       expect(onEditClick).toHaveBeenCalled();

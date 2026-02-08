@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useMemo } from "react";
+import { type Resolver, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -37,27 +38,30 @@ export function JobPositionForm({
 }: JobPositionFormProps) {
   const { t } = useTranslation();
 
-  const jobFormSchema = z.object({
-    title: z.string().min(2, {
-      message: t("recruitment.jobs.form.validation.titleMin"),
-    }),
-    department: z.string().min(1, {
-      message: t("recruitment.jobs.form.validation.departmentRequired"),
-    }),
-    headCount: z.coerce.number().min(1, {
-      message: t("recruitment.jobs.form.validation.headCountMin"),
-    }),
-    openDate: z.date(),
-    jobDescription: z.string().min(10, {
-      message: t("recruitment.jobs.form.validation.jdMin"),
-    }),
-    note: z.string().optional(),
-    status: z.enum(["OPEN", "CLOSED"]).default("OPEN"),
-  });
+  const jobFormSchema = useMemo(
+    () =>
+      z.object({
+        title: z.string().min(2, {
+          message: t("recruitment.jobs.form.validation.titleMin"),
+        }),
+        department: z.string().min(1, {
+          message: t("recruitment.jobs.form.validation.departmentRequired"),
+        }),
+        headCount: z.coerce.number().min(1, {
+          message: t("recruitment.jobs.form.validation.headCountMin"),
+        }),
+        openDate: z.date(),
+        jobDescription: z.string().min(10, {
+          message: t("recruitment.jobs.form.validation.jdMin"),
+        }),
+        note: z.string().optional(),
+        status: z.enum(["OPEN", "CLOSED"]).default("OPEN"),
+      }),
+    [t],
+  );
 
   const form = useForm<JobFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(jobFormSchema) as any,
+    resolver: zodResolver(jobFormSchema) as Resolver<JobFormValues>,
     defaultValues: {
       title: initialData?.title || "",
       department: initialData?.department || "",

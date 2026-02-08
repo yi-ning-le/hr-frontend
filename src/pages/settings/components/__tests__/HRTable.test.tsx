@@ -18,11 +18,6 @@ const mockHrs: HREmployee[] = [
     firstName: "John",
     lastName: "Doe",
     department: "HR",
-    email: "john@example.com",
-    position: "HR Manager",
-    status: "active",
-    joinDate: "2024-01-01",
-    employmentType: "full-time",
   },
 ];
 

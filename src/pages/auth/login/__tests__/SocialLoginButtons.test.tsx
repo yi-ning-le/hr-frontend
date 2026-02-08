@@ -20,10 +20,12 @@ describe("SocialLoginButtons", () => {
   it("renders three social login buttons", () => {
     render(<SocialLoginButtons />);
 
-    // Check for screen reader text for each button
-    expect(screen.getByText("auth.social.wechat")).toBeInTheDocument();
-    expect(screen.getByText("auth.social.dingtalk")).toBeInTheDocument();
-    expect(screen.getByText("auth.social.feishu")).toBeInTheDocument();
+    // Check for screen reader text for each button (now appears in SVG title and sr-only span)
+    expect(screen.getAllByText("auth.social.wechat").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("auth.social.dingtalk").length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getAllByText("auth.social.feishu").length).toBeGreaterThan(0);
   });
 
   it("shows coming soon text", () => {

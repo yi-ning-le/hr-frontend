@@ -88,9 +88,9 @@ export function RecentActivities() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {recentActivities.map((activity, index) => (
+          {recentActivities.map((activity) => (
             <div
-              key={index}
+              key={`${activity.user}-${activity.timeEn}`}
               className="flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
             >
               <Avatar className="size-9">

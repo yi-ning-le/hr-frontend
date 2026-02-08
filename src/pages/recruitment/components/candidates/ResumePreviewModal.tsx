@@ -102,7 +102,7 @@ export function ResumePreviewModal({
             <div className="flex-1 min-h-0 overflow-hidden p-4">
               {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
                 <PdfPreview
-                  url={candidate.resumeUrl}
+                  pdfUrl={candidate.resumeUrl}
                   showToolbar={true}
                   initialScale={1.2}
                   maxHeight="calc(95vh - 8rem)"

@@ -48,7 +48,7 @@ export function StatusItem({
                   : status.name}
               </p>
               <p className="text-xs text-muted-foreground capitalize">
-                {t("settings.candidateStatus.type." + status.type, status.type)}
+                {t(`settings.candidateStatus.type.${status.type}`, status.type)}
               </p>
             </div>
           </div>

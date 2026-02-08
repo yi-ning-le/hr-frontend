@@ -52,7 +52,13 @@ export function CandidateStatusDialog({
 
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
-  const setOpen = isControlled ? setControlledOpen! : setInternalOpen;
+  const setOpen = (val: boolean) => {
+    if (isControlled) {
+      setControlledOpen?.(val);
+    } else {
+      setInternalOpen(val);
+    }
+  };
 
   const form = useForm<StatusFormValues>({
     resolver: zodResolver(statusSchema),

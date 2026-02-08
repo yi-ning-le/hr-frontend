@@ -68,19 +68,21 @@ export function CandidateResumeSection({
         </div>
       </div>
       {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
-        <div
+        <button
           onClick={onPreviewClick}
-          className="cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all rounded-xl"
+          className="cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 w-full text-left"
+          type="button"
         >
           <PdfPreview
-            url={candidate.resumeUrl}
+            pdfUrl={candidate.resumeUrl}
             maxHeight="300px"
             showToolbar={false}
             initialScale={0.8}
           />
-        </div>
+        </button>
       ) : (
-        <div
+        <section
+          aria-label={t("recruitment.candidates.detail.noResume")}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -127,7 +129,7 @@ export function CandidateResumeSection({
               </Button>
             </>
           )}
-        </div>
+        </section>
       )}
     </section>
   );

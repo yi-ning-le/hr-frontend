@@ -5,9 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Polyfill at the very top, but imports are still hoisted.
 // So we must use dynamic import for the component under test.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-(globalThis as any).DOMMatrix = class DOMMatrix {
-  constructor() {}
-};
+(globalThis as any).DOMMatrix = class DOMMatrix {};
 
 // Mock dependencies
 vi.mock("react-i18next", () => ({

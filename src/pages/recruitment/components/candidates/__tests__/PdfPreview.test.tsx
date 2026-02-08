@@ -53,7 +53,7 @@ vi.stubGlobal(
 
 describe("PdfPreview", () => {
   const defaultProps = {
-    url: "http://example.com/test.pdf",
+    pdfUrl: "http://example.com/test.pdf",
     onFullscreen: vi.fn(),
   };
 
@@ -115,5 +115,26 @@ describe("PdfPreview", () => {
     fireEvent.click(fullscreenIcon!.closest("button")!);
 
     expect(defaultProps.onFullscreen).toHaveBeenCalled();
+  });
+
+  it("resets page number when url changes", async () => {
+    const { rerender } = render(<PdfPreview {...defaultProps} />);
+
+    // Wait for initial load
+    await screen.findByText("1 / 5");
+
+    // Navigate to page 2
+    fireEvent.click(screen.getAllByRole("button")[1]);
+    expect(await screen.findByText("2 / 5")).toBeInTheDocument();
+
+    // Change URL
+    rerender(
+      <PdfPreview {...defaultProps} pdfUrl="http://example.com/other.pdf" />,
+    );
+
+    // Page number should reset to 1
+    // Wait for the new document to load
+    await screen.findByText("1 / 5");
+    expect(screen.getByText("1 / 5")).toBeInTheDocument();
   });
 });

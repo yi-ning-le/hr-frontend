@@ -38,6 +38,7 @@ export function CandidateNoteSection({
             size="sm"
             className="h-6 w-6 p-0"
             onClick={onEditClick}
+            aria-label={t("common.edit")}
           >
             <Pencil className="h-3 w-3" />
           </Button>
@@ -63,16 +64,18 @@ export function CandidateNoteSection({
           </div>
         </div>
       ) : (
-        <div
-          className="text-sm text-foreground/80 bg-muted/30 p-4 rounded-lg min-h-[60px] whitespace-pre-wrap cursor-pointer hover:bg-muted/50 transition-colors"
+        <button
+          className="text-sm text-foreground/80 bg-muted/30 p-4 rounded-lg min-h-[60px] whitespace-pre-wrap text-left w-full hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           onClick={onEditClick}
+          type="button"
+          aria-label={t("recruitment.candidates.detail.interviewerNotes")}
         >
           {candidate.note || (
             <span className="text-muted-foreground italic">
               {t("recruitment.candidates.detail.noNotesYet")}
             </span>
           )}
-        </div>
+        </button>
       )}
     </section>
   );

@@ -27,7 +27,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 interface PdfPreviewProps {
-  url: string;
+  pdfUrl: string;
   className?: string;
   showToolbar?: boolean;
   initialScale?: number;
@@ -36,7 +36,7 @@ interface PdfPreviewProps {
 }
 
 export function PdfPreview({
-  url,
+  pdfUrl,
   className,
   showToolbar = true,
   initialScale = 1.0,
@@ -60,7 +60,7 @@ export function PdfPreview({
 
   // Reset state when URL changes to avoid stale state between candidates
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!pdfUrl) return;
     setPageNumber(1);
     setNumPages(null);
     setError(null);
@@ -68,7 +68,7 @@ export function PdfPreview({
     setMinHeight(undefined);
     setRetryKey(0);
     setScale(initialScale);
-  }, [url, initialScale]);
+  }, [pdfUrl, initialScale]);
 
   // Observe container width for responsive scaling
   useEffect(() => {
@@ -280,8 +280,8 @@ export function PdfPreview({
           </div>
         ) : (
           <Document
-            key={`${url}-${retryKey}`}
-            file={url}
+            key={`${pdfUrl}-${retryKey}`}
+            file={pdfUrl}
             onLoadSuccess={onDocumentLoadSuccess}
             onLoadError={onDocumentLoadError}
             loading={
