@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next";
 import { Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CandidateCard } from "./CandidateCard";
 import type { Candidate } from "@/types/candidate";
+import { CandidateCard } from "./CandidateCard";
 
 interface CandidateListProps {
   candidates: Candidate[];

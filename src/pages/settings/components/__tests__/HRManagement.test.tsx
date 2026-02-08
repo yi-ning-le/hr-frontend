@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HRManagement } from "../HRManagement";
 
 // Mock dependencies
@@ -27,7 +27,7 @@ vi.mock("react-i18next", () => ({
 }));
 
 import { useUserRole } from "@/hooks/useUserRole";
-import { RecruitmentAPI, EmployeesAPI } from "@/lib/api";
+import { EmployeesAPI, RecruitmentAPI } from "@/lib/api";
 
 const mockUseUserRole = vi.mocked(useUserRole);
 const mockGetHRs = vi.mocked(RecruitmentAPI.getHRs);

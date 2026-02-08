@@ -1,5 +1,8 @@
+import { Loader2, Plus, UploadCloud } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,13 +11,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { UploadCloud, Loader2, Plus } from "lucide-react";
-import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { useCreateCandidate } from "@/hooks/queries/useCandidates";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { parseResume } from "@/lib/parseResume";
+import { cn } from "@/lib/utils";
+import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 
 export function AddCandidateDialog() {
   const { t } = useTranslation();

@@ -1,13 +1,12 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate, useRouter } from "@tanstack/react-router";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-
+import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -16,8 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { toast } from "sonner";
 
 const createRegisterSchema = (t: (key: string) => string) =>
   z
@@ -32,7 +31,9 @@ const createRegisterSchema = (t: (key: string) => string) =>
         .string()
         .min(6, t("auth.register.passwordMin"))
         .max(50, t("auth.register.passwordMax")),
-      confirmPassword: z.string().min(1, t("auth.register.confirmPasswordRequired")),
+      confirmPassword: z
+        .string()
+        .min(1, t("auth.register.confirmPasswordRequired")),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: t("auth.register.passwordMismatch"),
@@ -66,11 +67,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   });
 
   async function onSubmit(data: RegisterFormValues) {
-    const result = await register(
-      data.username,
-      data.password,
-      data.email
-    );
+    const result = await register(data.username, data.password, data.email);
 
     if (result.success) {
       toast.success(t("auth.register.success"), {
@@ -113,9 +110,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                {t("auth.register.email")}
-              </FormLabel>
+              <FormLabel>{t("auth.register.email")}</FormLabel>
               <FormControl>
                 <Input
                   type="email"
@@ -160,7 +155,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
                       <Eye className="size-4" />
                     )}
                     <span className="sr-only">
-                      {showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
+                      {showPassword
+                        ? t("auth.login.hidePassword")
+                        : t("auth.login.showPassword")}
                     </span>
                   </Button>
                 </div>
@@ -200,7 +197,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
                       <Eye className="size-4" />
                     )}
                     <span className="sr-only">
-                      {showConfirmPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
+                      {showConfirmPassword
+                        ? t("auth.login.hidePassword")
+                        : t("auth.login.showPassword")}
                     </span>
                   </Button>
                 </div>

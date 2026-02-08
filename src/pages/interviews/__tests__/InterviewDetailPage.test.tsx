@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { InterviewDetailPage } from "../InterviewDetailPage";
-import * as useInterviews from "@/hooks/queries/useInterviews";
-import * as useCandidates from "@/hooks/queries/useCandidates";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as useCandidates from "@/hooks/queries/useCandidates";
+import * as useInterviews from "@/hooks/queries/useInterviews";
+import { InterviewDetailPage } from "../InterviewDetailPage";
 
 // Mock hooks
 vi.mock("@/hooks/queries/useInterviews");

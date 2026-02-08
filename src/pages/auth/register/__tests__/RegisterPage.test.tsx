@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { RegisterPage } from "../RegisterPage";
 
 // Mock react-i18next
@@ -52,7 +52,9 @@ describe("RegisterPage", () => {
 
     // Use partial matching or check for existence without strict equality due to potential whitespace or splitting
     expect(screen.getByText(/auth.register.termsPrefix/)).toBeInTheDocument();
-    expect(screen.getByText("auth.register.termsOfService")).toBeInTheDocument();
+    expect(
+      screen.getByText("auth.register.termsOfService"),
+    ).toBeInTheDocument();
     expect(screen.getByText(/auth.register.and/)).toBeInTheDocument();
     expect(screen.getByText("auth.register.privacyPolicy")).toBeInTheDocument();
   });

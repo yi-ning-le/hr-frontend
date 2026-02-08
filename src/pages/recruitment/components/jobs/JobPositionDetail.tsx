@@ -1,24 +1,34 @@
-import { useState } from "react"
-import { format } from "date-fns"
-import { useTranslation } from "react-i18next"
-import { cn } from "@/lib/utils"
-import { Maximize2 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { format } from "date-fns";
+import { Maximize2 } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import type { JobPosition } from "@/types/job"
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import type { JobPosition } from "@/types/job";
 
 interface JobPositionDetailProps {
-  job: JobPosition
+  job: JobPosition;
 }
 
-function ExpandableText({ title, content, className, fullscreenLabel }: { title: string; content: string; className?: string; fullscreenLabel: string }) {
-  const [isFullScreen, setIsFullScreen] = useState(false)
+function ExpandableText({
+  title,
+  content,
+  className,
+  fullscreenLabel,
+}: {
+  title: string;
+  content: string;
+  className?: string;
+  fullscreenLabel: string;
+}) {
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   return (
     <div className="space-y-1">
@@ -34,7 +44,12 @@ function ExpandableText({ title, content, className, fullscreenLabel }: { title:
           <Maximize2 className="h-3.5 w-3.5" />
         </Button>
       </div>
-      <div className={cn("rounded-md border bg-muted/50 p-4 text-sm whitespace-pre-wrap overflow-y-auto", className)}>
+      <div
+        className={cn(
+          "rounded-md border bg-muted/50 p-4 text-sm whitespace-pre-wrap overflow-y-auto",
+          className,
+        )}
+      >
         {content}
       </div>
 
@@ -49,35 +64,49 @@ function ExpandableText({ title, content, className, fullscreenLabel }: { title:
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 export function JobPositionDetail({ job }: JobPositionDetailProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.name")}</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            {t("recruitment.jobs.name")}
+          </h4>
           <p className="text-sm font-medium leading-none">{job.title}</p>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.status")}</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            {t("recruitment.jobs.status")}
+          </h4>
           <Badge variant={job.status === "OPEN" ? "default" : "secondary"}>
-            {job.status === "OPEN" ? t("recruitment.jobs.statusOptions.open") : t("recruitment.jobs.statusOptions.closed")}
+            {job.status === "OPEN"
+              ? t("recruitment.jobs.statusOptions.open")
+              : t("recruitment.jobs.statusOptions.closed")}
           </Badge>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.department")}</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            {t("recruitment.jobs.department")}
+          </h4>
           <p className="text-sm font-medium leading-none">{job.department}</p>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.headCount")}</h4>
-          <p className="text-sm font-medium leading-none">{job.headCount} {t("recruitment.jobs.detail.headCountUnit")}</p>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            {t("recruitment.jobs.headCount")}
+          </h4>
+          <p className="text-sm font-medium leading-none">
+            {job.headCount} {t("recruitment.jobs.detail.headCountUnit")}
+          </p>
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("recruitment.jobs.openDate")}</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            {t("recruitment.jobs.openDate")}
+          </h4>
           <p className="text-sm font-medium leading-none">
             {job.openDate ? format(job.openDate, "yyyy-MM-dd") : "-"}
           </p>
@@ -100,5 +129,5 @@ export function JobPositionDetail({ job }: JobPositionDetailProps) {
         />
       )}
     </div>
-  )
+  );
 }

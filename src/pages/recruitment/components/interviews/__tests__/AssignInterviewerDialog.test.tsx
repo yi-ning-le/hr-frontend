@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeAll } from "vitest";
-import { AssignInterviewerDialog } from "../AssignInterviewerDialog";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
+import { AssignInterviewerDialog } from "../AssignInterviewerDialog";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

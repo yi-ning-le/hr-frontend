@@ -1,9 +1,9 @@
 import { format } from "date-fns";
-import { useTranslation } from "react-i18next";
 import { Briefcase, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { StatusBadge } from "./StatusBadge";
 import type { Candidate } from "@/types/candidate";
+import { StatusBadge } from "./StatusBadge";
 
 interface CandidateCardProps {
   candidate: Candidate;
@@ -22,7 +22,9 @@ export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={candidate.avatar} />
-            <AvatarFallback>{candidate.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>
+              {candidate.name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div>
             <div className="font-medium leading-none group-hover:text-primary transition-colors">
@@ -39,12 +41,17 @@ export function CandidateCard({ candidate, onClick }: CandidateCardProps) {
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mt-1">
         <div className="flex items-center gap-1">
           <Briefcase className="h-3 w-3" />
-          {t("recruitment.candidates.card.yearsExp", { years: candidate.experienceYears })}
+          {t("recruitment.candidates.card.yearsExp", {
+            years: candidate.experienceYears,
+          })}
         </div>
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           {t("recruitment.candidates.card.appliedOn", {
-            date: format(candidate.appliedJobId ? candidate.appliedAt : new Date(), "MM-dd")
+            date: format(
+              candidate.appliedJobId ? candidate.appliedAt : new Date(),
+              "MM-dd",
+            ),
           })}
         </div>
       </div>

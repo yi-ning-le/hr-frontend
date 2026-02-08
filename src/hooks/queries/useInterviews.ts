@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  type Interview,
-  type CreateInterviewInput,
-  type UpdateInterviewNotesInput,
-} from "@/types/recruitment.d";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/useAuthStore";
+import type {
+  CreateInterviewInput,
+  Interview,
+  UpdateInterviewNotesInput,
+} from "@/types/recruitment.d";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 

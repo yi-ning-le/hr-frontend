@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useAuthStore } from "../useAuthStore";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthAPI, setAuthToken } from "@/lib/api";
+import { useAuthStore } from "../useAuthStore";
 
 // Mock API
 vi.mock("@/lib/api", () => ({

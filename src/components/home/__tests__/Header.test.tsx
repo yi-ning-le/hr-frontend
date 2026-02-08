@@ -1,12 +1,12 @@
-import { Header } from "@/components/layout/Header";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { Header } from "@/components/layout/Header";
 
 // Mock react-i18next
-vi.mock('react-i18next', () => ({
+vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
-    i18n: { language: 'zh-CN', changeLanguage: vi.fn() },
+    i18n: { language: "zh-CN", changeLanguage: vi.fn() },
   }),
 }));
 
@@ -21,7 +21,7 @@ vi.mock("@/stores/useAuthStore", () => ({
     user: {
       username: "管理员",
       email: "admin@example.com",
-      avatar: "https://github.com/shadcn.png"
+      avatar: "https://github.com/shadcn.png",
     },
     logout: vi.fn(),
   }),

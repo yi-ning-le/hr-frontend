@@ -12,18 +12,18 @@ vi.mock("react-pdf", () => ({
 vi.mock("react-pdf/dist/Page/AnnotationLayer.css", () => ({}));
 vi.mock("react-pdf/dist/Page/TextLayer.css", () => ({}));
 
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
-import { CandidateResumeSection } from "../CandidateResumeSection";
+import { fireEvent, render, screen } from "@testing-library/react";
+import type React from "react";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
+import { CandidateResumeSection } from "../CandidateResumeSection";
 
 // Mock ResizeObserver for jsdom
 beforeAll(() => {
   globalThis.ResizeObserver = class ResizeObserver {
-    observe() { }
-    unobserve() { }
-    disconnect() { }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
   } as typeof globalThis.ResizeObserver;
 });
 vi.mock("react-i18next", () => ({
@@ -75,7 +75,7 @@ describe("CandidateResumeSection", () => {
     render(<CandidateResumeSection {...defaultProps} />);
 
     expect(
-      screen.getByText("recruitment.candidates.detail.resumePreview")
+      screen.getByText("recruitment.candidates.detail.resumePreview"),
     ).toBeInTheDocument();
   });
 
@@ -90,7 +90,7 @@ describe("CandidateResumeSection", () => {
       render(<CandidateResumeSection {...defaultProps} />);
 
       expect(
-        screen.getByText("recruitment.candidates.detail.downloadResume")
+        screen.getByText("recruitment.candidates.detail.downloadResume"),
       ).toBeInTheDocument();
     });
 
@@ -100,7 +100,7 @@ describe("CandidateResumeSection", () => {
         <CandidateResumeSection
           {...defaultProps}
           onPreviewClick={onPreviewClick}
-        />
+        />,
       );
 
       // Find the clickable wrapper around the PdfPreview
@@ -120,13 +120,13 @@ describe("CandidateResumeSection", () => {
       render(<CandidateResumeSection {...defaultProps} />);
 
       const downloadButton = screen.getByText(
-        "recruitment.candidates.detail.downloadResume"
+        "recruitment.candidates.detail.downloadResume",
       );
       fireEvent.click(downloadButton);
 
       expect(openMock).toHaveBeenCalledWith(
         "https://example.com/resume.pdf",
-        "_blank"
+        "_blank",
       );
 
       vi.unstubAllGlobals();
@@ -139,11 +139,11 @@ describe("CandidateResumeSection", () => {
         <CandidateResumeSection
           {...defaultProps}
           candidate={mockCandidateWithoutResume}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("recruitment.candidates.detail.noResume")
+        screen.getByText("recruitment.candidates.detail.noResume"),
       ).toBeInTheDocument();
     });
 
@@ -152,11 +152,11 @@ describe("CandidateResumeSection", () => {
         <CandidateResumeSection
           {...defaultProps}
           candidate={mockCandidateWithPlaceholderResume}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("recruitment.candidates.detail.noResume")
+        screen.getByText("recruitment.candidates.detail.noResume"),
       ).toBeInTheDocument();
     });
 
@@ -165,11 +165,11 @@ describe("CandidateResumeSection", () => {
         <CandidateResumeSection
           {...defaultProps}
           candidate={mockCandidateWithoutResume}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("recruitment.candidates.detail.uploadResume")
+        screen.getByText("recruitment.candidates.detail.uploadResume"),
       ).toBeInTheDocument();
     });
 
@@ -178,11 +178,11 @@ describe("CandidateResumeSection", () => {
         <CandidateResumeSection
           {...defaultProps}
           candidate={mockCandidateWithoutResume}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("recruitment.candidates.detail.uploadHint")
+        screen.getByText("recruitment.candidates.detail.uploadHint"),
       ).toBeInTheDocument();
     });
 
@@ -191,11 +191,11 @@ describe("CandidateResumeSection", () => {
         <CandidateResumeSection
           {...defaultProps}
           candidate={mockCandidateWithoutResume}
-        />
+        />,
       );
 
       expect(
-        screen.queryByText("recruitment.candidates.detail.downloadResume")
+        screen.queryByText("recruitment.candidates.detail.downloadResume"),
       ).not.toBeInTheDocument();
     });
   });
@@ -207,11 +207,11 @@ describe("CandidateResumeSection", () => {
           {...defaultProps}
           candidate={mockCandidateWithoutResume}
           isUploadingResume={true}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("recruitment.candidates.detail.uploadingResume")
+        screen.getByText("recruitment.candidates.detail.uploadingResume"),
       ).toBeInTheDocument();
     });
 
@@ -221,11 +221,11 @@ describe("CandidateResumeSection", () => {
           {...defaultProps}
           candidate={mockCandidateWithoutResume}
           isUploadingResume={true}
-        />
+        />,
       );
 
       expect(
-        screen.queryByText("recruitment.candidates.detail.uploadResume")
+        screen.queryByText("recruitment.candidates.detail.uploadResume"),
       ).not.toBeInTheDocument();
     });
   });
@@ -238,7 +238,7 @@ describe("CandidateResumeSection", () => {
           {...defaultProps}
           candidate={mockCandidateWithoutResume}
           onResumeUpload={onResumeUpload}
-        />
+        />,
       );
 
       const file = new File(["test"], "resume.pdf", {

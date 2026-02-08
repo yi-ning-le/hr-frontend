@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { JobsAPI } from "@/lib/api";
 import type { JobFormValues } from "@/pages/recruitment/components/jobs/forms/JobPositionForm";
 

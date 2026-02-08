@@ -1,6 +1,6 @@
+import { Filter, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Search, Filter } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,10 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { AddCandidateDialog } from "./AddCandidateDialog";
-import type { CandidateStatus } from "@/types/candidate";
+import { Input } from "@/components/ui/input";
 import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
+import type { CandidateStatus } from "@/types/candidate";
+import { AddCandidateDialog } from "./AddCandidateDialog";
 
 interface CandidateToolbarProps {
   searchQuery: string;

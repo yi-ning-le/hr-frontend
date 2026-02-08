@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Separator } from "@/components/ui/separator";
-import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,24 +11,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCandidateStore } from "@/stores/useCandidateStore";
+import { Separator } from "@/components/ui/separator";
 import {
   useCandidates,
-  useUpdateCandidate,
-  useUpdateCandidateStatus,
-  useUpdateCandidateNote,
   useDeleteCandidate,
+  useUpdateCandidate,
+  useUpdateCandidateNote,
+  useUpdateCandidateStatus,
   useUploadResume,
 } from "@/hooks/queries/useCandidates";
-import { ResumePreviewModal } from "./ResumePreviewModal";
+import { useCandidateStore } from "@/stores/useCandidateStore";
+import type { Candidate } from "@/types/candidate";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
-import { toast } from "sonner";
 import { CandidateDetailHeader } from "./detail/CandidateDetailHeader";
 import { CandidateInfoSection } from "./detail/CandidateInfoSection";
-import { CandidateResumeSection } from "./detail/CandidateResumeSection";
 import { CandidateNoteSection } from "./detail/CandidateNoteSection";
-import type { Candidate } from "@/types/candidate";
+import { CandidateResumeSection } from "./detail/CandidateResumeSection";
+import { ResumePreviewModal } from "./ResumePreviewModal";
 
 export function CandidateDetail() {
   const { t } = useTranslation();

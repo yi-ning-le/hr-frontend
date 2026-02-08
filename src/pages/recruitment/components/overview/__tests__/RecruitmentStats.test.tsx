@@ -1,7 +1,6 @@
-
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { RecruitmentStats } from "../RecruitmentStats";
 
 // Mock translation
@@ -16,10 +15,18 @@ describe("RecruitmentStats", () => {
     render(<RecruitmentStats />);
 
     // Check titles
-    expect(screen.getByText("recruitment.stats.activeJobs")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.stats.activeCandidates")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.stats.todayInterviews")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.stats.completionRate")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.stats.activeJobs"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.stats.activeCandidates"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.stats.todayInterviews"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.stats.completionRate"),
+    ).toBeInTheDocument();
 
     // Check values (hardcoded in component currently)
     expect(screen.getByText("12")).toBeInTheDocument();

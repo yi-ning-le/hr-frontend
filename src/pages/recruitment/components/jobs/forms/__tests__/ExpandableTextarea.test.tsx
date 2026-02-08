@@ -1,6 +1,6 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { useForm, FormProvider } from "react-hook-form";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { FormProvider, useForm } from "react-hook-form";
+import { describe, expect, it, vi } from "vitest";
 import { ExpandableTextarea } from "../ExpandableTextarea";
 import type { JobFormValues } from "../JobPositionForm";
 
@@ -95,7 +95,9 @@ describe("ExpandableTextarea", () => {
     fireEvent.click(expandButton);
 
     // Find and click done button
-    const doneButton = screen.getByText("recruitment.jobs.form.expandableTextarea.done");
+    const doneButton = screen.getByText(
+      "recruitment.jobs.form.expandableTextarea.done",
+    );
     fireEvent.click(doneButton);
 
     // Dialog should be closed - the dialog title should not be visible

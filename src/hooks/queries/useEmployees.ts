@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EmployeesAPI } from "@/lib/api";
 import type {
   Employee,
+  EmployeeInput,
   EmployeeStatus,
   EmploymentType,
-  EmployeeInput,
 } from "@/types/employee";
 
 export const EMPLOYEE_QUERY_KEY = ["employees"] as const;

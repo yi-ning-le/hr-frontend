@@ -1,9 +1,8 @@
-
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { CandidateList } from "../CandidateList";
+import { describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
+import { CandidateList } from "../CandidateList";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -31,11 +30,15 @@ describe("CandidateList", () => {
 
     // Correct translation key from component
     expect(screen.queryByTestId("candidate-card")).not.toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.list.noResults")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.list.noResults"),
+    ).toBeInTheDocument();
   });
 
   it("renders list of candidates", () => {
-    render(<CandidateList candidates={mockCandidates} onCandidateClick={vi.fn()} />);
+    render(
+      <CandidateList candidates={mockCandidates} onCandidateClick={vi.fn()} />,
+    );
 
     expect(screen.getAllByTestId("candidate-card")).toHaveLength(2);
     expect(screen.getByText("John Doe")).toBeInTheDocument();

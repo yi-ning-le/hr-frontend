@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { JobPositionForm } from "../JobPositionForm";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { JobPosition } from "@/types/job";
+import { JobPositionForm } from "../JobPositionForm";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -13,15 +13,21 @@ vi.mock("react-i18next", () => ({
 
 // Mock child form components
 vi.mock("../JobBasicInfoFields", () => ({
-  JobBasicInfoFields: () => <div data-testid="basic-info-fields">JobBasicInfoFields</div>,
+  JobBasicInfoFields: () => (
+    <div data-testid="basic-info-fields">JobBasicInfoFields</div>
+  ),
 }));
 
 vi.mock("../JobDateStatusFields", () => ({
-  JobDateStatusFields: () => <div data-testid="date-status-fields">JobDateStatusFields</div>,
+  JobDateStatusFields: () => (
+    <div data-testid="date-status-fields">JobDateStatusFields</div>
+  ),
 }));
 
 vi.mock("../JobDescriptionFields", () => ({
-  JobDescriptionFields: () => <div data-testid="description-fields">JobDescriptionFields</div>,
+  JobDescriptionFields: () => (
+    <div data-testid="description-fields">JobDescriptionFields</div>
+  ),
 }));
 
 describe("JobPositionForm", () => {
@@ -47,13 +53,17 @@ describe("JobPositionForm", () => {
   it("renders cancel button when onCancel is provided", () => {
     render(<JobPositionForm {...defaultProps} />);
 
-    expect(screen.getByText("recruitment.jobs.form.cancel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.cancel"),
+    ).toBeInTheDocument();
   });
 
   it("does not render cancel button when onCancel is not provided", () => {
     render(<JobPositionForm onSubmit={vi.fn()} />);
 
-    expect(screen.queryByText("recruitment.jobs.form.cancel")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("recruitment.jobs.form.cancel"),
+    ).not.toBeInTheDocument();
   });
 
   it("calls onCancel when cancel button is clicked", () => {
@@ -80,7 +90,9 @@ describe("JobPositionForm", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(<JobPositionForm {...defaultProps} className="custom-class" />);
+    const { container } = render(
+      <JobPositionForm {...defaultProps} className="custom-class" />,
+    );
 
     const form = container.querySelector("form");
     expect(form).toHaveClass("custom-class");

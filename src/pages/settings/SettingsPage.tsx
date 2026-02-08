@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUserRole } from "@/hooks/useUserRole";
 import { CandidateStatusSettings } from "@/pages/settings/components/CandidateStatusSettings";
 import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
-import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
 import { HRManagement } from "@/pages/settings/components/HRManagement";
-import { useUserRole } from "@/hooks/useUserRole";
+import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
 
 export interface SettingsPageProps {
   activeTab?: string;

@@ -1,5 +1,7 @@
-import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 type ActivityType = "leave" | "onboard" | "update" | "expense";
 
@@ -64,7 +64,7 @@ const recentActivities: Activity[] = [
 
 export function RecentActivities() {
   const { t, i18n } = useTranslation();
-  const isZh = i18n.language === 'zh-CN';
+  const isZh = i18n.language === "zh-CN";
 
   return (
     <Card className="border-0 bg-white shadow-lg shadow-slate-200/50 dark:bg-slate-900 dark:shadow-slate-900/50">
@@ -73,7 +73,9 @@ export function RecentActivities() {
           <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white">
             {t("home.recentActivities.title")}
           </CardTitle>
-          <CardDescription>{t("home.recentActivities.description")}</CardDescription>
+          <CardDescription>
+            {t("home.recentActivities.description")}
+          </CardDescription>
         </div>
         <Button
           variant="ghost"

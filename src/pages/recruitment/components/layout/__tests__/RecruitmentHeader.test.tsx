@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { RecruitmentHeader } from "../RecruitmentHeader";
 
 // Mock react-i18next
@@ -23,7 +23,9 @@ describe("RecruitmentHeader", () => {
     const onAddJob = vi.fn();
     render(<RecruitmentHeader onAddJob={onAddJob} />);
 
-    expect(screen.getByRole("button", { name: "recruitment.addJob" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "recruitment.addJob" }),
+    ).toBeInTheDocument();
   });
 
   it("calls onAddJob when button is clicked", () => {

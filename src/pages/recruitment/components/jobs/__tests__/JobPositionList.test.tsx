@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { JobPositionList } from "../JobPositionList";
+import { describe, expect, it, vi } from "vitest";
 import type { JobPosition } from "@/types/job";
+import { JobPositionList } from "../JobPositionList";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -41,7 +41,9 @@ describe("JobPositionList", () => {
     expect(screen.getByText("recruitment.jobs.department")).toBeInTheDocument();
     expect(screen.getByText("recruitment.jobs.headCount")).toBeInTheDocument();
     expect(screen.getByText("recruitment.jobs.openDate")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.jobs.quickAction")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.quickAction"),
+    ).toBeInTheDocument();
     expect(screen.getByText("recruitment.jobs.note")).toBeInTheDocument();
 
     // Status header appears multiple times (table header + filter)
@@ -60,7 +62,11 @@ describe("JobPositionList", () => {
     render(<JobPositionList jobs={mockJobs} onEdit={vi.fn()} />);
 
     // Matched with actual component keys
-    expect(screen.getAllByText("recruitment.jobs.statusOptions.open").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("recruitment.jobs.statusOptions.closed").length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText("recruitment.jobs.statusOptions.open").length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText("recruitment.jobs.statusOptions.closed").length,
+    ).toBeGreaterThan(0);
   });
 });

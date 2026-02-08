@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { LoginForm } from "./LoginForm";
 import { SocialLoginButtons } from "./SocialLoginButtons";
-import { useAuthStore } from "@/stores/useAuthStore";
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -11,7 +11,9 @@ export function LoginPage() {
   return (
     <div className="grid gap-6">
       <div className="grid gap-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">{t("auth.login.welcomeTitle")}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("auth.login.welcomeTitle")}
+        </h1>
       </div>
 
       <LoginForm />

@@ -1,18 +1,18 @@
-import { useState, useMemo } from "react";
-import type { JobPosition } from "@/types/job";
-import { JobPositionList } from "./JobPositionList";
-import { JobDialogs } from "./JobDialogs";
-import type { JobFormValues } from "./forms/JobPositionForm";
-import { useJobStore } from "@/stores/useJobStore";
-import {
-  useJobs,
-  useCreateJob,
-  useUpdateJob,
-  useDeleteJob,
-  useToggleJobStatus,
-} from "@/hooks/queries/useJobs";
+import { useMemo, useState } from "react";
 import { useCandidates } from "@/hooks/queries/useCandidates";
+import {
+  useCreateJob,
+  useDeleteJob,
+  useJobs,
+  useToggleJobStatus,
+  useUpdateJob,
+} from "@/hooks/queries/useJobs";
+import { useJobStore } from "@/stores/useJobStore";
 import type { Candidate } from "@/types/candidate";
+import type { JobPosition } from "@/types/job";
+import type { JobFormValues } from "./forms/JobPositionForm";
+import { JobDialogs } from "./JobDialogs";
+import { JobPositionList } from "./JobPositionList";
 
 /**
  * JobManagementTab component extracts the job-related logic and UI from RecruitmentPage.

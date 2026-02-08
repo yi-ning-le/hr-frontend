@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { CandidateInfoSection } from "../CandidateInfoSection";
+import { describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
+import { CandidateInfoSection } from "../CandidateInfoSection";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -33,7 +33,7 @@ describe("CandidateInfoSection", () => {
     render(<CandidateInfoSection candidate={mockCandidate} />);
 
     expect(
-      screen.getByText("recruitment.candidates.detail.basicInfo")
+      screen.getByText("recruitment.candidates.detail.basicInfo"),
     ).toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe("CandidateInfoSection", () => {
     render(<CandidateInfoSection candidate={mockCandidate} />);
 
     expect(
-      screen.getByText("recruitment.candidates.detail.email")
+      screen.getByText("recruitment.candidates.detail.email"),
     ).toBeInTheDocument();
     expect(screen.getByText("john@example.com")).toBeInTheDocument();
   });
@@ -50,7 +50,7 @@ describe("CandidateInfoSection", () => {
     render(<CandidateInfoSection candidate={mockCandidate} />);
 
     expect(
-      screen.getByText("recruitment.candidates.detail.phone")
+      screen.getByText("recruitment.candidates.detail.phone"),
     ).toBeInTheDocument();
     expect(screen.getByText("1234567890")).toBeInTheDocument();
   });
@@ -59,7 +59,7 @@ describe("CandidateInfoSection", () => {
     render(<CandidateInfoSection candidate={mockCandidate} />);
 
     expect(
-      screen.getByText("recruitment.candidates.detail.education")
+      screen.getByText("recruitment.candidates.detail.education"),
     ).toBeInTheDocument();
     expect(screen.getByText("Bachelor Degree")).toBeInTheDocument();
   });
@@ -68,7 +68,7 @@ describe("CandidateInfoSection", () => {
     render(<CandidateInfoSection candidate={mockCandidate} />);
 
     expect(
-      screen.getByText("recruitment.candidates.detail.appliedAt")
+      screen.getByText("recruitment.candidates.detail.appliedAt"),
     ).toBeInTheDocument();
     // Check formatted date
     expect(screen.getByText("2024-01-15 10:30")).toBeInTheDocument();

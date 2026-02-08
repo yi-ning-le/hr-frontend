@@ -1,7 +1,6 @@
-
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { RecentApplications } from "../RecentApplications";
 
 // Mock translation
@@ -15,14 +14,18 @@ describe("RecentApplications", () => {
   it("renders recent applications list", () => {
     render(<RecentApplications />);
 
-    expect(screen.getByText("recruitment.overview.recentApplications.title")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.overview.recentApplications.title"),
+    ).toBeInTheDocument();
 
     // Check for some static mock data that is hardcoded in the component
     expect(screen.getByText("张伟")).toBeInTheDocument();
     expect(screen.getByText("李娜")).toBeInTheDocument();
 
     // Check status rendering
-    expect(screen.getAllByText("recruitment.candidates.statusOptions.new").length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText("recruitment.candidates.statusOptions.new").length,
+    ).toBeGreaterThan(0);
   });
 
   it("renders correct roles", () => {

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CalendarTab } from "../CalendarTab";
 
 // Mock react-i18next
@@ -27,7 +27,9 @@ describe("CalendarTab", () => {
   it("renders placeholder description", () => {
     render(<CalendarTab />);
 
-    expect(screen.getByText("recruitment.calendar.placeholder")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.calendar.placeholder"),
+    ).toBeInTheDocument();
   });
 
   it("renders with dashed border container", () => {

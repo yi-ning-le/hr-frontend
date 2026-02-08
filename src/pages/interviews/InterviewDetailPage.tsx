@@ -1,18 +1,19 @@
-import { useState } from "react";
-import { useParams, Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { Link, useParams } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   ArrowLeft,
+  Briefcase,
   Calendar,
   Clock,
-  User,
-  Briefcase,
+  FileText,
   MapPin,
   Save,
-  FileText,
+  User,
 } from "lucide-react";
-
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,17 +22,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { useCandidates } from "@/hooks/queries/useCandidates";
 import {
   useInterview,
   useUpdateInterviewNotes,
 } from "@/hooks/queries/useInterviews";
-import { useCandidates } from "@/hooks/queries/useCandidates";
-import { toast } from "sonner";
 
 export function InterviewDetailPage() {
   const { interviewId } = useParams({

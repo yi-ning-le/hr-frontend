@@ -1,5 +1,5 @@
+import { Check, FileText, Pencil, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { FileText, Pencil, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { Candidate } from "@/types/candidate";
@@ -29,7 +29,8 @@ export function CandidateNoteSection({
     <section className="space-y-4 pb-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-          <FileText className="h-4 w-4" /> {t("recruitment.candidates.detail.interviewerNotes")}
+          <FileText className="h-4 w-4" />{" "}
+          {t("recruitment.candidates.detail.interviewerNotes")}
         </h4>
         {!isEditingNote && (
           <Button

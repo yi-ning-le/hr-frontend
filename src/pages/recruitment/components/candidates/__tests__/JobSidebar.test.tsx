@@ -1,9 +1,8 @@
-
 // @vitest-environment jsdom
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { JobSidebar } from "../JobSidebar";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { JobPosition } from "@/types/job";
+import { JobSidebar } from "../JobSidebar";
 
 // Mock translation
 vi.mock("react-i18next", () => ({
@@ -13,11 +12,14 @@ vi.mock("react-i18next", () => ({
 }));
 
 // Mock ResizeObserver
-vi.stubGlobal('ResizeObserver', class ResizeObserver {
-  observe() { }
-  unobserve() { }
-  disconnect() { }
-} as typeof globalThis.ResizeObserver);
+vi.stubGlobal(
+  "ResizeObserver",
+  class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as typeof globalThis.ResizeObserver,
+);
 
 describe("JobSidebar", () => {
   const mockJobs: JobPosition[] = [
@@ -52,8 +54,12 @@ describe("JobSidebar", () => {
   it("renders correctly with jobs", () => {
     render(<JobSidebar {...defaultProps} />);
 
-    expect(screen.getByText("recruitment.candidates.sidebar.title")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.candidates.sidebar.allPositions")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.sidebar.title"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.sidebar.allPositions"),
+    ).toBeInTheDocument();
     expect(screen.getByText("8")).toBeInTheDocument(); // Total candidates count
 
     // Check departments are rendered
@@ -64,7 +70,9 @@ describe("JobSidebar", () => {
   it("filters jobs based on search query", async () => {
     render(<JobSidebar {...defaultProps} />);
 
-    const searchInput = screen.getByPlaceholderText("recruitment.candidates.sidebar.searchPlaceholder");
+    const searchInput = screen.getByPlaceholderText(
+      "recruitment.candidates.sidebar.searchPlaceholder",
+    );
     fireEvent.change(searchInput, { target: { value: "Frontend" } });
 
     // Engineering department should still be there (contains Frontend Engineer)
@@ -94,7 +102,9 @@ describe("JobSidebar", () => {
   it("calls onSelectJob with 'all' when 'All Positions' is clicked", () => {
     render(<JobSidebar {...defaultProps} selectedJobId="job-1" />);
 
-    const allPositionsButton = screen.getByText("recruitment.candidates.sidebar.allPositions");
+    const allPositionsButton = screen.getByText(
+      "recruitment.candidates.sidebar.allPositions",
+    );
     fireEvent.click(allPositionsButton);
 
     expect(defaultProps.onSelectJob).toHaveBeenCalledWith("all");
@@ -102,7 +112,9 @@ describe("JobSidebar", () => {
 
   it("expands all departments by default", () => {
     render(<JobSidebar {...defaultProps} />);
-    const engineeringTrigger = screen.getByText("Engineering").closest('button');
-    expect(engineeringTrigger).toHaveAttribute('data-state', 'open');
+    const engineeringTrigger = screen
+      .getByText("Engineering")
+      .closest("button");
+    expect(engineeringTrigger).toHaveAttribute("data-state", "open");
   });
 });

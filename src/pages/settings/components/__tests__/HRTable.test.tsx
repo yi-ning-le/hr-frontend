@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
-import { HRTable } from "../HRTable";
+import { describe, expect, it, vi } from "vitest";
 import type { HREmployee } from "@/lib/api";
+import { HRTable } from "../HRTable";
 
 // Mock translation
 vi.mock("react-i18next", () => ({

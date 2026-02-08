@@ -1,5 +1,11 @@
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 interface DepartmentStat {
@@ -9,10 +15,26 @@ interface DepartmentStat {
 }
 
 const departmentStats: DepartmentStat[] = [
-  { nameKey: "home.departmentStats.departments.tech", count: 156, percentage: 35 },
-  { nameKey: "home.departmentStats.departments.product", count: 89, percentage: 20 },
-  { nameKey: "home.departmentStats.departments.marketing", count: 67, percentage: 15 },
-  { nameKey: "home.departmentStats.departments.operations", count: 78, percentage: 17 },
+  {
+    nameKey: "home.departmentStats.departments.tech",
+    count: 156,
+    percentage: 35,
+  },
+  {
+    nameKey: "home.departmentStats.departments.product",
+    count: 89,
+    percentage: 20,
+  },
+  {
+    nameKey: "home.departmentStats.departments.marketing",
+    count: 67,
+    percentage: 15,
+  },
+  {
+    nameKey: "home.departmentStats.departments.operations",
+    count: 78,
+    percentage: 17,
+  },
   { nameKey: "home.departmentStats.departments.hr", count: 58, percentage: 13 },
 ];
 
@@ -25,7 +47,9 @@ export function DepartmentStats() {
         <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white">
           {t("home.departmentStats.title")}
         </CardTitle>
-        <CardDescription>{t("home.departmentStats.description")}</CardDescription>
+        <CardDescription>
+          {t("home.departmentStats.description")}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -39,7 +63,8 @@ export function DepartmentStats() {
                   {t(dept.nameKey)}
                 </span>
                 <span className="text-sm text-slate-500 dark:text-slate-400">
-                  {dept.count}{t("common.people")}
+                  {dept.count}
+                  {t("common.people")}
                 </span>
               </div>
               <Progress value={dept.percentage} className="h-2" />

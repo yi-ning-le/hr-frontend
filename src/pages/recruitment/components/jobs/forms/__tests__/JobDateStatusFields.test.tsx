@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { useForm, FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
+import { describe, expect, it, vi } from "vitest";
 import { JobDateStatusFields } from "../JobDateStatusFields";
 import type { JobFormValues } from "../JobPositionForm";
 
@@ -13,7 +13,11 @@ vi.mock("react-i18next", () => ({
 }));
 
 // Render helper that uses the wrapper's control
-function RenderableJobDateStatusFields({ withDate = true }: { withDate?: boolean }) {
+function RenderableJobDateStatusFields({
+  withDate = true,
+}: {
+  withDate?: boolean;
+}) {
   const form = useForm<JobFormValues>({
     defaultValues: {
       title: "",
@@ -37,19 +41,25 @@ describe("JobDateStatusFields", () => {
   it("renders open date field with label", () => {
     render(<RenderableJobDateStatusFields />);
 
-    expect(screen.getByText("recruitment.jobs.form.openDateLabel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.openDateLabel"),
+    ).toBeInTheDocument();
   });
 
   it("renders status field with label", () => {
     render(<RenderableJobDateStatusFields />);
 
-    expect(screen.getByText("recruitment.jobs.form.statusLabel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.statusLabel"),
+    ).toBeInTheDocument();
   });
 
   it("renders date picker trigger button when no date", () => {
     render(<RenderableJobDateStatusFields withDate={false} />);
 
-    expect(screen.getByText("recruitment.jobs.form.selectDate")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.selectDate"),
+    ).toBeInTheDocument();
   });
 
   it("renders status select with trigger", () => {

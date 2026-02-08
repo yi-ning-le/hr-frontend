@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { JobDialogs } from "../JobDialogs";
+import { describe, expect, it, vi } from "vitest";
 import type { JobPosition } from "@/types/job";
+import { JobDialogs } from "../JobDialogs";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -17,7 +17,9 @@ vi.mock("../forms/JobPositionForm", () => ({
 }));
 
 vi.mock("../JobPositionDetail", () => ({
-  JobPositionDetail: () => <div data-testid="job-detail">JobPositionDetail</div>,
+  JobPositionDetail: () => (
+    <div data-testid="job-detail">JobPositionDetail</div>
+  ),
 }));
 
 describe("JobDialogs", () => {
@@ -30,7 +32,7 @@ describe("JobDialogs", () => {
         handleSaveJob={vi.fn()}
         viewingJob={undefined}
         setViewingJob={vi.fn()}
-      />
+      />,
     );
     expect(screen.queryByTestId("job-form")).not.toBeInTheDocument();
   });
@@ -44,10 +46,12 @@ describe("JobDialogs", () => {
         handleSaveJob={vi.fn()}
         viewingJob={undefined}
         setViewingJob={vi.fn()}
-      />
+      />,
     );
 
-    expect(screen.getByText("recruitment.jobs.dialog.addTitle")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.dialog.addTitle"),
+    ).toBeInTheDocument();
     expect(screen.getByTestId("job-form")).toBeInTheDocument();
   });
 
@@ -61,10 +65,12 @@ describe("JobDialogs", () => {
         handleSaveJob={vi.fn()}
         viewingJob={undefined}
         setViewingJob={vi.fn()}
-      />
+      />,
     );
 
-    expect(screen.getByText("recruitment.jobs.dialog.editTitle")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.dialog.editTitle"),
+    ).toBeInTheDocument();
     expect(screen.getByTestId("job-form")).toBeInTheDocument();
   });
 
@@ -78,7 +84,7 @@ describe("JobDialogs", () => {
         handleSaveJob={vi.fn()}
         viewingJob={mockJob}
         setViewingJob={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByTestId("job-detail")).toBeInTheDocument();

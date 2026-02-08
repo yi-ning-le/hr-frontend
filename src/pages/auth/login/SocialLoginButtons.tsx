@@ -1,13 +1,16 @@
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface SocialLoginButtonsProps {
   className?: string;
   disabled?: boolean;
 }
 
-export function SocialLoginButtons({ className, disabled }: SocialLoginButtonsProps) {
+export function SocialLoginButtons({
+  className,
+  disabled,
+}: SocialLoginButtonsProps) {
   const { t } = useTranslation();
 
   return (

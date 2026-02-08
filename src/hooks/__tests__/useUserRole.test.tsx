@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
-import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useUserRole, USER_ROLE_QUERY_KEY } from "../useUserRole";
+import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RecruitmentAPI } from "@/lib/api";
+import { USER_ROLE_QUERY_KEY, useUserRole } from "../useUserRole";
 
 // Mock the API
 vi.mock("@/lib/api", () => ({

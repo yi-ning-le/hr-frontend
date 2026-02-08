@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 
 // The i18n mock is already set up in test/i18n-mock.ts

@@ -1,9 +1,8 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, Shield } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { RecruitmentAPI, EmployeesAPI } from "@/lib/api";
-import type { Recruiter, EmployeeAPIResponse } from "@/lib/api";
-import { useUserRole } from "@/hooks/useUserRole";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -11,11 +10,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toast } from "sonner";
-import { Shield, Loader2 } from "lucide-react";
-
-import { RecruiterTable } from "./RecruiterTable";
+import { useUserRole } from "@/hooks/useUserRole";
+import type { EmployeeAPIResponse, Recruiter } from "@/lib/api";
+import { EmployeesAPI, RecruitmentAPI } from "@/lib/api";
 import { AddRecruiterDialog } from "./AddRecruiterDialog";
+import { RecruiterTable } from "./RecruiterTable";
 
 export function RecruiterManagement() {
   const { t } = useTranslation();

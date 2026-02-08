@@ -1,9 +1,7 @@
+import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 import type { CandidateStatusDefinition as CandidateStatus } from "@/types/candidate";
 import { CandidateStatusDialog } from "./candidate-status/CandidateStatusDialog";
 import { StatusItem } from "./candidate-status/StatusItem";

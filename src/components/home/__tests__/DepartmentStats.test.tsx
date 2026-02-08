@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { DepartmentStats } from "../DepartmentStats";
 
 // Mock react-i18next
-vi.mock('react-i18next', () => ({
+vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
-    i18n: { language: 'zh-CN' },
+    i18n: { language: "zh-CN" },
   }),
 }));
 
@@ -15,17 +15,29 @@ describe("DepartmentStats", () => {
     render(<DepartmentStats />);
 
     expect(screen.getByText("home.departmentStats.title")).toBeInTheDocument();
-    expect(screen.getByText("home.departmentStats.description")).toBeInTheDocument();
+    expect(
+      screen.getByText("home.departmentStats.description"),
+    ).toBeInTheDocument();
   });
 
   it("renders all department names", () => {
     render(<DepartmentStats />);
 
-    expect(screen.getByText("home.departmentStats.departments.tech")).toBeInTheDocument();
-    expect(screen.getByText("home.departmentStats.departments.product")).toBeInTheDocument();
-    expect(screen.getByText("home.departmentStats.departments.marketing")).toBeInTheDocument();
-    expect(screen.getByText("home.departmentStats.departments.operations")).toBeInTheDocument();
-    expect(screen.getByText("home.departmentStats.departments.hr")).toBeInTheDocument();
+    expect(
+      screen.getByText("home.departmentStats.departments.tech"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("home.departmentStats.departments.product"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("home.departmentStats.departments.marketing"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("home.departmentStats.departments.operations"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("home.departmentStats.departments.hr"),
+    ).toBeInTheDocument();
   });
 
   it("renders department employee counts", () => {

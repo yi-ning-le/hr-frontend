@@ -1,16 +1,16 @@
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Maximize2 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { FormControl, FormLabel } from "@/components/ui/form"
+import { Maximize2 } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import { FormControl, FormLabel } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 interface ExpandableTextareaProps {
   value: string;
@@ -25,10 +25,10 @@ export function ExpandableTextarea({
   onChange,
   placeholder,
   title,
-  className
+  className,
 }: ExpandableTextareaProps) {
-  const { t } = useTranslation()
-  const [isFullScreen, setIsFullScreen] = useState(false)
+  const { t } = useTranslation();
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   return (
     <div className="space-y-1">
@@ -58,7 +58,9 @@ export function ExpandableTextarea({
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>
-              {t("recruitment.jobs.form.expandableTextarea.editTitle", { title })}
+              {t("recruitment.jobs.form.expandableTextarea.editTitle", {
+                title,
+              })}
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto p-1">
@@ -77,5 +79,5 @@ export function ExpandableTextarea({
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

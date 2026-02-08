@@ -1,13 +1,12 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-
+import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -16,13 +15,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { toast } from "sonner";
 
-const createLoginSchema = (t: (key: string) => string) => z.object({
-  username: z.string().min(1, t("auth.login.usernameRequired")),
-  password: z.string().min(1, t("auth.login.passwordRequired")),
-});
+const createLoginSchema = (t: (key: string) => string) =>
+  z.object({
+    username: z.string().min(1, t("auth.login.usernameRequired")),
+    password: z.string().min(1, t("auth.login.passwordRequired")),
+  });
 
 type LoginFormValues = z.infer<ReturnType<typeof createLoginSchema>>;
 
@@ -124,7 +124,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                       <Eye className="size-4" />
                     )}
                     <span className="sr-only">
-                      {showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
+                      {showPassword
+                        ? t("auth.login.hidePassword")
+                        : t("auth.login.showPassword")}
                     </span>
                   </Button>
                 </div>

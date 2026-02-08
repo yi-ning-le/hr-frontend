@@ -1,8 +1,9 @@
-import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
-import { Calendar, User, Clock, Briefcase } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-
+import { format } from "date-fns";
+import { Briefcase, Calendar, Clock, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,12 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
-import { useMyInterviews } from "@/hooks/queries/useInterviews";
 import { useCandidates } from "@/hooks/queries/useCandidates";
+import { useMyInterviews } from "@/hooks/queries/useInterviews";
 
 export function MyInterviewsPage() {
   const { t } = useTranslation();

@@ -1,12 +1,12 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { Route } from "../_protected";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { Route as RootRoute } from "../__root";
+import { Route } from "../_protected";
 
 // Mock window.matchMedia for Toaster/Sonner
 Object.defineProperty(window, "matchMedia", {

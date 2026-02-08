@@ -1,6 +1,6 @@
 import { createRoute } from "@tanstack/react-router";
-import { Route as ProtectedLayoutRoute } from "../_protected";
 import { EmployeesPage } from "@/pages/employees/EmployeesPage";
+import { Route as ProtectedLayoutRoute } from "../_protected";
 
 export const Route = createRoute({
   getParentRoute: () => ProtectedLayoutRoute,

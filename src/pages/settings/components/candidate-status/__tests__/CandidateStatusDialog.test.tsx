@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { CandidateStatusDialog } from "../CandidateStatusDialog";
+import { describe, expect, it, vi } from "vitest";
 import type { CandidateStatusDefinition } from "@/types/candidate";
+import { CandidateStatusDialog } from "../CandidateStatusDialog";
 
 // Mock translation
 vi.mock("react-i18next", () => ({

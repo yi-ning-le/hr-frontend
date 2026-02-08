@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import axios from "axios";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  AuthAPI,
+  CandidatesAPI,
+  JobsAPI,
+  RecruitmentAPI,
   setAuthToken,
   setUnauthorizedCallback,
-  AuthAPI,
-  JobsAPI,
-  CandidatesAPI,
-  RecruitmentAPI,
 } from "../api";
 
 // Mock axios

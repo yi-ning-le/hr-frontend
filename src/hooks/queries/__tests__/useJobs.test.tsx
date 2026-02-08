@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useJobs } from "../useJobs";
+import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { JobsAPI } from "@/lib/api";
 import type { JobPosition } from "@/types/job";
+import { useJobs } from "../useJobs";
 
 vi.mock("@/lib/api", () => ({
   JobsAPI: {

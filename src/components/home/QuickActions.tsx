@@ -1,13 +1,13 @@
-import { useTranslation } from "react-i18next";
 import {
-  Users,
-  Clock,
-  ClipboardList,
   Award,
   Building2,
-  TrendingUp,
+  ClipboardList,
+  Clock,
   type LucideIcon,
+  TrendingUp,
+  Users,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,12 +24,36 @@ interface QuickAction {
 }
 
 const quickActions: QuickAction[] = [
-  { titleKey: "home.quickActions.employeeManagement", icon: Users, descriptionKey: "home.quickActions.employeeManagementDesc" },
-  { titleKey: "home.quickActions.attendanceManagement", icon: Clock, descriptionKey: "home.quickActions.attendanceManagementDesc" },
-  { titleKey: "home.quickActions.leaveApproval", icon: ClipboardList, descriptionKey: "home.quickActions.leaveApprovalDesc" },
-  { titleKey: "home.quickActions.performance", icon: Award, descriptionKey: "home.quickActions.performanceDesc" },
-  { titleKey: "home.quickActions.departmentManagement", icon: Building2, descriptionKey: "home.quickActions.departmentManagementDesc" },
-  { titleKey: "home.quickActions.dataAnalysis", icon: TrendingUp, descriptionKey: "home.quickActions.dataAnalysisDesc" },
+  {
+    titleKey: "home.quickActions.employeeManagement",
+    icon: Users,
+    descriptionKey: "home.quickActions.employeeManagementDesc",
+  },
+  {
+    titleKey: "home.quickActions.attendanceManagement",
+    icon: Clock,
+    descriptionKey: "home.quickActions.attendanceManagementDesc",
+  },
+  {
+    titleKey: "home.quickActions.leaveApproval",
+    icon: ClipboardList,
+    descriptionKey: "home.quickActions.leaveApprovalDesc",
+  },
+  {
+    titleKey: "home.quickActions.performance",
+    icon: Award,
+    descriptionKey: "home.quickActions.performanceDesc",
+  },
+  {
+    titleKey: "home.quickActions.departmentManagement",
+    icon: Building2,
+    descriptionKey: "home.quickActions.departmentManagementDesc",
+  },
+  {
+    titleKey: "home.quickActions.dataAnalysis",
+    icon: TrendingUp,
+    descriptionKey: "home.quickActions.dataAnalysisDesc",
+  },
 ];
 
 export function QuickActions() {

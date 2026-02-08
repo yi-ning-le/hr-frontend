@@ -1,7 +1,7 @@
 import { Outlet } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { useTranslation } from "react-i18next";
 
 interface AuthLayoutProps {
   className?: string;

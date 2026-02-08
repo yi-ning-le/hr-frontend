@@ -1,14 +1,7 @@
+import { Filter, RefreshCcw, Search, UserPlus, Users } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Users, UserPlus, Search, Filter, RefreshCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,14 +12,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useEmployeeStore } from "@/stores/useEmployeeStore";
-import { useState } from "react";
-import { EmployeeList } from "./components/EmployeeList";
-import { EmployeeFormDialog } from "./components/EmployeeFormDialog";
-import type { Employee } from "@/types/employee";
-import { useEmployees, useDeleteEmployee } from "@/hooks/queries/useEmployees";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useDeleteEmployee, useEmployees } from "@/hooks/queries/useEmployees";
 import { useUserRole } from "@/hooks/useUserRole";
-import { toast } from "sonner";
+import { useEmployeeStore } from "@/stores/useEmployeeStore";
+import type { Employee } from "@/types/employee";
+import { EmployeeFormDialog } from "./components/EmployeeFormDialog";
+import { EmployeeList } from "./components/EmployeeList";
 
 export function EmployeesPage() {
   const { t } = useTranslation();

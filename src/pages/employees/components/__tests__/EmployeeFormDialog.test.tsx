@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
-import { EmployeeFormDialog } from "../EmployeeFormDialog";
+import { describe, expect, it, vi } from "vitest";
 import type { Employee } from "@/types/employee";
+import { EmployeeFormDialog } from "../EmployeeFormDialog";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

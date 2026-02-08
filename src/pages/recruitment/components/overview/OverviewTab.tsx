@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { RecruitmentStats } from "./RecruitmentStats";
 import { RecentApplications } from "./RecentApplications";
+import { RecruitmentStats } from "./RecruitmentStats";
 
 export function OverviewTab() {
   const { t } = useTranslation();
@@ -21,28 +21,36 @@ export function OverviewTab() {
             </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-500">{t("recruitment.overview.funnel.screening")}</span>
+                <span className="text-slate-500">
+                  {t("recruitment.overview.funnel.screening")}
+                </span>
                 <span className="font-bold">120</span>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-blue-500 w-full"></div>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-500">{t("recruitment.overview.funnel.firstInterview")}</span>
+                <span className="text-slate-500">
+                  {t("recruitment.overview.funnel.firstInterview")}
+                </span>
                 <span className="font-bold">45</span>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-blue-500 w-[37%]"></div>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-500">{t("recruitment.overview.funnel.secondInterview")}</span>
+                <span className="text-slate-500">
+                  {t("recruitment.overview.funnel.secondInterview")}
+                </span>
                 <span className="font-bold">12</span>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-blue-500 w-[10%]"></div>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-500">{t("recruitment.overview.funnel.offer")}</span>
+                <span className="text-slate-500">
+                  {t("recruitment.overview.funnel.offer")}
+                </span>
                 <span className="font-bold">5</span>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">

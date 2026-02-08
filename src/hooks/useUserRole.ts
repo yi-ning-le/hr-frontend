@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { RecruitmentAPI } from "@/lib/api";
 import type { RecruitmentRoleResponse } from "@/lib/api";
+import { RecruitmentAPI } from "@/lib/api";
 
 /**
  * Query key for user role data

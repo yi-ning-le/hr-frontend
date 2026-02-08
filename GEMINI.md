@@ -67,7 +67,9 @@ The project uses `bun` (or `npm`) scripts defined in `package.json`:
 
 *   **Start Development Server:** `bun run dev`
 *   **Build for Production:** `bun run build` (Runs `tsc` and then Vite build)
-*   **Lint Code:** `bun run lint` (Uses ESLint)
+*   **Lint Code:** `bun run lint` (Uses **Biome** for linting)
+*   **Format Code:** `bun run format` (Uses **Biome** for formatting)
+*   **Check & Fix:** `bun run check` (Uses **Biome** for linting, formatting, and import sorting)
 *   **Run Tests:** `bun run test` (Vitest watch mode)
 *   **Run Tests Once:** `bun run test:run`
 *   **Test Coverage:** `bun run test:coverage`

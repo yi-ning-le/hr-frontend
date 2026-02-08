@@ -1,18 +1,18 @@
+import { Briefcase, Download, FileText, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Download, FileText, Briefcase, X } from "lucide-react";
-import type { Candidate } from "@/types/candidate";
-import { PdfPreview } from "./PdfPreview";
-import { useJobs } from "@/hooks/queries/useJobs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useJobs } from "@/hooks/queries/useJobs";
+import type { Candidate } from "@/types/candidate";
 import type { JobPosition } from "@/types/job";
+import { PdfPreview } from "./PdfPreview";
 
 interface ResumePreviewModalProps {
   candidate: Candidate | null;

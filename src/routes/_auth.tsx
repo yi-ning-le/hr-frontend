@@ -1,7 +1,7 @@
 import { createRoute, redirect } from "@tanstack/react-router";
-import { Route as RootRoute } from "./__root";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Route as RootRoute } from "./__root";
 
 export const Route = createRoute({
   getParentRoute: () => RootRoute,

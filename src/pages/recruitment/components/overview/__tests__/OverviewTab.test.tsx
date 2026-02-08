@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { OverviewTab } from "../OverviewTab";
 
 // Mock react-i18next
@@ -12,11 +12,15 @@ vi.mock("react-i18next", () => ({
 
 // Mock child components
 vi.mock("../RecruitmentStats", () => ({
-  RecruitmentStats: () => <div data-testid="recruitment-stats">RecruitmentStats</div>,
+  RecruitmentStats: () => (
+    <div data-testid="recruitment-stats">RecruitmentStats</div>
+  ),
 }));
 
 vi.mock("../RecentApplications", () => ({
-  RecentApplications: () => <div data-testid="recent-applications">RecentApplications</div>,
+  RecentApplications: () => (
+    <div data-testid="recent-applications">RecentApplications</div>
+  ),
 }));
 
 describe("OverviewTab", () => {
@@ -35,16 +39,26 @@ describe("OverviewTab", () => {
   it("renders recruitment funnel section", () => {
     render(<OverviewTab />);
 
-    expect(screen.getByText("recruitment.overview.funnel.title")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.overview.funnel.title"),
+    ).toBeInTheDocument();
   });
 
   it("renders funnel stages", () => {
     render(<OverviewTab />);
 
-    expect(screen.getByText("recruitment.overview.funnel.screening")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.overview.funnel.firstInterview")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.overview.funnel.secondInterview")).toBeInTheDocument();
-    expect(screen.getByText("recruitment.overview.funnel.offer")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.overview.funnel.screening"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.overview.funnel.firstInterview"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.overview.funnel.secondInterview"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.overview.funnel.offer"),
+    ).toBeInTheDocument();
   });
 
   it("renders funnel stage counts", () => {

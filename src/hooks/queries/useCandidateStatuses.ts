@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { CandidateStatusesAPI } from "@/lib/api";
 import type { CandidateStatusDefinition } from "@/types/candidate";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
 
 export const CANDIDATE_STATUSES_QUERY_KEY = ["candidate-statuses"] as const;
 

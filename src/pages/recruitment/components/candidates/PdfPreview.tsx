@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import {
+  AlertCircle,
   ChevronLeft,
   ChevronRight,
-  ZoomIn,
-  ZoomOut,
-  RotateCw,
-  Maximize2,
   FileText,
   Loader2,
-  AlertCircle,
+  Maximize2,
+  RotateCw,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 // This ensures the worker version matches the library version exactly
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
+  import.meta.url,
 ).toString();
 
 interface PdfPreviewProps {
@@ -54,7 +54,9 @@ export function PdfPreview({
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef({ top: 0, left: 0 });
   const [minHeight, setMinHeight] = useState<number | undefined>(undefined);
-  const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+  const [containerWidth, setContainerWidth] = useState<number | undefined>(
+    undefined,
+  );
 
   // Reset state when URL changes to avoid stale state between candidates
   useEffect(() => {
@@ -82,12 +84,14 @@ export function PdfPreview({
     return () => observer.disconnect();
   }, []);
 
-
-  const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-    setLoading(false);
-    setError(null);
-  }, []);
+  const onDocumentLoadSuccess = useCallback(
+    ({ numPages }: { numPages: number }) => {
+      setNumPages(numPages);
+      setLoading(false);
+      setError(null);
+    },
+    [],
+  );
 
   const onDocumentLoadError = useCallback((error: Error) => {
     console.error("PDF Load Error:", error);
@@ -141,14 +145,16 @@ export function PdfPreview({
   }, []);
 
   // Calculate page width based on container
-  const pageWidth = containerWidth ? Math.min(containerWidth - 48, 800) * scale : undefined;
+  const pageWidth = containerWidth
+    ? Math.min(containerWidth - 48, 800) * scale
+    : undefined;
 
   return (
     <div
       ref={containerRef}
       className={cn(
         "flex flex-col rounded-xl border bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden",
-        className
+        className,
       )}
     >
       {/* Toolbar */}
@@ -248,7 +254,10 @@ export function PdfPreview({
       <div
         ref={contentAreaRef}
         className="flex-1 overflow-auto flex items-start justify-center p-4"
-        style={{ maxHeight, minHeight: minHeight ? `${minHeight}px` : undefined }}
+        style={{
+          maxHeight,
+          minHeight: minHeight ? `${minHeight}px` : undefined,
+        }}
       >
         {error ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-4">

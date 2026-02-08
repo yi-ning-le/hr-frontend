@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { RecentActivities } from "../RecentActivities";
 
 // Mock react-i18next
-vi.mock('react-i18next', () => ({
+vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
-    i18n: { language: 'zh-CN' },
+    i18n: { language: "zh-CN" },
   }),
 }));
 
@@ -15,7 +15,9 @@ describe("RecentActivities", () => {
     render(<RecentActivities />);
 
     expect(screen.getByText("home.recentActivities.title")).toBeInTheDocument();
-    expect(screen.getByText("home.recentActivities.description")).toBeInTheDocument();
+    expect(
+      screen.getByText("home.recentActivities.description"),
+    ).toBeInTheDocument();
   });
 
   it("renders the view all button", () => {
@@ -54,9 +56,17 @@ describe("RecentActivities", () => {
   it("renders activity type badges with translation keys", () => {
     render(<RecentActivities />);
 
-    expect(screen.getByText("home.recentActivities.activityTypes.leave")).toBeInTheDocument();
-    expect(screen.getByText("home.recentActivities.activityTypes.onboard")).toBeInTheDocument();
-    expect(screen.getByText("home.recentActivities.activityTypes.update")).toBeInTheDocument();
-    expect(screen.getByText("home.recentActivities.activityTypes.expense")).toBeInTheDocument();
+    expect(
+      screen.getByText("home.recentActivities.activityTypes.leave"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("home.recentActivities.activityTypes.onboard"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("home.recentActivities.activityTypes.update"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("home.recentActivities.activityTypes.expense"),
+    ).toBeInTheDocument();
   });
 });

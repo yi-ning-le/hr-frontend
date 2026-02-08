@@ -1,20 +1,13 @@
+import { MoreHorizontal, Pencil, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MoreHorizontal, Pencil, Trash2, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -22,12 +15,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 import type {
+  CandidateStatusDefinition as ApiCandidateStatus,
   Candidate,
   CandidateStatus,
-  CandidateStatusDefinition as ApiCandidateStatus,
 } from "@/types/candidate";
-import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 import { AssignInterviewerDialog } from "../../interviews/AssignInterviewerDialog";
 
 interface CandidateDetailHeaderProps {

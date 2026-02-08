@@ -1,7 +1,6 @@
-
 // @vitest-environment jsdom
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { PdfPreview } from "../PdfPreview";
 
 // Mock translation
@@ -18,32 +17,45 @@ vi.mock("react-pdf", () => ({
       workerSrc: "",
     },
   },
-  Document: ({ children, onLoadSuccess, file }: { children?: React.ReactNode; onLoadSuccess?: (pdf: { numPages: number }) => void; file: string }) => {
+  Document: ({
+    children,
+    onLoadSuccess,
+    file,
+  }: {
+    children?: React.ReactNode;
+    onLoadSuccess?: (pdf: { numPages: number }) => void;
+    file: string;
+  }) => {
     // Simulate async load success
     setTimeout(() => {
       if (onLoadSuccess) onLoadSuccess({ numPages: 5 });
     }, 10);
-    return <div data-testid="pdf-document" data-file={file}>{children}</div>;
+    return (
+      <div data-testid="pdf-document" data-file={file}>
+        {children}
+      </div>
+    );
   },
   Page: ({ pageNumber }: { pageNumber: number }) => {
     return <div data-testid="pdf-page">Page {pageNumber}</div>;
-  }
+  },
 }));
 
 // Mock ResizeObserver
-vi.stubGlobal('ResizeObserver', class ResizeObserver {
-  observe() { }
-  unobserve() { }
-  disconnect() { }
-} as typeof globalThis.ResizeObserver);
+vi.stubGlobal(
+  "ResizeObserver",
+  class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as typeof globalThis.ResizeObserver,
+);
 
 describe("PdfPreview", () => {
   const defaultProps = {
     url: "http://example.com/test.pdf",
     onFullscreen: vi.fn(),
   };
-
-
 
   it("renders pages after loading", async () => {
     render(<PdfPreview {...defaultProps} />);
@@ -70,7 +82,9 @@ describe("PdfPreview", () => {
   });
 
   it("zooms in and out", async () => {
-    const { container } = render(<PdfPreview {...defaultProps} showToolbar={true} />);
+    const { container } = render(
+      <PdfPreview {...defaultProps} showToolbar={true} />,
+    );
     // Wait for loading to finish (indicated by page count)
     await screen.findByText("1 / 5");
 

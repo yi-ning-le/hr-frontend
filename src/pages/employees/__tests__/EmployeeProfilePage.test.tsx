@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { EmployeeProfilePage } from "../EmployeeProfilePage";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Employee } from "@/types/employee";
+import { EmployeeProfilePage } from "../EmployeeProfilePage";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

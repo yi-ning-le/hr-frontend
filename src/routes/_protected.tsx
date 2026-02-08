@@ -1,9 +1,9 @@
-import { createRoute, redirect, Outlet } from "@tanstack/react-router";
-import { Route as RootRoute } from "./__root";
-import { Header } from "@/components/layout/Header";
+import { createRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 import { Toaster } from "@/components/ui/sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Route as RootRoute } from "./__root";
 
 // Before load guard - checks authentication
 function beforeLoadGuard() {

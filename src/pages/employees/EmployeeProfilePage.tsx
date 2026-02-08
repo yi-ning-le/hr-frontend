@@ -1,21 +1,21 @@
-import { useTranslation } from "react-i18next";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
+  Briefcase,
+  Building2,
+  Calendar,
   Mail,
   Phone,
-  Building2,
-  Briefcase,
-  Calendar,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEmployees } from "@/hooks/queries/useEmployees";
-import { Link } from "@tanstack/react-router";
 import { Route } from "@/routes/_protected/employees.$employeeId";
-import { useMemo } from "react";
 
 export function EmployeeProfilePage() {
   const { t } = useTranslation();

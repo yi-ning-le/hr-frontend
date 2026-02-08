@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { CandidateNoteSection } from "../CandidateNoteSection";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
+import { CandidateNoteSection } from "../CandidateNoteSection";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
@@ -43,7 +43,7 @@ describe("CandidateNoteSection", () => {
     render(<CandidateNoteSection {...defaultProps} />);
 
     expect(
-      screen.getByText("recruitment.candidates.detail.interviewerNotes")
+      screen.getByText("recruitment.candidates.detail.interviewerNotes"),
     ).toBeInTheDocument();
   });
 
@@ -60,11 +60,11 @@ describe("CandidateNoteSection", () => {
         <CandidateNoteSection
           {...defaultProps}
           candidate={candidateWithoutNote}
-        />
+        />,
       );
 
       expect(
-        screen.getByText("recruitment.candidates.detail.noNotesYet")
+        screen.getByText("recruitment.candidates.detail.noNotesYet"),
       ).toBeInTheDocument();
     });
 
@@ -77,7 +77,9 @@ describe("CandidateNoteSection", () => {
 
     it("calls onEditClick when edit button is clicked", () => {
       const onEditClick = vi.fn();
-      render(<CandidateNoteSection {...defaultProps} onEditClick={onEditClick} />);
+      render(
+        <CandidateNoteSection {...defaultProps} onEditClick={onEditClick} />,
+      );
 
       const editButton = screen.getByRole("button");
       fireEvent.click(editButton);
@@ -87,7 +89,9 @@ describe("CandidateNoteSection", () => {
 
     it("calls onEditClick when note area is clicked", () => {
       const onEditClick = vi.fn();
-      render(<CandidateNoteSection {...defaultProps} onEditClick={onEditClick} />);
+      render(
+        <CandidateNoteSection {...defaultProps} onEditClick={onEditClick} />,
+      );
 
       const noteArea = screen.getByText("This is a test note");
       fireEvent.click(noteArea);
@@ -121,7 +125,7 @@ describe("CandidateNoteSection", () => {
     it("calls onNoteChange when typing in textarea", () => {
       const onNoteChange = vi.fn();
       render(
-        <CandidateNoteSection {...editModeProps} onNoteChange={onNoteChange} />
+        <CandidateNoteSection {...editModeProps} onNoteChange={onNoteChange} />,
       );
 
       const textarea = screen.getByRole("textbox");
@@ -132,7 +136,9 @@ describe("CandidateNoteSection", () => {
 
     it("calls onNoteSave when save button is clicked", () => {
       const onNoteSave = vi.fn();
-      render(<CandidateNoteSection {...editModeProps} onNoteSave={onNoteSave} />);
+      render(
+        <CandidateNoteSection {...editModeProps} onNoteSave={onNoteSave} />,
+      );
 
       const saveButton = screen.getByText("common.save");
       fireEvent.click(saveButton);
@@ -143,7 +149,7 @@ describe("CandidateNoteSection", () => {
     it("calls onNoteCancel when cancel button is clicked", () => {
       const onNoteCancel = vi.fn();
       render(
-        <CandidateNoteSection {...editModeProps} onNoteCancel={onNoteCancel} />
+        <CandidateNoteSection {...editModeProps} onNoteCancel={onNoteCancel} />,
       );
 
       const cancelButton = screen.getByText("common.cancel");

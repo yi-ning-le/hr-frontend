@@ -8,7 +8,9 @@ export function RegisterPage() {
   return (
     <div className="grid gap-6">
       <div className="grid gap-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">{t("auth.register.createAccount")}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("auth.register.createAccount")}
+        </h1>
         <p className="text-muted-foreground text-sm">
           {t("auth.register.subtitle")}
         </p>
@@ -28,17 +30,11 @@ export function RegisterPage() {
 
       <p className="text-center text-xs text-muted-foreground">
         {t("auth.register.termsPrefix")}{" "}
-        <a
-          href="#"
-          className="underline underline-offset-4 hover:text-primary"
-        >
+        <a href="#" className="underline underline-offset-4 hover:text-primary">
           {t("auth.register.termsOfService")}
         </a>{" "}
         {t("auth.register.and")}{" "}
-        <a
-          href="#"
-          className="underline underline-offset-4 hover:text-primary"
-        >
+        <a href="#" className="underline underline-offset-4 hover:text-primary">
           {t("auth.register.privacyPolicy")}
         </a>
       </p>

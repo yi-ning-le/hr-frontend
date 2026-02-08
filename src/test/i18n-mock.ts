@@ -24,5 +24,3 @@ vi.mock("react-i18next", () => ({
     init: vi.fn(),
   },
 }));
-
-export {};

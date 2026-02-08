@@ -1,37 +1,37 @@
-import { useTranslation } from "react-i18next"
-import type { Control } from "react-hook-form"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import type { Control } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import type { JobFormValues } from "./JobPositionForm"
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import type { JobFormValues } from "./JobPositionForm";
 
 interface JobDateStatusFieldsProps {
-  control: Control<JobFormValues>
+  control: Control<JobFormValues>;
 }
 
 export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -48,7 +48,7 @@ export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
                     variant={"outline"}
                     className={cn(
                       "w-full pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      !field.value && "text-muted-foreground",
                     )}
                   >
                     {field.value ? (
@@ -65,9 +65,7 @@ export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
                   mode="single"
                   selected={field.value}
                   onSelect={field.onChange}
-                  disabled={(date) =>
-                    date < new Date("1900-01-01")
-                  }
+                  disabled={(date) => date < new Date("1900-01-01")}
                   initialFocus
                 />
               </PopoverContent>
@@ -86,12 +84,18 @@ export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("recruitment.jobs.form.selectStatus")} />
+                  <SelectValue
+                    placeholder={t("recruitment.jobs.form.selectStatus")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="OPEN">{t("recruitment.jobs.statusOptions.open")}</SelectItem>
-                <SelectItem value="CLOSED">{t("recruitment.jobs.statusOptions.closed")}</SelectItem>
+                <SelectItem value="OPEN">
+                  {t("recruitment.jobs.statusOptions.open")}
+                </SelectItem>
+                <SelectItem value="CLOSED">
+                  {t("recruitment.jobs.statusOptions.closed")}
+                </SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -99,5 +103,5 @@ export function JobDateStatusFields({ control }: JobDateStatusFieldsProps) {
         )}
       />
     </div>
-  )
+  );
 }

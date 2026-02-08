@@ -1,14 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Mock } from "vitest";
 import { redirect } from "@tanstack/react-router";
-import { Route } from "../_auth";
+import type { Mock } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Route } from "../_auth";
 
 // Mock dependencies
 vi.mock("@tanstack/react-router", async () => {
   const actual = await vi.importActual("@tanstack/react-router");
   return {
-    ...actual as Record<string, unknown>,
+    ...(actual as Record<string, unknown>),
     createRoute: <T,>(options: T) => options,
     redirect: vi.fn(),
   };

@@ -1,12 +1,12 @@
-import { useTranslation } from "react-i18next";
 import {
-  Users,
-  UserPlus,
   Calendar,
   Clock,
-  TrendingUp,
   type LucideIcon,
+  TrendingUp,
+  UserPlus,
+  Users,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface StatItem {
@@ -77,16 +77,18 @@ export function StatsCards() {
                 </p>
                 <div className="mt-2 flex items-center gap-1">
                   <TrendingUp
-                    className={`size-4 ${stat.trend === "up"
+                    className={`size-4 ${
+                      stat.trend === "up"
                         ? "text-emerald-500"
                         : "rotate-180 text-red-500"
-                      }`}
+                    }`}
                   />
                   <span
-                    className={`text-sm font-medium ${stat.trend === "up"
+                    className={`text-sm font-medium ${
+                      stat.trend === "up"
                         ? "text-emerald-600 dark:text-emerald-400"
                         : "text-red-600 dark:text-red-400"
-                      }`}
+                    }`}
                   >
                     {stat.change}
                   </span>

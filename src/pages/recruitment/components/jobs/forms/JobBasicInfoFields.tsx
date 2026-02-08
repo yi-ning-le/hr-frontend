@@ -1,21 +1,21 @@
-import { useTranslation } from "react-i18next"
-import type { Control } from "react-hook-form"
+import type { Control } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import type { JobFormValues } from "./JobPositionForm"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import type { JobFormValues } from "./JobPositionForm";
 
 interface JobBasicInfoFieldsProps {
-  control: Control<JobFormValues>
+  control: Control<JobFormValues>;
 }
 
 export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <>
@@ -26,7 +26,11 @@ export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
           <FormItem>
             <FormLabel>{t("recruitment.jobs.form.titleLabel")}</FormLabel>
             <FormControl>
-              <Input placeholder={t("recruitment.jobs.form.titlePlaceholder")} {...field} value={field.value || ''} />
+              <Input
+                placeholder={t("recruitment.jobs.form.titlePlaceholder")}
+                {...field}
+                value={field.value || ""}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -39,9 +43,15 @@ export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
           name="department"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("recruitment.jobs.form.departmentLabel")}</FormLabel>
+              <FormLabel>
+                {t("recruitment.jobs.form.departmentLabel")}
+              </FormLabel>
               <FormControl>
-                <Input placeholder={t("recruitment.jobs.form.departmentPlaceholder")} {...field} value={field.value || ''} />
+                <Input
+                  placeholder={t("recruitment.jobs.form.departmentPlaceholder")}
+                  {...field}
+                  value={field.value || ""}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -55,7 +65,13 @@ export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
             <FormItem>
               <FormLabel>{t("recruitment.jobs.form.headCountLabel")}</FormLabel>
               <FormControl>
-                <Input type="number" min={1} {...field} value={field.value as number} onChange={field.onChange} />
+                <Input
+                  type="number"
+                  min={1}
+                  {...field}
+                  value={field.value as number}
+                  onChange={field.onChange}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -63,5 +79,5 @@ export function JobBasicInfoFields({ control }: JobBasicInfoFieldsProps) {
         />
       </div>
     </>
-  )
+  );
 }

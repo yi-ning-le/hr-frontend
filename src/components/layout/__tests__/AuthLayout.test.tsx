@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { AuthLayout } from "../AuthLayout";
 
 // Mock TanStack Router's Outlet component
@@ -9,7 +9,9 @@ vi.mock("@tanstack/react-router", () => ({
 
 // Mock LanguageSwitcher component
 vi.mock("../LanguageSwitcher", () => ({
-  LanguageSwitcher: () => <div data-testid="language-switcher">Language Switcher</div>,
+  LanguageSwitcher: () => (
+    <div data-testid="language-switcher">Language Switcher</div>
+  ),
 }));
 
 describe("AuthLayout", () => {

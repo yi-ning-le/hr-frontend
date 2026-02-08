@@ -1,10 +1,12 @@
-import { Footer } from "@/components/layout/Footer";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { Footer } from "@/components/layout/Footer";
 
 // Mock LanguageSwitcher component
 vi.mock("@/components/layout/LanguageSwitcher", () => ({
-  LanguageSwitcher: () => <div data-testid="language-switcher">Language Switcher</div>,
+  LanguageSwitcher: () => (
+    <div data-testid="language-switcher">Language Switcher</div>
+  ),
 }));
 
 describe("Footer", () => {

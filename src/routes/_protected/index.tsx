@@ -1,9 +1,9 @@
-import { createRoute } from '@tanstack/react-router'
-import { Route as ProtectedLayoutRoute } from '../_protected'
+import { createRoute } from "@tanstack/react-router";
 import { Home } from "@/components/home/Home";
+import { Route as ProtectedLayoutRoute } from "../_protected";
 
 export const Route = createRoute({
   getParentRoute: () => ProtectedLayoutRoute,
-  path: '/',
+  path: "/",
   component: Home,
-})
+});

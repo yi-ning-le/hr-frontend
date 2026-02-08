@@ -1,10 +1,10 @@
 import axios from "axios";
-import type { JobPosition } from "@/types/job";
 import type {
   Candidate,
   CandidateStatus,
   CandidateStatusDefinition,
 } from "@/types/candidate"; // CandidateStatus is string, Definition is object
+import type { JobPosition } from "@/types/job";
 
 // Create Axios instance with default config
 const api = axios.create({

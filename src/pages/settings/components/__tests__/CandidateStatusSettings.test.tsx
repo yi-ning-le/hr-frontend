@@ -2,9 +2,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { CandidateStatusSettings } from "../CandidateStatusSettings";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CandidateStatusDefinition } from "@/types/candidate";
+import { CandidateStatusSettings } from "../CandidateStatusSettings";
 
 // Mock translation
 vi.mock("react-i18next", () => ({

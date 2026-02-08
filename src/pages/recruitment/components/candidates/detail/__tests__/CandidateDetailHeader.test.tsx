@@ -1,15 +1,15 @@
 // @vitest-environment jsdom
 import {
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
   within,
 } from "@testing-library/react";
-import { describe, it, expect, vi, beforeAll } from "vitest";
-import { CandidateDetailHeader } from "../CandidateDetailHeader";
-import type { Candidate } from "@/types/candidate";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import type { Candidate } from "@/types/candidate";
+import { CandidateDetailHeader } from "../CandidateDetailHeader";
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({

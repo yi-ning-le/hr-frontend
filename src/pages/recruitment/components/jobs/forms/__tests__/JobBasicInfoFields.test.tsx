@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { useForm, FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
+import { describe, expect, it, vi } from "vitest";
 import { JobBasicInfoFields } from "../JobBasicInfoFields";
 import type { JobFormValues } from "../JobPositionForm";
 
@@ -37,25 +37,37 @@ describe("JobBasicInfoFields", () => {
   it("renders title field with label", () => {
     render(<RenderableJobBasicInfoFields />);
 
-    expect(screen.getByText("recruitment.jobs.form.titleLabel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.titleLabel"),
+    ).toBeInTheDocument();
   });
 
   it("renders department field with label", () => {
     render(<RenderableJobBasicInfoFields />);
 
-    expect(screen.getByText("recruitment.jobs.form.departmentLabel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.departmentLabel"),
+    ).toBeInTheDocument();
   });
 
   it("renders headCount field with label", () => {
     render(<RenderableJobBasicInfoFields />);
 
-    expect(screen.getByText("recruitment.jobs.form.headCountLabel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.headCountLabel"),
+    ).toBeInTheDocument();
   });
 
   it("renders input with placeholder text", () => {
     render(<RenderableJobBasicInfoFields />);
 
-    expect(screen.getByPlaceholderText("recruitment.jobs.form.titlePlaceholder")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("recruitment.jobs.form.departmentPlaceholder")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("recruitment.jobs.form.titlePlaceholder"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(
+        "recruitment.jobs.form.departmentPlaceholder",
+      ),
+    ).toBeInTheDocument();
   });
 });

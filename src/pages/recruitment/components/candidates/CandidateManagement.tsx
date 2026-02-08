@@ -1,25 +1,22 @@
+import type { DropResult } from "@hello-pangea/dnd";
+import { LayoutGrid, List as ListIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { LayoutGrid, List as ListIcon } from "lucide-react";
-import type { DropResult } from "@hello-pangea/dnd";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
-import { type Candidate, type CandidateStatus } from "@/types/candidate";
-
-import { JobSidebar } from "./JobSidebar";
-import { CandidateToolbar } from "./CandidateToolbar";
-import { CandidateList } from "./CandidateList";
-import { CandidateDetail } from "./CandidateDetail";
-import { CandidateKanban } from "./CandidateKanban";
-
-import { useCandidateStore } from "@/stores/useCandidateStore";
-import { useJobs } from "@/hooks/queries/useJobs";
 import {
   useCandidates,
   useUpdateCandidateStatus,
 } from "@/hooks/queries/useCandidates";
+import { useJobs } from "@/hooks/queries/useJobs";
+import { useCandidateStore } from "@/stores/useCandidateStore";
+import type { Candidate, CandidateStatus } from "@/types/candidate";
+import { CandidateDetail } from "./CandidateDetail";
+import { CandidateKanban } from "./CandidateKanban";
+import { CandidateList } from "./CandidateList";
+import { CandidateToolbar } from "./CandidateToolbar";
+import { JobSidebar } from "./JobSidebar";
 
 export function CandidateManagement() {
   const { t } = useTranslation();

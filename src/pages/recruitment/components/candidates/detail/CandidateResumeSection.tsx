@@ -1,10 +1,10 @@
+import { FileText, Loader2, UploadCloud } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FileText, Loader2, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PdfPreview } from "../PdfPreview";
-import type { Candidate } from "@/types/candidate";
 import { cn } from "@/lib/utils";
+import type { Candidate } from "@/types/candidate";
+import { PdfPreview } from "../PdfPreview";
 
 interface CandidateResumeSectionProps {
   candidate: Candidate;
@@ -51,7 +51,8 @@ export function CandidateResumeSection({
     <section>
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-          <FileText className="h-4 w-4" /> {t("recruitment.candidates.detail.resumePreview")}
+          <FileText className="h-4 w-4" />{" "}
+          {t("recruitment.candidates.detail.resumePreview")}
         </h4>
         <div className="flex gap-2">
           {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
@@ -87,7 +88,7 @@ export function CandidateResumeSection({
             "rounded-xl border p-8 text-center text-sm text-muted-foreground min-h-[200px] flex flex-col items-center justify-center border-dashed relative transition-all duration-200",
             isDragging
               ? "border-primary bg-primary/5 ring-4 ring-primary/10"
-              : "bg-slate-50/50 dark:bg-slate-900/50 border-muted-foreground/20 hover:bg-muted/50"
+              : "bg-slate-50/50 dark:bg-slate-900/50 border-muted-foreground/20 hover:bg-muted/50",
           )}
         >
           {isUploadingResume ? (
@@ -100,11 +101,13 @@ export function CandidateResumeSection({
               <UploadCloud
                 className={cn(
                   "h-10 w-10 mb-3 transition-colors",
-                  isDragging ? "text-primary opacity-100" : "opacity-20"
+                  isDragging ? "text-primary opacity-100" : "opacity-20",
                 )}
               />
               <p className="font-medium mb-1">
-                {isDragging ? t("recruitment.candidates.detail.dropToUpload") : t("recruitment.candidates.detail.noResume")}
+                {isDragging
+                  ? t("recruitment.candidates.detail.dropToUpload")
+                  : t("recruitment.candidates.detail.noResume")}
               </p>
               <p className="text-xs text-muted-foreground mb-4">
                 {t("recruitment.candidates.detail.uploadHint")}

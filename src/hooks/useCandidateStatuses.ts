@@ -1,9 +1,9 @@
 import {
   useCandidateStatusQueries,
   useCreateCandidateStatus,
-  useUpdateCandidateStatusMutation,
   useDeleteCandidateStatus,
   useReorderCandidateStatuses,
+  useUpdateCandidateStatusMutation,
 } from "./queries/useCandidateStatuses";
 
 /**

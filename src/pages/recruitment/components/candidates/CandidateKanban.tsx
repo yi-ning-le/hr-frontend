@@ -1,13 +1,15 @@
+import type { DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import type { DropResult } from "@hello-pangea/dnd";
-import type { Candidate } from "@/types/candidate";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
-import type { CandidateStatusDefinition as CandidateStatus } from "@/types/candidate";
+import type {
+  Candidate,
+  CandidateStatusDefinition as CandidateStatus,
+} from "@/types/candidate";
 
 interface CandidateKanbanProps {
   candidates: Candidate[];

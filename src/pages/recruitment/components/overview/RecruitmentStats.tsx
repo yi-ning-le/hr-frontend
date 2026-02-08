@@ -1,6 +1,6 @@
+import { Briefcase, Calendar, TrendingUp, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Briefcase, Calendar, TrendingUp } from "lucide-react";
 
 export function RecruitmentStats() {
   const { t } = useTranslation();
@@ -51,9 +51,16 @@ export function RecruitmentStats() {
             <stat.icon className="h-4 w-4 text-slate-500 dark:text-slate-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</div>
-            <p className={`text-xs ${stat.trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'
-              }`}>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              {stat.value}
+            </div>
+            <p
+              className={`text-xs ${
+                stat.trend === "up"
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-slate-500 dark:text-slate-400"
+              }`}
+            >
               {stat.changeValue} {t(stat.changeKey)}
             </p>
           </CardContent>

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { useForm, FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
+import { describe, expect, it, vi } from "vitest";
 import { JobDescriptionFields } from "../JobDescriptionFields";
 import type { JobFormValues } from "../JobPositionForm";
 
@@ -14,7 +14,13 @@ vi.mock("react-i18next", () => ({
 
 // Mock ExpandableTextarea to simplify testing
 vi.mock("../ExpandableTextarea", () => ({
-  ExpandableTextarea: ({ title, placeholder }: { title: string; placeholder: string }) => (
+  ExpandableTextarea: ({
+    title,
+    placeholder,
+  }: {
+    title: string;
+    placeholder: string;
+  }) => (
     <div data-testid="expandable-textarea">
       <label>{title}</label>
       <textarea placeholder={placeholder}></textarea>
@@ -47,13 +53,17 @@ describe("JobDescriptionFields", () => {
   it("renders job description field", () => {
     render(<RenderableJobDescriptionFields />);
 
-    expect(screen.getByText("recruitment.jobs.form.jdLabel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.jdLabel"),
+    ).toBeInTheDocument();
   });
 
   it("renders note field", () => {
     render(<RenderableJobDescriptionFields />);
 
-    expect(screen.getByText("recruitment.jobs.form.noteLabel")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.jobs.form.noteLabel"),
+    ).toBeInTheDocument();
   });
 
   it("renders both expandable textareas", () => {

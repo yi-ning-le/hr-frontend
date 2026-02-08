@@ -1,6 +1,6 @@
+import { isAxiosError } from "axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { isAxiosError } from "axios";
 import { AuthAPI, setAuthToken } from "@/lib/api";
 import i18n from "@/lib/i18n";
 

@@ -1,8 +1,8 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, UserCheck } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { RecruitmentAPI, EmployeesAPI } from "@/lib/api";
-import { useUserRole } from "@/hooks/useUserRole";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,8 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
-import { Loader2, UserCheck } from "lucide-react";
+import { useUserRole } from "@/hooks/useUserRole";
+import { EmployeesAPI, RecruitmentAPI } from "@/lib/api";
 
 interface InterviewTransferDialogProps {
   interviewId: string;

@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { LoginForm } from "../LoginForm";
 
 // Mock react-i18next
@@ -45,14 +45,20 @@ describe("LoginForm", () => {
 
     expect(screen.getByText("auth.login.username")).toBeInTheDocument();
     expect(screen.getByText("auth.login.password")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("auth.login.usernamePlaceholder")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("auth.login.passwordPlaceholder")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("auth.login.usernamePlaceholder"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("auth.login.passwordPlaceholder"),
+    ).toBeInTheDocument();
   });
 
   it("renders submit button", () => {
     render(<LoginForm />);
 
-    expect(screen.getByRole("button", { name: "auth.login.submit" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "auth.login.submit" }),
+    ).toBeInTheDocument();
   });
 
   it("renders forgot password link", () => {
@@ -64,11 +70,15 @@ describe("LoginForm", () => {
   it("toggles password visibility", () => {
     render(<LoginForm />);
 
-    const passwordInput = screen.getByPlaceholderText("auth.login.passwordPlaceholder");
+    const passwordInput = screen.getByPlaceholderText(
+      "auth.login.passwordPlaceholder",
+    );
     expect(passwordInput).toHaveAttribute("type", "password");
 
     // Find the toggle button by its sr-only text
-    const toggleButton = screen.getByRole("button", { name: "auth.login.showPassword" });
+    const toggleButton = screen.getByRole("button", {
+      name: "auth.login.showPassword",
+    });
     fireEvent.click(toggleButton);
 
     expect(passwordInput).toHaveAttribute("type", "text");
@@ -77,7 +87,9 @@ describe("LoginForm", () => {
   it("shows validation error when submitting empty form", async () => {
     render(<LoginForm />);
 
-    const submitButton = screen.getByRole("button", { name: "auth.login.submit" });
+    const submitButton = screen.getByRole("button", {
+      name: "auth.login.submit",
+    });
     fireEvent.click(submitButton);
 
     // Wait for validation messages to appear

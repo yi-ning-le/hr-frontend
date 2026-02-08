@@ -1,36 +1,41 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useTranslation } from "react-i18next"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
-import type { JobPosition } from "@/types/job"
-import { JobBasicInfoFields } from "./JobBasicInfoFields"
-import { JobDateStatusFields } from "./JobDateStatusFields"
-import { JobDescriptionFields } from "./JobDescriptionFields"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import type { JobPosition } from "@/types/job";
+import { JobBasicInfoFields } from "./JobBasicInfoFields";
+import { JobDateStatusFields } from "./JobDateStatusFields";
+import { JobDescriptionFields } from "./JobDescriptionFields";
 
 export interface JobFormValues {
-  title: string
-  department: string
-  headCount: number
-  openDate: Date
-  jobDescription: string
-  note?: string
-  status: "OPEN" | "CLOSED"
+  title: string;
+  department: string;
+  headCount: number;
+  openDate: Date;
+  jobDescription: string;
+  note?: string;
+  status: "OPEN" | "CLOSED";
 }
 
 interface JobPositionFormProps {
-  initialData?: JobPosition
-  onSubmit: (data: JobFormValues) => void
-  onCancel?: () => void
-  className?: string
+  initialData?: JobPosition;
+  onSubmit: (data: JobFormValues) => void;
+  onCancel?: () => void;
+  className?: string;
 }
 
-export function JobPositionForm({ initialData, onSubmit, onCancel, className }: JobPositionFormProps) {
-  const { t } = useTranslation()
+export function JobPositionForm({
+  initialData,
+  onSubmit,
+  onCancel,
+  className,
+}: JobPositionFormProps) {
+  const { t } = useTranslation();
 
   const jobFormSchema = z.object({
     title: z.string().min(2, {
@@ -48,7 +53,7 @@ export function JobPositionForm({ initialData, onSubmit, onCancel, className }: 
     }),
     note: z.string().optional(),
     status: z.enum(["OPEN", "CLOSED"]).default("OPEN"),
-  })
+  });
 
   const form = useForm<JobFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,15 +67,18 @@ export function JobPositionForm({ initialData, onSubmit, onCancel, className }: 
       note: initialData?.note || "",
       status: initialData?.status || "OPEN",
     },
-  })
+  });
 
   function handleSubmit(data: JobFormValues) {
-    onSubmit(data)
+    onSubmit(data);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className={cn("flex flex-col h-full", className)}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className={cn("flex flex-col h-full", className)}
+      >
         <div className="flex-1 overflow-y-auto space-y-4 min-h-0 p-1">
           <JobBasicInfoFields control={form.control} />
           <JobDateStatusFields control={form.control} />
@@ -87,5 +95,5 @@ export function JobPositionForm({ initialData, onSubmit, onCancel, className }: 
         </div>
       </form>
     </Form>
-  )
+  );
 }

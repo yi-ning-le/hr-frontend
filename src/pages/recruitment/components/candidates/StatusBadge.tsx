@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
+import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 import { cn } from "@/lib/utils";
 import type { CandidateStatus } from "@/types/candidate"; // This is likely string now
-import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 
 interface StatusBadgeProps {
   status: CandidateStatus;

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // We need to mock the import.meta.env before importing i18n
 vi.mock("i18next-browser-languagedetector", () => ({

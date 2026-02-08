@@ -2,9 +2,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
-import { AddRecruiterDialog } from "../AddRecruiterDialog";
+import { describe, expect, it, vi } from "vitest";
 import type { EmployeeAPIResponse } from "@/lib/api";
+import { AddRecruiterDialog } from "../AddRecruiterDialog";
 
 // Mock translation
 vi.mock("react-i18next", () => ({

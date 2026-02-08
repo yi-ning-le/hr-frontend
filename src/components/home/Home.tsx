@@ -1,27 +1,27 @@
 import { useTranslation } from "react-i18next";
-import { StatsCards } from "./StatsCards";
+import { DepartmentStats } from "./DepartmentStats";
 import { QuickActions } from "./QuickActions";
 import { RecentActivities } from "./RecentActivities";
-import { DepartmentStats } from "./DepartmentStats";
+import { StatsCards } from "./StatsCards";
 
 export function Home() {
   const { t, i18n } = useTranslation();
 
   const formatDate = () => {
     const date = new Date();
-    if (i18n.language === 'zh-CN') {
-      return date.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long'
+    if (i18n.language === "zh-CN") {
+      return date.toLocaleDateString("zh-CN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long",
       });
     }
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 

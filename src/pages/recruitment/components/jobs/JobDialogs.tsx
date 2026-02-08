@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { JobPositionForm, type JobFormValues } from "./forms/JobPositionForm";
-import { JobPositionDetail } from "./JobPositionDetail";
 import type { JobPosition } from "@/types/job";
+import { type JobFormValues, JobPositionForm } from "./forms/JobPositionForm";
+import { JobPositionDetail } from "./JobPositionDetail";
 
 interface JobDialogsProps {
   isDialogOpen: boolean;
@@ -32,7 +32,10 @@ export function JobDialogs({
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col" aria-describedby="job-description-content">
+        <DialogContent
+          className="sm:max-w-[700px] max-h-[90vh] flex flex-col"
+          aria-describedby="job-description-content"
+        >
           <DialogHeader className="flex-shrink-0">
             <DialogTitle>
               {editingJob
@@ -54,7 +57,10 @@ export function JobDialogs({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!viewingJob} onOpenChange={(open) => !open && setViewingJob(undefined)}>
+      <Dialog
+        open={!!viewingJob}
+        onOpenChange={(open) => !open && setViewingJob(undefined)}
+      >
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col">
           <DialogHeader className="flex-shrink-0">
             <DialogTitle>{viewingJob?.title}</DialogTitle>

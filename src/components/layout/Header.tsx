@@ -1,14 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
-  Building2,
   Bell,
+  Building2,
   LogOut,
   Settings,
   User as UserIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { toast } from "sonner";
 
 export function Header() {
   const { t } = useTranslation();

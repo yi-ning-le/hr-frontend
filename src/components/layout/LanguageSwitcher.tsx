@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next";
 import { Languages } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,7 +16,8 @@ const languages = [
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
+  const currentLanguage =
+    languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode);
@@ -35,7 +36,11 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
-            className={currentLanguage.code === language.code ? "bg-slate-100 dark:bg-slate-800" : ""}
+            className={
+              currentLanguage.code === language.code
+                ? "bg-slate-100 dark:bg-slate-800"
+                : ""
+            }
           >
             <span className="mr-2">{language.flag}</span>
             {language.label}

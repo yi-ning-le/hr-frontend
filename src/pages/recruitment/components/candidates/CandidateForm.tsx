@@ -1,8 +1,9 @@
-import { useEffect } from "react";
-import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
+import { type Resolver, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -21,8 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useJobs } from "@/hooks/queries/useJobs";
-import { Loader2 } from "lucide-react";
 import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 import type { CandidateStatusDefinition as CandidateStatus } from "@/types/candidate";
 

@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { CandidateToolbar } from "../CandidateToolbar";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { CandidateStatus } from "@/types/candidate";
+import { CandidateToolbar } from "../CandidateToolbar";
 
 // Mock translation
 vi.mock("react-i18next", () => ({

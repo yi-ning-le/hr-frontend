@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { LoginPage } from "../LoginPage";
 
 // Mock react-i18next
@@ -22,7 +22,9 @@ vi.mock("../LoginForm", () => ({
 }));
 
 vi.mock("../SocialLoginButtons", () => ({
-  SocialLoginButtons: () => <div data-testid="social-buttons">SocialLoginButtons</div>,
+  SocialLoginButtons: () => (
+    <div data-testid="social-buttons">SocialLoginButtons</div>
+  ),
 }));
 
 // Mock useAuthStore

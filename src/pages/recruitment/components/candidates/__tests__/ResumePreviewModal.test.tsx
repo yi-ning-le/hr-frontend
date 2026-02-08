@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ResumePreviewModal } from "../ResumePreviewModal";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
+import { ResumePreviewModal } from "../ResumePreviewModal";
 
 // Mock translation
 vi.mock("react-i18next", () => ({

@@ -1,19 +1,19 @@
-import { useState, useMemo, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { Briefcase, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import type { JobPosition } from "@/types/job";
 import { cn } from "@/lib/utils";
+import type { JobPosition } from "@/types/job";
 
 interface JobSidebarProps {
   jobs: JobPosition[];
@@ -38,7 +38,7 @@ export function JobSidebar({
     return jobs.filter(
       (job) =>
         job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.department.toLowerCase().includes(searchQuery.toLowerCase())
+        job.department.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [jobs, searchQuery]);
 
@@ -52,7 +52,10 @@ export function JobSidebar({
     return groups;
   }, [filteredJobs, t]);
 
-  const departments = useMemo(() => Object.keys(groupedJobs).sort(), [groupedJobs]);
+  const departments = useMemo(
+    () => Object.keys(groupedJobs).sort(),
+    [groupedJobs],
+  );
 
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
@@ -88,7 +91,9 @@ export function JobSidebar({
             className="w-full justify-between mb-2"
             onClick={() => onSelectJob("all")}
           >
-            <span className="truncate">{t("recruitment.candidates.sidebar.allPositions")}</span>
+            <span className="truncate">
+              {t("recruitment.candidates.sidebar.allPositions")}
+            </span>
             <Badge variant="secondary" className="ml-auto text-xs">
               {totalCandidates}
             </Badge>
@@ -108,8 +113,14 @@ export function JobSidebar({
               <AccordionItem key={dept} value={dept} className="border-none">
                 <AccordionTrigger className="hover:no-underline py-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {dept}
-                  <Badge variant="outline" className="ml-auto text-[10px] font-normal">
-                    {groupedJobs[dept].reduce((acc, job) => acc + (jobCounts[job.id] || 0), 0)}
+                  <Badge
+                    variant="outline"
+                    className="ml-auto text-[10px] font-normal"
+                  >
+                    {groupedJobs[dept].reduce(
+                      (acc, job) => acc + (jobCounts[job.id] || 0),
+                      0,
+                    )}
                   </Badge>
                 </AccordionTrigger>
                 <AccordionContent className="pb-1">
@@ -117,10 +128,12 @@ export function JobSidebar({
                     {groupedJobs[dept].map((job) => (
                       <Button
                         key={job.id}
-                        variant={selectedJobId === job.id ? "secondary" : "ghost"}
+                        variant={
+                          selectedJobId === job.id ? "secondary" : "ghost"
+                        }
                         className={cn(
                           "w-full justify-between h-9 px-2 pl-4 text-sm font-normal",
-                          selectedJobId === job.id && "bg-secondary"
+                          selectedJobId === job.id && "bg-secondary",
                         )}
                         onClick={() => onSelectJob(job.id)}
                       >
