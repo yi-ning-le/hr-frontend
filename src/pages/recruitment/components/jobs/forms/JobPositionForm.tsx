@@ -13,15 +13,26 @@ import { JobBasicInfoFields } from "./JobBasicInfoFields";
 import { JobDateStatusFields } from "./JobDateStatusFields";
 import { JobDescriptionFields } from "./JobDescriptionFields";
 
-export interface JobFormValues {
-  title: string;
-  department: string;
-  headCount: number;
-  openDate: Date;
-  jobDescription: string;
-  note?: string;
-  status: "OPEN" | "CLOSED";
-}
+const createJobFormSchema = (t: (key: string) => string) =>
+  z.object({
+    title: z.string().min(2, {
+      message: t("recruitment.jobs.form.validation.titleMin"),
+    }),
+    department: z.string().min(1, {
+      message: t("recruitment.jobs.form.validation.departmentRequired"),
+    }),
+    headCount: z.coerce.number().min(1, {
+      message: t("recruitment.jobs.form.validation.headCountMin"),
+    }),
+    openDate: z.date(),
+    jobDescription: z.string().min(10, {
+      message: t("recruitment.jobs.form.validation.jdMin"),
+    }),
+    note: z.string().optional(),
+    status: z.enum(["OPEN", "CLOSED"]).default("OPEN"),
+  });
+
+export type JobFormValues = z.infer<ReturnType<typeof createJobFormSchema>>;
 
 interface JobPositionFormProps {
   initialData?: JobPosition;
@@ -38,49 +49,28 @@ export function JobPositionForm({
 }: JobPositionFormProps) {
   const { t } = useTranslation();
 
-  const jobFormSchema = useMemo(
-    () =>
-      z.object({
-        title: z.string().min(2, {
-          message: t("recruitment.jobs.form.validation.titleMin"),
-        }),
-        department: z.string().min(1, {
-          message: t("recruitment.jobs.form.validation.departmentRequired"),
-        }),
-        headCount: z.coerce.number().min(1, {
-          message: t("recruitment.jobs.form.validation.headCountMin"),
-        }),
-        openDate: z.date(),
-        jobDescription: z.string().min(10, {
-          message: t("recruitment.jobs.form.validation.jdMin"),
-        }),
-        note: z.string().optional(),
-        status: z.enum(["OPEN", "CLOSED"]).default("OPEN"),
-      }),
-    [t],
-  );
+  const formSchema = useMemo(() => createJobFormSchema(t), [t]);
 
   const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema) as Resolver<JobFormValues>,
+    resolver: zodResolver(formSchema) as Resolver<JobFormValues>,
     defaultValues: {
       title: initialData?.title || "",
       department: initialData?.department || "",
       headCount: initialData?.headCount || 1,
-      openDate: initialData?.openDate as Date,
+      // Ensure date is a Date object, handling potential string input from API
+      openDate: initialData?.openDate
+        ? new Date(initialData.openDate)
+        : new Date(),
       jobDescription: initialData?.jobDescription || "",
       note: initialData?.note || "",
       status: initialData?.status || "OPEN",
     },
   });
 
-  function handleSubmit(data: JobFormValues) {
-    onSubmit(data);
-  }
-
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit(onSubmit)}
         className={cn("flex flex-col h-full", className)}
       >
         <div className="flex-1 overflow-y-auto space-y-4 min-h-0 p-1">
