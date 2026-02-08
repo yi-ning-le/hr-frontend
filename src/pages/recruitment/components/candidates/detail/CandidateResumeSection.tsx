@@ -74,6 +74,7 @@ export function CandidateResumeSection({
           type="button"
         >
           <PdfPreview
+            key={candidate.resumeUrl}
             pdfUrl={candidate.resumeUrl}
             maxHeight="300px"
             showToolbar={false}

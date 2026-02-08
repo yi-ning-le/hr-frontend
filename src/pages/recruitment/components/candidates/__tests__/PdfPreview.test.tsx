@@ -129,7 +129,11 @@ describe("PdfPreview", () => {
 
     // Change URL
     rerender(
-      <PdfPreview {...defaultProps} pdfUrl="http://example.com/other.pdf" />,
+      <PdfPreview
+        key="http://example.com/other.pdf"
+        {...defaultProps}
+        pdfUrl="http://example.com/other.pdf"
+      />,
     );
 
     // Page number should reset to 1
