@@ -1,5 +1,11 @@
 // @vitest-environment jsdom
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { CandidateDetailHeader } from "../CandidateDetailHeader";
 import type { Candidate } from "@/types/candidate";
@@ -43,6 +49,15 @@ vi.mock("@/hooks/useCandidateStatuses", () => ({
     },
   }),
 }));
+
+vi.mock(
+  "@/pages/recruitment/components/interviews/AssignInterviewerDialog",
+  () => ({
+    AssignInterviewerDialog: () => (
+      <div data-testid="assign-interviewer-dialog" />
+    ),
+  }),
+);
 
 // Mock DOM APIs for Radix UI in jsdom
 beforeAll(() => {
@@ -112,7 +127,9 @@ describe("CandidateDetailHeader", () => {
   it("renders channel and experience badges", () => {
     renderWithDialog();
 
-    expect(screen.getByText("LinkedIn")).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.form.channels.linkedin"),
+    ).toBeInTheDocument();
     expect(
       screen.getByText("recruitment.candidates.card.yearsExp"),
     ).toBeInTheDocument();
@@ -125,6 +142,46 @@ describe("CandidateDetailHeader", () => {
     expect(
       screen.getByText("recruitment.candidates.statusOptions.new"),
     ).toBeInTheDocument();
+  });
+
+  it("translates candidate channel", () => {
+    renderWithDialog();
+    // The component currently renders candidate.channel directly.
+    // We expect it to use the translation key.
+    expect(
+      screen.getByText("recruitment.candidates.form.channels.linkedin"),
+    ).toBeInTheDocument();
+  });
+
+  it("renders assign interviewer button only within the dropdown menu", async () => {
+    const { baseElement } = renderWithDialog();
+
+    // Initially, it should not be present in the document
+    expect(
+      screen.queryByText("recruitment.candidates.detail.assignInterviewer"),
+    ).not.toBeInTheDocument();
+
+    // Find and click the dropdown trigger
+    const trigger = screen.getByRole("button", { name: "common.openMenu" });
+    fireEvent.pointerDown(trigger);
+    fireEvent.pointerUp(trigger);
+    fireEvent.click(trigger);
+
+    // Now it should be present in the portal (often rendered in body/baseElement)
+    await waitFor(() => {
+      const items = screen.queryAllByText(
+        "recruitment.candidates.detail.assignInterviewer",
+      );
+      // If it's still missing, check baseElement explicitly
+      if (items.length === 0) {
+        const portalItems = within(baseElement).queryAllByText(
+          "recruitment.candidates.detail.assignInterviewer",
+        );
+        expect(portalItems.length).toBe(1);
+      } else {
+        expect(items.length).toBe(1);
+      }
+    });
   });
 
   it("renders dropdown menu trigger button", () => {

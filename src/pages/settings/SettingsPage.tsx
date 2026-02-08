@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CandidateStatusSettings } from "@/pages/settings/components/CandidateStatusSettings";
 import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
 import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
+import { HRManagement } from "@/pages/settings/components/HRManagement";
 import { useUserRole } from "@/hooks/useUserRole";
 
 export interface SettingsPageProps {
@@ -25,13 +26,18 @@ export function SettingsPage({ activeTab, onTabChange }: SettingsPageProps) {
       label: t("settings.tabs.general", "General"),
       component: <GeneralSettings />,
     },
-    // Admin-only tab
+    // Admin-only tabs
     ...(isAdmin
       ? [
           {
             id: "recruiters",
             label: t("settings.tabs.recruiters", "Recruiters"),
             component: <RecruiterManagement />,
+          },
+          {
+            id: "hr-management",
+            label: t("settings.tabs.hrManagement", "HR Management"),
+            component: <HRManagement />,
           },
         ]
       : []),

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Users, UserPlus, Search, Filter } from "lucide-react";
+import { Users, UserPlus, Search, Filter, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +25,7 @@ import { EmployeeList } from "./components/EmployeeList";
 import { EmployeeFormDialog } from "./components/EmployeeFormDialog";
 import type { Employee } from "@/types/employee";
 import { useEmployees, useDeleteEmployee } from "@/hooks/queries/useEmployees";
+import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "sonner";
 
 export function EmployeesPage() {
@@ -41,6 +42,9 @@ export function EmployeesPage() {
 
   const { mutateAsync: deleteEmployee, isPending: isDeleting } =
     useDeleteEmployee();
+
+  // Check if current user is HR
+  const { isHR } = useUserRole();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
@@ -135,10 +139,25 @@ export function EmployeesPage() {
             </p>
           </div>
         </div>
-        <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          {t("employees.addEmployee", "Add Employee")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="text-sm text-muted-foreground mr-4">
+            {t("common.total", "Total")}: {total}
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => window.location.reload()}
+            title={t("common.refresh", "Refresh")}
+          >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
+          {isHR && (
+            <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              {t("employees.addEmployee", "Add Employee")}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
@@ -195,6 +214,7 @@ export function EmployeesPage() {
           onEdit={handleEditEmployee}
           onDelete={handleDeleteClick}
           onView={handleViewEmployee}
+          isHR={isHR}
         />
       </div>
 

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CandidateStatusesAPI } from "@/lib/api";
 import type { CandidateStatusDefinition } from "@/types/candidate";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const CANDIDATE_STATUSES_QUERY_KEY = ["candidate-statuses"] as const;
 
@@ -25,21 +26,23 @@ export const useCandidateStatusQueries = () => {
 
 export const useCreateCandidateStatus = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   return useMutation({
     mutationFn: ({ name, color }: { name: string; color: string }) =>
       CandidateStatusesAPI.create(name, color),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CANDIDATE_STATUSES_QUERY_KEY });
-      toast.success("Status created");
+      toast.success(t("settings.candidateStatus.messages.createSuccess"));
     },
     onError: () => {
-      toast.error("Failed to create status");
+      toast.error(t("settings.candidateStatus.messages.createError"));
     },
   });
 };
 
 export const useUpdateCandidateStatusMutation = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   return useMutation({
     mutationFn: ({
       id,
@@ -52,37 +55,39 @@ export const useUpdateCandidateStatusMutation = () => {
     }) => CandidateStatusesAPI.update(id, name, color),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CANDIDATE_STATUSES_QUERY_KEY });
-      toast.success("Status updated");
+      toast.success(t("settings.candidateStatus.messages.updateSuccess"));
     },
     onError: () => {
-      toast.error("Failed to update status");
+      toast.error(t("settings.candidateStatus.messages.updateError"));
     },
   });
 };
 
 export const useDeleteCandidateStatus = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   return useMutation({
     mutationFn: (id: string) => CandidateStatusesAPI.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CANDIDATE_STATUSES_QUERY_KEY });
-      toast.success("Status deleted");
+      toast.success(t("settings.candidateStatus.messages.deleteSuccess"));
     },
     onError: () => {
-      toast.error("Failed to delete status");
+      toast.error(t("settings.candidateStatus.messages.deleteError"));
     },
   });
 };
 
 export const useReorderCandidateStatuses = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   return useMutation({
     mutationFn: (ids: string[]) => CandidateStatusesAPI.reorder(ids),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CANDIDATE_STATUSES_QUERY_KEY });
     },
     onError: () => {
-      toast.error("Failed to reorder statuses");
+      toast.error(t("settings.candidateStatus.messages.reorderError"));
     },
   });
 };

@@ -3,13 +3,14 @@ import { RecruitmentPage } from "../RecruitmentPage";
 import { describe, it, expect, vi } from "vitest";
 
 // Mock react-i18next
-vi.mock('react-i18next', () => ({
+vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: {
-      language: 'zh-CN',
+      language: "zh-CN",
     },
   }),
+  initReactI18next: { type: "3rdParty" },
 }));
 
 // Mock subcomponents
@@ -33,11 +34,15 @@ vi.mock("../../../stores/useJobStore", () => ({
 }));
 
 vi.mock("../components/overview/RecruitmentStats", () => ({
-  RecruitmentStats: () => <div data-testid="recruitment-stats">Stats Component</div>,
+  RecruitmentStats: () => (
+    <div data-testid="recruitment-stats">Stats Component</div>
+  ),
 }));
 
 vi.mock("../components/overview/RecentApplications", () => ({
-  RecentApplications: () => <div data-testid="recent-applications">Applications Component</div>,
+  RecentApplications: () => (
+    <div data-testid="recent-applications">Applications Component</div>
+  ),
 }));
 
 vi.mock("../components/candidates/PdfPreview", () => ({

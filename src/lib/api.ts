@@ -336,6 +336,7 @@ export interface RecruitmentRoleResponse {
   isAdmin: boolean;
   isRecruiter: boolean;
   isInterviewer: boolean;
+  isHR: boolean;
 }
 
 // Recruiter type
@@ -345,6 +346,14 @@ export interface Recruiter {
   lastName: string;
   department: string;
   avatar?: string;
+}
+
+// HREmployee type
+export interface HREmployee {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  department: string;
 }
 
 export const RecruitmentAPI = {
@@ -376,5 +385,19 @@ export const RecruitmentAPI = {
     await api.post(`/recruitment/interviews/${interviewId}/transfer`, {
       newInterviewerId,
     });
+  },
+
+  // HR Management APIs
+  getHRs: async (): Promise<HREmployee[]> => {
+    const response = await api.get<HREmployee[]>("/recruitment/admin/hrs");
+    return response.data;
+  },
+
+  assignHR: async (employeeId: string): Promise<void> => {
+    await api.post("/recruitment/admin/hrs", { employeeId });
+  },
+
+  revokeHR: async (employeeId: string): Promise<void> => {
+    await api.delete("/recruitment/admin/hrs", { data: { employeeId } });
   },
 };

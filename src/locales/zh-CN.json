@@ -22,13 +22,16 @@
     "people": "人",
     "percentage": "占比",
     "actions": "操作",
+    "openMenu": "打开菜单",
     "uncategorized": "未分类",
     "clearFilter": "清除筛选",
     "noResults": "没有找到结果",
     "resultsCount": "共找到 {{count}} 条结果",
     "saveChanges": "保存修改",
     "areYouSure": "您确定吗？",
-    "create": "创建"
+    "create": "创建",
+    "assign": "分配",
+    "pickDate": "选择日期"
   },
   "nav": {
     "overview": "概览",
@@ -223,6 +226,8 @@
       "list": {
         "noResults": "未找到符合条件的候选人"
       },
+      "unknownCandidate": "未知候选人",
+      "unknownPosition": "未知职位",
       "dialog": {
         "addTitle": "添加候选人",
         "editTitle": "编辑候选人",
@@ -253,6 +258,7 @@
       },
       "detail": {
         "appliedPosition": "申请职位：",
+        "assignInterviewer": "安排面试",
         "basicInfo": "基本信息",
         "email": "邮箱",
         "phone": "电话",
@@ -374,6 +380,42 @@
     "calendar": {
       "title": "面试日历",
       "placeholder": "在此展示面试安排日程。"
+    },
+    "interviews": {
+      "assignTitle": "安排面试",
+      "assignDescription": "为 {{candidateName}} 设定面试安排。",
+      "assignSuccess": "面试安排成功",
+      "assignFailed": "面试安排失败",
+      "interviewer": "面试官",
+      "selectInterviewer": "选择面试官",
+      "scheduledTime": "面试时间",
+      "initialNotes": "初始备注",
+      "notesPlaceholder": "添加面试备注或说明...",
+      "myInterviews": "我的面试",
+      "noInterviews": "暂无面试安排",
+      "noInterviewsDesc": "您目前没有即将进行的面试。",
+      "viewDetails": "查看详情",
+      "validation": {
+        "interviewerRequired": "请选择面试官",
+        "scheduledTimeRequired": "请选择面试时间"
+      },
+      "status": {
+        "PENDING": "待定",
+        "CONFIRMED": "已确认",
+        "COMPLETED": "已完成",
+        "CANCELLED": "已取消",
+        "RESCHEDULED": "已改期"
+      }
+    },
+    "transfer": {
+      "title": "转交面试",
+      "description": "将此面试转交给其他员工。",
+      "descriptionWithName": "将 {{name}} 的面试转交给其他员工。",
+      "selectEmployee": "选择新面试官",
+      "placeholder": "选择员工",
+      "confirm": "转交",
+      "success": "面试转交成功",
+      "error": "面试转交失败"
     }
   },
   "pdf": {
@@ -443,7 +485,9 @@
       "phoneMin": "电话至少10位",
       "departmentRequired": "请输入部门",
       "positionRequired": "请输入职位",
-      "joinDateRequired": "请选择入职日期"
+      "joinDateRequired": "请选择入职日期",
+      "deleteSuccess": "员工删除成功",
+      "deleteError": "删除员工失败"
     }
   },
   "footer": {
@@ -454,7 +498,9 @@
     "description": "管理您的账户设置和偏好。",
     "tabs": {
       "candidateStatuses": "候选人状态",
-      "general": "常规设置"
+      "general": "常规设置",
+      "recruiters": "招聘专员",
+      "hrManagement": "人事管理"
     },
     "general": {
       "placeholder": "常规设置占位符"
@@ -471,7 +517,74 @@
       "type": {
         "system": "系统预设",
         "custom": "自定义"
+      },
+      "messages": {
+        "createSuccess": "状态创建成功",
+        "createError": "创建状态失败",
+        "updateSuccess": "状态更新成功",
+        "updateError": "更新状态失败",
+        "deleteSuccess": "状态删除成功",
+        "deleteError": "删除状态失败",
+        "reorderError": "重新排序失败"
       }
+    },
+    "recruiterManagement": {
+      "title": "招聘专员管理",
+      "description": "分配或撤销员工的招聘专员角色。",
+      "adminOnly": "需要管理员权限才能管理招聘专员。",
+      "assignSuccess": "招聘专员角色分配成功",
+      "assignError": "分配招聘专员角色失败",
+      "revokeSuccess": "招聘专员角色已撤销",
+      "revokeError": "撤销招聘专员角色失败",
+      "addRecruiter": "添加招聘专员",
+      "selectEmployee": "选择员工",
+      "searchPlaceholder": "搜索员工...",
+      "assign": "分配角色",
+      "columns": {
+        "employee": "员工",
+        "department": "部门",
+        "assignedAt": "分配时间",
+        "actions": "操作"
+      },
+      "revokeConfirmTitle": "撤销招聘专员角色",
+      "revokeConfirmDesc": "确定要撤销 {{name}} 的招聘专员权限吗？",
+      "revoke": "撤销权限",
+      "noRecruiters": "尚未分配招聘专员。",
+      "name": "姓名",
+      "department": "部门",
+      "role": "角色",
+      "actions": "操作",
+      "addRecruiterTitle": "分配招聘专员角色",
+      "addRecruiterDescription": "选择一名员工以授予招聘权限。"
+    },
+    "hrManagement": {
+      "title": "人事管理",
+      "description": "分配或撤销员工的人事(HR)角色。",
+      "adminOnly": "需要管理员权限才能管理人事员工。",
+      "assignSuccess": "HR角色分配成功",
+      "assignError": "分配HR角色失败",
+      "revokeSuccess": "HR角色已撤销",
+      "revokeError": "撤销HR角色失败",
+      "addHR": "添加HR",
+      "selectEmployee": "选择员工",
+      "searchPlaceholder": "搜索员工...",
+      "assign": "分配角色",
+      "columns": {
+        "employee": "员工",
+        "department": "部门",
+        "assignedAt": "分配时间",
+        "actions": "操作"
+      },
+      "revokeConfirmTitle": "撤销HR角色",
+      "revokeConfirmDesc": "确定要撤销 {{name}} 的HR权限吗？",
+      "revoke": "撤销权限",
+      "noHRs": "尚未分配人事员工。",
+      "name": "姓名",
+      "department": "部门",
+      "role": "角色",
+      "actions": "操作",
+      "addHRTitle": "分配HR角色",
+      "addHRDescription": "选择一名员工以授予HR权限。"
     }
   }
 }

@@ -28,6 +28,7 @@ interface EmployeeListProps {
   onEdit: (employee: Employee) => void;
   onDelete?: (employee: Employee) => void;
   onView?: (employee: Employee) => void;
+  isHR?: boolean;
 }
 
 export function EmployeeList({
@@ -36,6 +37,7 @@ export function EmployeeList({
   onEdit,
   onDelete,
   onView,
+  isHR = false,
 }: EmployeeListProps) {
   const { t } = useTranslation();
 
@@ -149,33 +151,35 @@ export function EmployeeList({
               }).format(new Date(employee.joinDate))}
             </TableCell>
             <TableCell onClick={(e) => e.stopPropagation()}>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">
-                      {t("common.actions", "Open menu")}
-                    </span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    {t("common.actions", "Actions")}
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => onEdit(employee)}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    {t("common.edit", "Edit")}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => onDelete?.(employee)}
-                    className="text-red-600 focus:text-red-600"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {t("common.delete", "Delete")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {isHR && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">
+                        {t("common.openMenu", "Open menu")}
+                      </span>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>
+                      {t("common.actions", "Actions")}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem onClick={() => onEdit(employee)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t("common.edit", "Edit")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => onDelete?.(employee)}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t("common.delete", "Delete")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </TableCell>
           </TableRow>
         ))}

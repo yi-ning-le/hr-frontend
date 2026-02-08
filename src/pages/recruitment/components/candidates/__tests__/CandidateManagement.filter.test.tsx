@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Polyfill at the very top, but imports are still hoisted.
 // So we must use dynamic import for the component under test.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).DOMMatrix = class DOMMatrix {
   constructor() {}
 };
@@ -37,11 +38,13 @@ vi.mock("react-i18next", () => ({
 // Mock store
 const mockStore = vi.fn();
 vi.mock("@/stores/useCandidateStore", () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useCandidateStore: (selector: any) => mockStore(selector),
 }));
 
 // Mock components
 vi.mock("../JobSidebar", () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   JobSidebar: ({ jobs, totalCandidates }: any) => (
     <div data-testid="job-sidebar">
       {`Jobs: ${jobs.length}, Total: ${totalCandidates}`}
@@ -56,6 +59,7 @@ vi.mock("../CandidateToolbar", () => ({
 }));
 
 vi.mock("../CandidateList", () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   CandidateList: ({ candidates }: { candidates: any[] }) => (
     <div data-testid="candidate-list">
       {candidates.map((c) => (
@@ -95,6 +99,7 @@ globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any;
 
 describe("CandidateManagement Filter Logic", () => {

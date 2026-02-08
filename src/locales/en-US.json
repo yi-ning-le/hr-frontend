@@ -22,13 +22,16 @@
     "people": "people",
     "percentage": "Ratio",
     "actions": "Actions",
+    "openMenu": "Open menu",
     "uncategorized": "Uncategorized",
     "clearFilter": "Clear Filter",
     "noResults": "No results found",
     "resultsCount": "Found {{count}} results",
     "saveChanges": "Save Changes",
     "areYouSure": "Are you sure?",
-    "create": "Create"
+    "create": "Create",
+    "assign": "Assign",
+    "pickDate": "Pick a date"
   },
   "nav": {
     "overview": "Overview",
@@ -223,6 +226,8 @@
       "list": {
         "noResults": "No matching candidates found"
       },
+      "unknownCandidate": "Unknown Candidate",
+      "unknownPosition": "Unknown Position",
       "dialog": {
         "addTitle": "Add New Candidate",
         "editTitle": "Edit Candidate",
@@ -253,6 +258,7 @@
       },
       "detail": {
         "appliedPosition": "Applied for:",
+        "assignInterviewer": "Assign Interviewer",
         "basicInfo": "Basic Information",
         "email": "Email",
         "phone": "Phone",
@@ -374,6 +380,42 @@
     "calendar": {
       "title": "Interview Calendar",
       "placeholder": "Interview schedule will be displayed here."
+    },
+    "interviews": {
+      "assignTitle": "Assign Interviewer",
+      "assignDescription": "Set up an interview for {{candidateName}}.",
+      "assignSuccess": "Interview assigned successfully",
+      "assignFailed": "Failed to assign interview",
+      "interviewer": "Interviewer",
+      "selectInterviewer": "Select an interviewer",
+      "scheduledTime": "Scheduled Time",
+      "initialNotes": "Initial Notes",
+      "notesPlaceholder": "Add interview notes or instructions...",
+      "myInterviews": "My Interviews",
+      "noInterviews": "No Interviews Scheduled",
+      "noInterviewsDesc": "You don't have any upcoming interviews at the moment.",
+      "viewDetails": "View Details",
+      "validation": {
+        "interviewerRequired": "Interviewer is required",
+        "scheduledTimeRequired": "Scheduled time is required"
+      },
+      "status": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled",
+        "RESCHEDULED": "Rescheduled"
+      }
+    },
+    "transfer": {
+      "title": "Transfer Interview",
+      "description": "Transfer this interview to another employee.",
+      "descriptionWithName": "Transfer the interview for {{name}} to another employee.",
+      "selectEmployee": "Select New Interviewer",
+      "placeholder": "Select an employee",
+      "confirm": "Transfer",
+      "success": "Interview transferred successfully",
+      "error": "Failed to transfer interview"
     }
   },
   "pdf": {
@@ -443,7 +485,9 @@
       "phoneMin": "Phone must be at least 10 characters",
       "departmentRequired": "Department is required",
       "positionRequired": "Position is required",
-      "joinDateRequired": "Join date is required"
+      "joinDateRequired": "Join date is required",
+      "deleteSuccess": "Employee deleted successfully",
+      "deleteError": "Failed to delete employee"
     }
   },
   "footer": {
@@ -454,7 +498,9 @@
     "description": "Manage your account settings and preferences.",
     "tabs": {
       "candidateStatuses": "Candidate Statuses",
-      "general": "General"
+      "general": "General",
+      "recruiters": "Recruiters",
+      "hrManagement": "HR Management"
     },
     "general": {
       "placeholder": "General Settings Placeholder"
@@ -471,7 +517,74 @@
       "type": {
         "system": "System",
         "custom": "Custom"
+      },
+      "messages": {
+        "createSuccess": "Status created",
+        "createError": "Failed to create status",
+        "updateSuccess": "Status updated",
+        "updateError": "Failed to update status",
+        "deleteSuccess": "Status deleted",
+        "deleteError": "Failed to delete status",
+        "reorderError": "Failed to reorder statuses"
       }
+    },
+    "recruiterManagement": {
+      "title": "Recruiter Management",
+      "description": "Assign or revoke recruiter roles for employees.",
+      "adminOnly": "Admin access required to manage recruiters.",
+      "assignSuccess": "Recruiter role assigned successfully",
+      "assignError": "Failed to assign recruiter role",
+      "revokeSuccess": "Recruiter role revoked successfully",
+      "revokeError": "Failed to revoke recruiter role",
+      "addRecruiter": "Add Recruiter",
+      "selectEmployee": "Select Employee",
+      "searchPlaceholder": "Search employees...",
+      "assign": "Assign Role",
+      "columns": {
+        "employee": "Employee",
+        "department": "Department",
+        "assignedAt": "Assigned At",
+        "actions": "Actions"
+      },
+      "revokeConfirmTitle": "Revoke Recruiter Role",
+      "revokeConfirmDesc": "Are you sure you want to revoke recruiter permissions for {{name}}?",
+      "revoke": "Revoke Permissions",
+      "noRecruiters": "No recruiters assigned yet.",
+      "name": "Name",
+      "department": "Department",
+      "role": "Role",
+      "actions": "Actions",
+      "addRecruiterTitle": "Assign Recruiter Role",
+      "addRecruiterDescription": "Select an employee to grant recruiter privileges."
+    },
+    "hrManagement": {
+      "title": "HR Management",
+      "description": "Assign or revoke HR roles for employees.",
+      "adminOnly": "Admin access required to manage HR employees.",
+      "assignSuccess": "HR role assigned successfully",
+      "assignError": "Failed to assign HR role",
+      "revokeSuccess": "HR role revoked successfully",
+      "revokeError": "Failed to revoke HR role",
+      "addHR": "Add HR",
+      "selectEmployee": "Select Employee",
+      "searchPlaceholder": "Search employees...",
+      "assign": "Assign Role",
+      "columns": {
+        "employee": "Employee",
+        "department": "Department",
+        "assignedAt": "Assigned At",
+        "actions": "Actions"
+      },
+      "revokeConfirmTitle": "Revoke HR Role",
+      "revokeConfirmDesc": "Are you sure you want to revoke HR permissions for {{name}}?",
+      "revoke": "Revoke Permissions",
+      "noHRs": "No HR employees assigned yet.",
+      "name": "Name",
+      "department": "Department",
+      "role": "Role",
+      "actions": "Actions",
+      "addHRTitle": "Assign HR Role",
+      "addHRDescription": "Select an employee to grant HR privileges."
     }
   }
 }

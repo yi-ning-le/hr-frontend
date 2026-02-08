@@ -13,11 +13,9 @@ vi.mock("react-i18next", () => ({
 }));
 
 // Mock useUserRole
+const mockUseUserRole = vi.fn();
 vi.mock("@/hooks/useUserRole", () => ({
-  useUserRole: () => ({
-    isAdmin: true,
-    isLoading: false,
-  }),
+  useUserRole: () => mockUseUserRole(),
 }));
 
 // Mock API dependencies
@@ -155,7 +153,8 @@ vi.mock("@/components/ui/select", () => ({
 }));
 
 describe("RecruiterManagement", () => {
-  it("renders existing recruiters and allows interaction", async () => {
+  it("renders existing recruiters and allows interaction when admin", async () => {
+    mockUseUserRole.mockReturnValue({ isAdmin: true, isLoading: false });
     const user = userEvent.setup();
     render(<RecruiterManagement />);
 
@@ -184,5 +183,15 @@ describe("RecruiterManagement", () => {
     expect(mockInvalidateQueries).toHaveBeenCalledWith({
       queryKey: ["recruiters"],
     });
+  });
+
+  it("shows access denied message when not admin", () => {
+    mockUseUserRole.mockReturnValue({ isAdmin: false, isLoading: false });
+    render(<RecruiterManagement />);
+
+    expect(
+      screen.getByText(/Admin access required to manage recruiters/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Add Recruiter")).not.toBeInTheDocument();
   });
 });

@@ -38,6 +38,22 @@ vi.mock("@/hooks/queries/useEmployees", () => ({
   })),
 }));
 
+// Mock useUserRole hook - default to HR for backward compatibility with existing tests
+vi.mock("@/hooks/useUserRole", () => ({
+  useUserRole: vi.fn(() => ({
+    isAdmin: false,
+    isRecruiter: false,
+    isInterviewer: false,
+    isHR: true, // Default to HR for existing tests
+    isLoading: false,
+    isError: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+}));
+
+import { useUserRole } from "@/hooks/useUserRole";
+
 // Mock child components
 vi.mock("../components/EmployeeList", () => ({
   EmployeeList: ({
@@ -219,5 +235,43 @@ describe("EmployeesPage", () => {
     await user.click(confirmButton);
 
     expect(mockDeleteEmployee).toHaveBeenCalledWith("1");
+  });
+});
+
+describe("EmployeesPage - HR Access Control", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("shows Add Employee button for HR users", () => {
+    vi.mocked(useUserRole).mockReturnValue({
+      isAdmin: false,
+      isRecruiter: false,
+      isInterviewer: false,
+      isHR: true,
+      isLoading: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    render(<EmployeesPage />);
+    expect(screen.getByText("Add Employee")).toBeInTheDocument();
+  });
+
+  it("hides Add Employee button for non-HR users", () => {
+    vi.mocked(useUserRole).mockReturnValue({
+      isAdmin: false,
+      isRecruiter: false,
+      isInterviewer: false,
+      isHR: false,
+      isLoading: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    render(<EmployeesPage />);
+    expect(screen.queryByText("Add Employee")).not.toBeInTheDocument();
   });
 });

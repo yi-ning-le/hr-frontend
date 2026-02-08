@@ -132,6 +132,15 @@ vi.mock("@/hooks/queries/useJobs", () => ({
   }),
 }));
 
+vi.mock(
+  "@/pages/recruitment/components/interviews/AssignInterviewerDialog",
+  () => ({
+    AssignInterviewerDialog: () => (
+      <div data-testid="assign-interviewer-dialog" />
+    ),
+  }),
+);
+
 // Mock ResizeObserver
 vi.stubGlobal(
   "ResizeObserver",
@@ -169,6 +178,9 @@ describe("CandidateDetail", () => {
 
   it("renders candidate channel badge", () => {
     renderInDialog();
-    expect(screen.getByText("LinkedIn")).toBeInTheDocument();
+    // The mock returns the translation key as-is
+    expect(
+      screen.getByText("recruitment.candidates.form.channels.linkedin"),
+    ).toBeInTheDocument();
   });
 });

@@ -34,6 +34,7 @@ export const useUserRole = () => {
     isAdmin: data?.isAdmin ?? false,
     isRecruiter: data?.isRecruiter ?? false,
     isInterviewer: data?.isInterviewer ?? false,
+    isHR: data?.isHR ?? false,
     isLoading,
     isError,
     error,

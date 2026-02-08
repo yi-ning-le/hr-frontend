@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { isAxiosError } from "axios";
 import { AuthAPI, setAuthToken } from "@/lib/api";
+import i18n from "@/lib/i18n";
 
 // User type definition
 export interface User {
@@ -90,7 +91,7 @@ export const useAuthStore = create<AuthStore>()(
           return { success: true };
         } catch (error) {
           set({ isLoading: false });
-          let errorMessage = "Login failed";
+          let errorMessage = i18n.t("auth.login.failed");
           if (isAxiosError(error) && error.response?.data?.message) {
             errorMessage = error.response.data.message;
           } else if (error instanceof Error) {
@@ -114,7 +115,7 @@ export const useAuthStore = create<AuthStore>()(
           return { success: true };
         } catch (error) {
           set({ isLoading: false });
-          let errorMessage = "Registration failed";
+          let errorMessage = i18n.t("auth.register.failed");
           if (isAxiosError(error) && error.response?.data?.message) {
             errorMessage = error.response.data.message;
           } else if (error instanceof Error) {
@@ -140,11 +141,11 @@ export const useAuthStore = create<AuthStore>()(
           get().reset();
           console.error("Logout API call failed:", error);
 
-          let errorMessage = "Logout failed";
+          let errorMessage = i18n.t("header.logoutFailed");
           if (isAxiosError(error)) {
             errorMessage =
               error.response?.data?.message ||
-              `Logout failed: ${error.response?.status || "Unknown error"}`;
+              `${i18n.t("header.logoutFailed")}: ${error.response?.status || "Unknown error"}`;
           } else if (error instanceof Error) {
             errorMessage = error.message;
           }
@@ -164,7 +165,7 @@ export const useAuthStore = create<AuthStore>()(
 
         // TODO: Implement third-party OAuth flow
         console.log(`Third-party login with ${provider} - not implemented yet`);
-        return { success: false, error: `${provider} 登录暂未开放` };
+        return { success: false, error: i18n.t("auth.social.comingSoon") };
       },
     }),
     {
