@@ -3,25 +3,49 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useEmployees } from "@/hooks/queries/useEmployees";
+import { useUserRole } from "@/hooks/useUserRole";
 import type { Employee } from "@/types/employee";
 import { EmployeesPage } from "../EmployeesPage";
 
 // Mock react-i18next
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback || key,
-    i18n: { language: "zh-CN", changeLanguage: vi.fn() },
+vi.mock("react-i18next", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-i18next")>();
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: string, fallback?: string) => fallback || key,
+      i18n: { language: "zh-CN", changeLanguage: vi.fn() },
+    }),
+    initReactI18next: {
+      type: "3rdParty",
+      init: vi.fn(),
+    },
+  };
+});
+
+// Mock TanStack Router
+const mockNavigate = vi.fn();
+const mockUseSearch = vi.fn().mockReturnValue({
+  page: 1,
+  limit: 10,
+  search: "",
+  status: "",
+  department: "",
+});
+
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: () => mockNavigate,
+  createRoute: () => ({
+    useSearch: mockUseSearch,
+    fullPath: "/employees",
   }),
 }));
 
-// Mock useEmployeeStore for filters and pagination
-vi.mock("@/stores/useEmployeeStore", () => ({
-  useEmployeeStore: vi.fn(() => ({
-    filters: { search: "", status: "" },
-    pagination: { page: 1, limit: 10, total: 0 },
-    setFilters: vi.fn(),
-    setPage: vi.fn(),
-  })),
+vi.mock("@/routes/_protected/employees", () => ({
+  Route: {
+    useSearch: () => mockUseSearch(),
+    fullPath: "/employees",
+  },
 }));
 
 // Mock TanStack Query hooks
@@ -51,8 +75,6 @@ vi.mock("@/hooks/useUserRole", () => ({
     refetch: vi.fn(),
   })),
 }));
-
-import { useUserRole } from "@/hooks/useUserRole";
 
 // Mock child components
 vi.mock("../components/EmployeeList", () => ({

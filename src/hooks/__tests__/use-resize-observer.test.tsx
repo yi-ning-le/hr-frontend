@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { renderHook, act } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { useResizeObserver } from "../use-resize-observer";
+import { act, renderHook } from "@testing-library/react";
 import { useRef } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { useResizeObserver } from "../use-resize-observer";
 
 describe("useResizeObserver", () => {
   let observeMock: ReturnType<typeof vi.fn>;

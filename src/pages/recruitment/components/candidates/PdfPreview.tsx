@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useState, useRef } from "react";
-import { useResizeObserver } from "@/hooks/use-resize-observer";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useResizeObserver } from "@/hooks/use-resize-observer";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import {

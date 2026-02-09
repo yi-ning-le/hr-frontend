@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { Filter, RefreshCcw, Search, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,21 +24,28 @@ import {
 } from "@/components/ui/select";
 import { useDeleteEmployee, useEmployees } from "@/hooks/queries/useEmployees";
 import { useUserRole } from "@/hooks/useUserRole";
-import { useEmployeeStore } from "@/stores/useEmployeeStore";
+import { Route } from "@/routes/_protected/employees";
 import type { Employee } from "@/types/employee";
 import { EmployeeFormDialog } from "./components/EmployeeFormDialog";
 import { EmployeeList } from "./components/EmployeeList";
 
+type DialogState =
+  | { mode: "closed" }
+  | { mode: "create" }
+  | { mode: "edit"; employee: Employee }
+  | { mode: "view"; employee: Employee };
+
 export function EmployeesPage() {
   const { t } = useTranslation();
-  const { filters, pagination, setFilters, setPage } = useEmployeeStore();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const filters = Route.useSearch();
 
   const { data, isLoading, isError } = useEmployees({
     status: filters.status || undefined,
     department: filters.department || undefined,
     search: filters.search || undefined,
-    page: pagination.page,
-    limit: pagination.limit,
+    page: filters.page,
+    limit: filters.limit,
   });
 
   const { mutateAsync: deleteEmployee, isPending: isDeleting } =
@@ -46,37 +54,28 @@ export function EmployeesPage() {
   // Check if current user is HR
   const { isHR } = useUserRole();
 
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null,
-  );
-  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [dialogState, setDialogState] = useState<DialogState>({
+    mode: "closed",
+  });
   const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(
     null,
   );
-  const [searchInput, setSearchInput] = useState(filters.search || "");
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFilters({ search: searchInput });
+    const formData = new FormData(e.currentTarget);
+    const search = formData.get("search") as string;
+    navigate({ search: (prev) => ({ ...prev, search, page: 1 }) });
   };
 
   const handleStatusFilter = (value: string) => {
-    setFilters({
-      status: value === "all" ? "" : (value as typeof filters.status),
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        status: value === "all" ? undefined : (value as typeof filters.status),
+        page: 1,
+      }),
     });
-  };
-
-  const handleViewEmployee = (employee: Employee) => {
-    setSelectedEmployee(employee);
-    setIsReadOnly(true);
-    setIsAddDialogOpen(true);
-  };
-
-  const handleEditEmployee = (employee: Employee) => {
-    setSelectedEmployee(employee);
-    setIsReadOnly(false);
-    setIsAddDialogOpen(true);
   };
 
   const handleDeleteClick = (employee: Employee) => {
@@ -97,17 +96,9 @@ export function EmployeesPage() {
     }
   };
 
-  const handleDialogChange = (open: boolean) => {
-    setIsAddDialogOpen(open);
-    if (!open) {
-      setSelectedEmployee(null);
-      setIsReadOnly(false);
-    }
-  };
-
   const employees = data?.employees || [];
   const total = data?.total || 0;
-  const totalPages = Math.ceil(total / pagination.limit);
+  const totalPages = Math.ceil(total / filters.limit);
 
   if (isError) {
     return (
@@ -152,7 +143,10 @@ export function EmployeesPage() {
             <RefreshCcw className="h-4 w-4" />
           </Button>
           {isHR && (
-            <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
+            <Button
+              onClick={() => setDialogState({ mode: "create" })}
+              className="gap-2"
+            >
               <UserPlus className="h-4 w-4" />
               {t("employees.addEmployee", "Add Employee")}
             </Button>
@@ -165,12 +159,12 @@ export function EmployeesPage() {
         <form onSubmit={handleSearchSubmit} className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
+            name="search"
             placeholder={t(
               "employees.searchPlaceholder",
               "Search by name or email...",
             )}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
+            defaultValue={filters.search}
             className="pl-10"
           />
         </form>
@@ -211,9 +205,9 @@ export function EmployeesPage() {
         <EmployeeList
           employees={employees}
           isLoading={isLoading || isDeleting}
-          onEdit={handleEditEmployee}
+          onEdit={(employee) => setDialogState({ mode: "edit", employee })}
           onDelete={handleDeleteClick}
-          onView={handleViewEmployee}
+          onView={(employee) => setDialogState({ mode: "view", employee })}
           isHR={isHR}
         />
       </div>
@@ -224,22 +218,26 @@ export function EmployeesPage() {
           <Button
             variant="outline"
             size="sm"
-            disabled={pagination.page <= 1}
-            onClick={() => setPage(pagination.page - 1)}
+            disabled={filters.page <= 1}
+            onClick={() =>
+              navigate({ search: (prev) => ({ ...prev, page: prev.page - 1 }) })
+            }
           >
             {t("common.previous", "Previous")}
           </Button>
           <span className="text-sm text-slate-600 dark:text-slate-400">
             {t("common.pageOf", "Page {{page}} of {{total}}", {
-              page: pagination.page,
+              page: filters.page,
               total: totalPages,
             })}
           </span>
           <Button
             variant="outline"
             size="sm"
-            disabled={pagination.page >= totalPages}
-            onClick={() => setPage(pagination.page + 1)}
+            disabled={filters.page >= totalPages}
+            onClick={() =>
+              navigate({ search: (prev) => ({ ...prev, page: prev.page + 1 }) })
+            }
           >
             {t("common.next", "Next")}
           </Button>
@@ -248,10 +246,14 @@ export function EmployeesPage() {
 
       {/* Add/Edit Employee Dialog */}
       <EmployeeFormDialog
-        open={isAddDialogOpen}
-        onOpenChange={handleDialogChange}
-        employee={selectedEmployee || undefined}
-        readOnly={isReadOnly}
+        open={dialogState.mode !== "closed"}
+        onOpenChange={(open) => !open && setDialogState({ mode: "closed" })}
+        employee={
+          dialogState.mode === "edit" || dialogState.mode === "view"
+            ? dialogState.employee
+            : undefined
+        }
+        readOnly={dialogState.mode === "view"}
       />
 
       {/* Delete Confirmation Dialog */}
