@@ -47,6 +47,6 @@ describe("useCandidates", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.[0].appliedAt).toBeInstanceOf(Date);
-    expect(CandidatesAPI.list).toHaveBeenCalledWith("all");
+    expect(CandidatesAPI.list).toHaveBeenCalledWith({ jobId: undefined });
   });
 });

@@ -31,12 +31,21 @@
     "areYouSure": "您确定吗？",
     "create": "创建",
     "assign": "分配",
-    "pickDate": "选择日期"
+    "view": "查看",
+    "pickDate": "选择日期",
+    "years": "年",
+    "total": "总计",
+    "refresh": "刷新",
+    "pageOf": "第 {{page}} 页，共 {{total}} 页",
+    "error": {
+      "fetch": "获取数据失败"
+    }
   },
   "nav": {
     "overview": "概览",
     "recruitment": "招聘管理",
-    "employees": "员工档案"
+    "employees": "员工档案",
+    "pendingResumes": "待处理简历"
   },
   "header": {
     "profile": "个人资料",
@@ -213,6 +222,9 @@
         "hired": "已入职",
         "rejected": "已拒绝"
       },
+      "pendingListTitle": "待评审候选人",
+      "review": "评审",
+      "noPendingResumes": "暂无待评审简历。",
       "toolbar": {
         "searchPlaceholder": "搜索候选人姓名或邮箱...",
         "statusFilter": "状态筛选",

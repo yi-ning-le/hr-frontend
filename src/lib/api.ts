@@ -136,8 +136,16 @@ export const JobsAPI = {
 };
 
 export const CandidatesAPI = {
-  list: async (jobId?: string): Promise<Candidate[]> => {
-    const params = jobId && jobId !== "all" ? { jobId } : {};
+  list: async (
+    filters: {
+      jobId?: string;
+      reviewerId?: string;
+      reviewStatus?: string;
+    } = {},
+  ): Promise<Candidate[]> => {
+    // Legacy support if just jobId string was passed (not applicable here as we change signature, but strict check)
+    // Actually, callers might pass string. Let's force object.
+    const params = filters;
     const response = await api.get<Candidate[]>("/candidates", { params });
     return response.data.map((c) => ({
       ...c,
@@ -181,6 +189,37 @@ export const CandidatesAPI = {
   updateNote: async (id: string, note: string): Promise<Candidate> => {
     const response = await api.patch<Candidate>(`/candidates/${id}/note`, {
       note,
+    });
+    return {
+      ...response.data,
+      appliedAt: new Date(response.data.appliedAt),
+    };
+  },
+
+  assignReviewer: async (
+    id: string,
+    reviewerId: string,
+  ): Promise<Candidate> => {
+    const response = await api.post<Candidate>(
+      `/candidates/${id}/assign-reviewer`,
+      {
+        reviewerId,
+      },
+    );
+    return {
+      ...response.data,
+      appliedAt: new Date(response.data.appliedAt),
+    };
+  },
+
+  review: async (
+    id: string,
+    reviewStatus: string,
+    reviewNote?: string,
+  ): Promise<Candidate> => {
+    const response = await api.post<Candidate>(`/candidates/${id}/review`, {
+      reviewStatus,
+      reviewNote,
     });
     return {
       ...response.data,
@@ -236,6 +275,11 @@ export interface EmployeeListAPIResponse {
 }
 
 export const EmployeesAPI = {
+  getMe: async (): Promise<EmployeeAPIResponse> => {
+    const response = await api.get<EmployeeAPIResponse>("/employees/me");
+    return response.data;
+  },
+
   list: async (
     params: {
       status?: string;

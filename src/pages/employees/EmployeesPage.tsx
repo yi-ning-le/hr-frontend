@@ -1,33 +1,16 @@
-import { useNavigate } from "@tanstack/react-router";
-import { Filter, RefreshCcw, Search, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useDeleteEmployee, useEmployees } from "@/hooks/queries/useEmployees";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Route } from "@/routes/_protected/employees";
 import type { Employee } from "@/types/employee";
+import { DeleteEmployeeDialog } from "./components/DeleteEmployeeDialog";
 import { EmployeeFormDialog } from "./components/EmployeeFormDialog";
 import { EmployeeList } from "./components/EmployeeList";
+import { EmployeesActionToolbar } from "./components/EmployeesActionToolbar";
+import { EmployeesHeader } from "./components/EmployeesHeader";
 
 type DialogState =
   | { mode: "closed" }
@@ -37,7 +20,7 @@ type DialogState =
 
 export function EmployeesPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = Route.useNavigate();
   const filters = Route.useSearch();
 
   const { data, isLoading, isError } = useEmployees({
@@ -61,11 +44,8 @@ export function EmployeesPage() {
     null,
   );
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const search = formData.get("search") as string;
-    navigate({ search: (prev) => ({ ...prev, search, page: 1 }) });
+  const handleSearch = (term: string) => {
+    navigate({ search: (prev) => ({ ...prev, search: term, page: 1 }) });
   };
 
   const handleStatusFilter = (value: string) => {
@@ -115,92 +95,20 @@ export function EmployeesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
-            <Users className="h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {t("employees.title", "Employees")}
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {t("employees.subtitle", "Manage your team members")}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm text-muted-foreground mr-4">
-            {t("common.total", "Total")}: {total}
-          </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => window.location.reload()}
-            title={t("common.refresh", "Refresh")}
-          >
-            <RefreshCcw className="h-4 w-4" />
-          </Button>
-          {isHR && (
-            <Button
-              onClick={() => setDialogState({ mode: "create" })}
-              className="gap-2"
-            >
-              <UserPlus className="h-4 w-4" />
-              {t("employees.addEmployee", "Add Employee")}
-            </Button>
-          )}
-        </div>
-      </div>
+      <EmployeesHeader
+        total={total}
+        isHR={isHR}
+        onRefresh={() => window.location.reload()}
+        onAdd={() => setDialogState({ mode: "create" })}
+      />
 
-      {/* Filters */}
-      <div className="flex flex-col gap-4 rounded-xl bg-white p-4 shadow-sm dark:bg-slate-800 sm:flex-row sm:items-center">
-        <form onSubmit={handleSearchSubmit} className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <Input
-            name="search"
-            placeholder={t(
-              "employees.searchPlaceholder",
-              "Search by name or email...",
-            )}
-            defaultValue={filters.search}
-            className="pl-10"
-          />
-        </form>
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-slate-400" />
-          <Select
-            value={filters.status || "all"}
-            onValueChange={handleStatusFilter}
-          >
-            <SelectTrigger className="w-[150px]">
-              <SelectValue
-                placeholder={t("employees.filterStatus", "Status")}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                {t("employees.allStatuses", "All Statuses")}
-              </SelectItem>
-              <SelectItem value="Active">
-                {t("employees.status.active", "Active")}
-              </SelectItem>
-              <SelectItem value="OnLeave">
-                {t("employees.status.onLeave", "On Leave")}
-              </SelectItem>
-              <SelectItem value="Resigned">
-                {t("employees.status.resigned", "Resigned")}
-              </SelectItem>
-              <SelectItem value="Terminated">
-                {t("employees.status.terminated", "Terminated")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <EmployeesActionToolbar
+        defaultSearchValue={filters.search}
+        status={filters.status}
+        onSearch={handleSearch}
+        onStatusChange={handleStatusFilter}
+      />
 
-      {/* Employee List */}
       <div className="rounded-xl bg-white shadow-sm dark:bg-slate-800">
         <EmployeeList
           employees={employees}
@@ -212,7 +120,6 @@ export function EmployeesPage() {
         />
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <Button
@@ -244,7 +151,6 @@ export function EmployeesPage() {
         </div>
       )}
 
-      {/* Add/Edit Employee Dialog */}
       <EmployeeFormDialog
         open={dialogState.mode !== "closed"}
         onOpenChange={(open) => !open && setDialogState({ mode: "closed" })}
@@ -256,39 +162,16 @@ export function EmployeesPage() {
         readOnly={dialogState.mode === "view"}
       />
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
+      <DeleteEmployeeDialog
         open={!!employeeToDelete}
-        onOpenChange={(open) => !open && setEmployeeToDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t("employees.deleteTitle", "Delete Employee")}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {t(
-                "employees.deleteConfirmation",
-                "Are you sure you want to delete {{name}}? This action cannot be undone.",
-                {
-                  name: `${employeeToDelete?.firstName} ${employeeToDelete?.lastName}`,
-                },
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>
-              {t("common.cancel", "Cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDelete}
-              className="bg-red-600 text-white hover:bg-red-700"
-            >
-              {t("common.delete", "Delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        employeeName={
+          employeeToDelete
+            ? `${employeeToDelete.firstName} ${employeeToDelete.lastName}`
+            : undefined
+        }
+        onClose={() => setEmployeeToDelete(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

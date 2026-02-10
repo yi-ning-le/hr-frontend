@@ -12,6 +12,7 @@ import { Route as EmployeeProfileRoute } from "./routes/_protected/employees.$em
 import { Route as IndexRoute } from "./routes/_protected/index";
 import { Route as InterviewDetailRoute } from "./routes/_protected/interviews.$interviewId";
 import { Route as MyInterviewsRoute } from "./routes/_protected/my-interviews";
+import { Route as PendingResumesRoute } from "./routes/_protected/pending-resumes";
 import { Route as RecruitmentRoute } from "./routes/_protected/recruitment";
 import { Route as SettingsRoute } from "./routes/_protected/settings";
 
@@ -22,13 +23,13 @@ const authRouteTree = AuthLayoutRoute.addChildren([LoginRoute, RegisterRoute]);
 const protectedRouteTree = ProtectedLayoutRoute.addChildren([
   IndexRoute,
   RecruitmentRoute,
+  PendingResumesRoute,
   EmployeesRoute,
   EmployeeProfileRoute,
   SettingsRoute,
   MyInterviewsRoute,
   InterviewDetailRoute,
 ]);
-
 // Main route tree
 const routeTree = RootRoute.addChildren([authRouteTree, protectedRouteTree]);
 

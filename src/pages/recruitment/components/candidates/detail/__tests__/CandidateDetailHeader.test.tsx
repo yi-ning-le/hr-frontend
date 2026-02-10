@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   fireEvent,
   render,
@@ -98,12 +99,16 @@ const renderWithDialog = (
     onDelete: vi.fn(),
   };
 
+  const queryClient = new QueryClient();
+
   return render(
-    <Dialog open={true}>
-      <DialogContent>
-        <CandidateDetailHeader {...defaultProps} {...props} />
-      </DialogContent>
-    </Dialog>,
+    <QueryClientProvider client={queryClient}>
+      <Dialog open={true}>
+        <DialogContent>
+          <CandidateDetailHeader {...defaultProps} {...props} />
+        </DialogContent>
+      </Dialog>
+    </QueryClientProvider>,
   );
 };
 

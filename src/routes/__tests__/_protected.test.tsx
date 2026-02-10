@@ -4,9 +4,9 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Route as RootRoute } from "../__root";
-import { Route } from "../_protected";
+import { beforeLoadGuard, Route } from "../_protected";
 
 // Mock window.matchMedia for Toaster/Sonner
 Object.defineProperty(window, "matchMedia", {
@@ -32,13 +32,27 @@ vi.mock("@/components/layout/Footer", () => ({
   Footer: () => <footer data-testid="layout-footer">Footer</footer>,
 }));
 
+// Dynamic mock for store
+const mockGetState = vi.fn();
+const mockFetchUserRoles = vi.fn();
+
 vi.mock("@/stores/useAuthStore", () => ({
   useAuthStore: {
-    getState: () => ({ isAuthenticated: true }),
+    getState: () => mockGetState(),
   },
 }));
 
 describe("ProtectedLayout", () => {
+  beforeEach(() => {
+    mockGetState.mockReturnValue({
+      isAuthenticated: true,
+      user: { id: "1", username: "test" },
+      roles: { isInterviewer: false },
+      fetchUserRoles: mockFetchUserRoles,
+    });
+    mockFetchUserRoles.mockClear();
+  });
+
   it("renders with correct flexbox structure for sticky footer", async () => {
     // Setup a minimal router for testing the Protected Layout
     const router = createRouter({
@@ -49,18 +63,51 @@ describe("ProtectedLayout", () => {
     render(<RouterProvider router={router} />);
 
     // Get the main layout container
-    // We expect the layout to be the parent of header, main, and footer
     const header = await screen.findByTestId("layout-header");
     const layoutContainer = header.parentElement;
 
     expect(layoutContainer).toHaveClass("min-h-screen", "flex", "flex-col");
 
-    // Get the main content area (which is implicitly the Outlet in the real app,
-    // but in the tested structure it wraps the Outlet)
-    // Based on the code: <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-    // We need to verify THIS element has flex-1
     const main = layoutContainer?.querySelector("main");
     expect(main).toBeInTheDocument();
     expect(main).toHaveClass("flex-1");
+  });
+});
+
+describe("beforeLoadGuard", () => {
+  beforeEach(() => {
+    mockFetchUserRoles.mockClear();
+  });
+
+  it("redirects if not authenticated", () => {
+    mockGetState.mockReturnValue({ isAuthenticated: false });
+    // redirect throws an error/object in TanStack Router
+    expect(() => beforeLoadGuard()).toThrow();
+  });
+
+  it("fetches roles if user exists but roles are missing", async () => {
+    mockGetState.mockReturnValue({
+      isAuthenticated: true,
+      user: { id: "1", username: "test" },
+      roles: null,
+      fetchUserRoles: mockFetchUserRoles,
+    });
+
+    await beforeLoadGuard();
+
+    expect(mockFetchUserRoles).toHaveBeenCalled();
+  });
+
+  it("does not fetch roles if roles exist", async () => {
+    mockGetState.mockReturnValue({
+      isAuthenticated: true,
+      user: { id: "1", username: "test" },
+      roles: { isInterviewer: false },
+      fetchUserRoles: mockFetchUserRoles,
+    });
+
+    await beforeLoadGuard();
+
+    expect(mockFetchUserRoles).not.toHaveBeenCalled();
   });
 });

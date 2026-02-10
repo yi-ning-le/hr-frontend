@@ -1,6 +1,7 @@
 import { MoreHorizontal, Pencil, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { AssignReviewerDialog } from "@/components/candidates/AssignReviewerDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ export function CandidateDetailHeader({
   const { t } = useTranslation();
   const { statuses } = useCandidateStatuses();
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const [isAssignReviewerOpen, setIsAssignReviewerOpen] = useState(false);
 
   return (
     <DialogHeader className="p-6 pb-4 border-b shrink-0 bg-background z-10">
@@ -119,6 +121,10 @@ export function CandidateDetailHeader({
                 <UserPlus className="mr-2 h-4 w-4" />{" "}
                 {t("recruitment.candidates.detail.assignInterviewer")}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsAssignReviewerOpen(true)}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                {t("candidate.assignReviewer", "Assign Reviewer")}
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={onEdit}>
                 <Pencil className="mr-2 h-4 w-4" /> {t("common.edit")}
               </DropdownMenuItem>
@@ -137,6 +143,12 @@ export function CandidateDetailHeader({
         candidate={candidate}
         open={isAssignDialogOpen}
         onOpenChange={setIsAssignDialogOpen}
+      />
+
+      <AssignReviewerDialog
+        candidate={candidate}
+        open={isAssignReviewerOpen}
+        onOpenChange={setIsAssignReviewerOpen}
       />
     </DialogHeader>
   );

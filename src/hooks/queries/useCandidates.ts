@@ -8,7 +8,9 @@ export const useCandidates = (jobId: string = "all") => {
   return useQuery({
     queryKey: [...CANDIDATES_QUERY_KEY, jobId],
     queryFn: async () => {
-      const result = await CandidatesAPI.list(jobId);
+      const result = await CandidatesAPI.list({
+        jobId: jobId === "all" ? undefined : jobId,
+      });
       // Ensure we have Date objects
       return result.map((c) => ({
         ...c,

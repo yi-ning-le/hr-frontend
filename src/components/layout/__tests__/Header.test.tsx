@@ -2,6 +2,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { Header } from "../Header";
 
 // Mock react-i18next
@@ -28,8 +29,68 @@ vi.mock("@/stores/useAuthStore", () => ({
 }));
 
 describe("Header Navigation", () => {
+  it("shows Pending Resumes link for interviewers", async () => {
+    // Mock user with interviewer role
+    vi.mocked(useAuthStore).mockImplementation(
+      () =>
+        ({
+          user: {
+            username: "Interviewer",
+            email: "int@example.com",
+            avatar: "",
+          },
+          roles: {
+            isInterviewer: true,
+            isAdmin: false,
+            isRecruiter: false,
+            isHR: false,
+          },
+          logout: vi.fn(),
+          fetchUserRoles: vi.fn(),
+        }) as any,
+    );
+
+    render(<Header />);
+    const link = screen.getByRole("link", { name: /pending resumes/i });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/pending-resumes");
+  });
+
+  it("does not show Pending Resumes link for non-interviewers", async () => {
+    // Mock user without interviewer role
+    vi.mocked(useAuthStore).mockImplementation(
+      () =>
+        ({
+          user: { username: "User", email: "user@example.com", avatar: "" },
+          roles: {
+            isInterviewer: false,
+            isAdmin: false,
+            isRecruiter: false,
+            isHR: false,
+          },
+          logout: vi.fn(),
+          fetchUserRoles: vi.fn(),
+        }) as any,
+    );
+
+    render(<Header />);
+    const link = screen.queryByRole("link", { name: /pending resumes/i });
+    expect(link).not.toBeInTheDocument();
+  });
+
   it("contains a link to the settings page in the dropdown menu", async () => {
     const user = userEvent.setup();
+    // Default mock behavior
+    vi.mocked(useAuthStore).mockImplementation(
+      () =>
+        ({
+          user: { username: "Admin", email: "admin@example.com", avatar: "" },
+          roles: { isInterviewer: false },
+          logout: vi.fn(),
+          fetchUserRoles: vi.fn(),
+        }) as any,
+    );
+
     render(<Header />);
 
     // Open the dropdown by clicking the avatar/button

@@ -44,6 +44,7 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/routes/_protected/employees", () => ({
   Route: {
     useSearch: () => mockUseSearch(),
+    useNavigate: () => mockNavigate,
     fullPath: "/employees",
   },
 }));

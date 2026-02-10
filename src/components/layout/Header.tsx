@@ -18,12 +18,33 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
+
+function HeaderLink({
+  className,
+  children,
+  to,
+  ...props
+}: React.ComponentProps<typeof Link>) {
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white [&.active]:bg-slate-100 [&.active]:text-slate-900 dark:[&.active]:bg-slate-800 dark:[&.active]:text-white",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}
 
 export function Header() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, roles, logout } = useAuthStore();
 
   const handleLogout = async () => {
     const result = await logout();
@@ -36,6 +57,8 @@ export function Header() {
       });
     }
   };
+
+  const userInitials = user?.username?.slice(0, 2).toUpperCase() || "User";
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80">
@@ -56,30 +79,23 @@ export function Header() {
           </div>
 
           <nav className="hidden md:flex items-center gap-1">
-            <Link
-              to="/"
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white [&.active]:bg-slate-100 [&.active]:text-slate-900 dark:[&.active]:bg-slate-800 dark:[&.active]:text-white"
-            >
-              {t("nav.overview")}
-            </Link>
-            <Link
-              to="/recruitment"
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white [&.active]:bg-slate-100 [&.active]:text-slate-900 dark:[&.active]:bg-slate-800 dark:[&.active]:text-white"
-            >
-              {t("nav.recruitment")}
-            </Link>
-            <Link
-              to="/employees"
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white [&.active]:bg-slate-100 [&.active]:text-slate-900 dark:[&.active]:bg-slate-800 dark:[&.active]:text-white"
-            >
+            <HeaderLink to="/">{t("nav.overview")}</HeaderLink>
+            <HeaderLink to="/recruitment">{t("nav.recruitment")}</HeaderLink>
+            <HeaderLink to="/employees" search={{ page: 1, limit: 20 }}>
               {t("nav.employees", "Employees")}
-            </Link>
+            </HeaderLink>
+            {user && roles?.isInterviewer && (
+              <HeaderLink to="/pending-resumes">
+                {t("nav.pendingResumes", "Pending Resumes")}
+              </HeaderLink>
+            )}
           </nav>
         </div>
 
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="size-5 text-slate-600 dark:text-slate-400" />
+            {/* TODO: Remove magic number when notifications are implemented */}
             <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
               3
             </span>
@@ -95,7 +111,7 @@ export function Header() {
                 <Avatar className="size-9 ring-2 ring-slate-200 ring-offset-2 dark:ring-slate-700">
                   <AvatarImage src={user?.avatar} alt={user?.username} />
                   <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-sm font-medium text-white">
-                    {user?.username?.slice(0, 2).toUpperCase() || "User"}
+                    {userInitials}
                   </AvatarFallback>
                 </Avatar>
               </Button>

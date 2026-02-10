@@ -6,13 +6,18 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { Route as RootRoute } from "./__root";
 
 // Before load guard - checks authentication
-function beforeLoadGuard() {
-  const { isAuthenticated } = useAuthStore.getState();
+export function beforeLoadGuard() {
+  const { isAuthenticated, user, roles, fetchUserRoles } =
+    useAuthStore.getState();
 
   if (!isAuthenticated) {
     throw redirect({
       to: "/login",
     });
+  }
+
+  if (user && !roles) {
+    return fetchUserRoles();
   }
 }
 

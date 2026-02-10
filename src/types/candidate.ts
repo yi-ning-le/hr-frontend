@@ -26,4 +26,7 @@ export interface Candidate {
   status: CandidateStatus;
   note: string;
   appliedAt: Date;
+  reviewerId?: string;
+  reviewStatus?: string;
+  reviewNote?: string;
 }

@@ -31,12 +31,21 @@
     "areYouSure": "Are you sure?",
     "create": "Create",
     "assign": "Assign",
-    "pickDate": "Pick a date"
+    "view": "View",
+    "pickDate": "Pick a date",
+    "years": "years",
+    "total": "Total",
+    "refresh": "Refresh",
+    "pageOf": "Page {{page}} of {{total}}",
+    "error": {
+      "fetch": "Failed to fetch data"
+    }
   },
   "nav": {
     "overview": "Overview",
     "recruitment": "Recruitment",
-    "employees": "Employees"
+    "employees": "Employees",
+    "pendingResumes": "Pending Resumes"
   },
   "header": {
     "profile": "Profile",
@@ -213,6 +222,9 @@
         "hired": "Hired",
         "rejected": "Rejected"
       },
+      "pendingListTitle": "Candidates to Review",
+      "review": "Review",
+      "noPendingResumes": "No pending resumes to review.",
       "toolbar": {
         "searchPlaceholder": "Search by name or email...",
         "statusFilter": "Status Filter",

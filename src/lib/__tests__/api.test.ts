@@ -222,17 +222,17 @@ describe("lib/api", () => {
       it("should filter by jobId when provided", async () => {
         mockAxios.get.mockResolvedValueOnce({ data: [mockCandidate] });
 
-        await CandidatesAPI.list("job-123");
+        await CandidatesAPI.list({ jobId: "job-123" });
 
         expect(mockAxios.get).toHaveBeenCalledWith("/candidates", {
           params: { jobId: "job-123" },
         });
       });
 
-      it("should not filter when jobId is 'all'", async () => {
+      it("should not filter when params are empty", async () => {
         mockAxios.get.mockResolvedValueOnce({ data: [mockCandidate] });
 
-        await CandidatesAPI.list("all");
+        await CandidatesAPI.list({});
 
         expect(mockAxios.get).toHaveBeenCalledWith("/candidates", {
           params: {},

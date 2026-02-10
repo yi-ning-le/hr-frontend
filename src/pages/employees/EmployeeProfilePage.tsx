@@ -53,7 +53,7 @@ export function EmployeeProfilePage() {
   return (
     <div className="space-y-6">
       {/* Back Button */}
-      <Link to="/employees">
+      <Link to="/employees" search={{ page: 1, limit: 20 }}>
         <Button variant="ghost" className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           {t("common.back", "Back")}

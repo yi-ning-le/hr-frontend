@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -153,12 +154,15 @@ vi.stubGlobal(
 
 // Helper to render with Dialog context
 const renderInDialog = () => {
+  const queryClient = new QueryClient();
   return render(
-    <Dialog open={true}>
-      <DialogContent className="max-w-4xl">
-        <CandidateDetail />
-      </DialogContent>
-    </Dialog>,
+    <QueryClientProvider client={queryClient}>
+      <Dialog open={true}>
+        <DialogContent className="max-w-4xl">
+          <CandidateDetail />
+        </DialogContent>
+      </Dialog>
+    </QueryClientProvider>,
   );
 };
 
