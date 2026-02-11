@@ -28,9 +28,16 @@ vi.mock("@/stores/useAuthStore", () => ({
   })),
 }));
 
+// Mock useUserRole
+vi.mock("@/hooks/useUserRole", () => ({
+  useUserRole: vi.fn(),
+}));
+
+import { useUserRole } from "@/hooks/useUserRole";
+
 describe("Header Navigation", () => {
   it("shows Pending Resumes link for interviewers", async () => {
-    // Mock user with interviewer role
+    // Mock user
     vi.mocked(useAuthStore).mockImplementation(
       () =>
         ({
@@ -39,16 +46,17 @@ describe("Header Navigation", () => {
             email: "int@example.com",
             avatar: "",
           },
-          roles: {
-            isInterviewer: true,
-            isAdmin: false,
-            isRecruiter: false,
-            isHR: false,
-          },
           logout: vi.fn(),
-          fetchUserRoles: vi.fn(),
         }) as any,
     );
+
+    // Mock roles
+    vi.mocked(useUserRole).mockReturnValue({
+      isInterviewer: true,
+      isAdmin: false,
+      isRecruiter: false,
+      isHR: false,
+    } as any);
 
     render(<Header />);
     const link = screen.getByRole("link", { name: /pending resumes/i });
@@ -57,21 +65,22 @@ describe("Header Navigation", () => {
   });
 
   it("does not show Pending Resumes link for non-interviewers", async () => {
-    // Mock user without interviewer role
+    // Mock user
     vi.mocked(useAuthStore).mockImplementation(
       () =>
         ({
           user: { username: "User", email: "user@example.com", avatar: "" },
-          roles: {
-            isInterviewer: false,
-            isAdmin: false,
-            isRecruiter: false,
-            isHR: false,
-          },
           logout: vi.fn(),
-          fetchUserRoles: vi.fn(),
         }) as any,
     );
+
+    // Mock roles
+    vi.mocked(useUserRole).mockReturnValue({
+      isInterviewer: false,
+      isAdmin: false,
+      isRecruiter: false,
+      isHR: false,
+    } as any);
 
     render(<Header />);
     const link = screen.queryByRole("link", { name: /pending resumes/i });
@@ -81,15 +90,21 @@ describe("Header Navigation", () => {
   it("contains a link to the settings page in the dropdown menu", async () => {
     const user = userEvent.setup();
     // Default mock behavior
+    // Default mock behavior
     vi.mocked(useAuthStore).mockImplementation(
       () =>
         ({
           user: { username: "Admin", email: "admin@example.com", avatar: "" },
-          roles: { isInterviewer: false },
           logout: vi.fn(),
-          fetchUserRoles: vi.fn(),
         }) as any,
     );
+
+    vi.mocked(useUserRole).mockReturnValue({
+      isInterviewer: false,
+      isAdmin: false,
+      isRecruiter: false,
+      isHR: false,
+    } as any);
 
     render(<Header />);
 

@@ -128,7 +128,7 @@ export function InterviewDetailPage() {
                   setNotes(e.target.value);
                   setHasUnsavedChanges(true);
                 }}
-                className="min-h-[300px] mb-4 font-mono text-sm leading-relaxed"
+                className="min-h-75 mb-4 font-mono text-sm leading-relaxed"
                 placeholder={t("recruitment.interviews.notesPlaceholder")}
               />
               <div className="flex justify-end">

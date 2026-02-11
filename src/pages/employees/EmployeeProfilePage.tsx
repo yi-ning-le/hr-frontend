@@ -65,7 +65,7 @@ export function EmployeeProfilePage() {
         <Card>
           <CardContent className="flex flex-col items-center pt-6">
             <Avatar className="h-24 w-24 mb-4">
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl">
+              <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-white text-2xl">
                 {employee.firstName[0]}
                 {employee.lastName[0]}
               </AvatarFallback>

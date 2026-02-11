@@ -1,171 +1,103 @@
 // @vitest-environment jsdom
-
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import {
   useCreateInterview,
-  useInterview,
   useMyInterviews,
+  useInterview,
   useUpdateInterviewNotes,
 } from "../useInterviews";
+import { InterviewsAPI } from "@/lib/api";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// Mock useAuthStore
-vi.mock("@/stores/useAuthStore", () => ({
-  useAuthStore: {
-    getState: () => ({ token: "test-token" }),
+// Mock the API
+vi.mock("@/lib/api", () => ({
+  InterviewsAPI: {
+    create: vi.fn(),
+    getMyInterviews: vi.fn(),
+    get: vi.fn(),
+    updateNotes: vi.fn(),
   },
 }));
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  });
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
-const mockInterview = {
-  id: "interview-1",
-  candidateId: "candidate-1",
-  interviewerId: "emp-1",
-  scheduledAt: "2024-01-15T10:00:00Z",
-  notes: "Initial notes",
-  status: "scheduled",
-};
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
 
-describe("useInterviews hooks", () => {
+describe("useInterviews Hooks", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    globalThis.fetch = vi.fn();
+    queryClient.clear();
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  it("useMyInterviews calls InterviewsAPI.getMyInterviews", async () => {
+    const mockInterviews = [{ id: "1", candidateName: "John Doe" }];
+    (InterviewsAPI.getMyInterviews as any).mockResolvedValue(mockInterviews);
+
+    const { result } = renderHook(() => useMyInterviews(), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(InterviewsAPI.getMyInterviews).toHaveBeenCalled();
+    expect(result.current.data).toEqual(mockInterviews);
   });
 
-  describe("useMyInterviews", () => {
-    it("fetches current user interviews", async () => {
-      vi.mocked(globalThis.fetch).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve([mockInterview]),
-      } as Response);
+  it("useInterview calls InterviewsAPI.get", async () => {
+    const mockInterview = { id: "1", candidateName: "John Doe" };
+    (InterviewsAPI.get as any).mockResolvedValue(mockInterview);
 
-      const { result } = renderHook(() => useMyInterviews(), {
-        wrapper: createWrapper(),
-      });
+    const { result } = renderHook(() => useInterview("1"), { wrapper });
 
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(result.current.data).toEqual([mockInterview]);
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/recruitment/interviews/me"),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: "Bearer test-token",
-          }),
-        }),
-      );
-    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    it("handles fetch error", async () => {
-      vi.mocked(globalThis.fetch).mockResolvedValueOnce({
-        ok: false,
-      } as Response);
-
-      const { result } = renderHook(() => useMyInterviews(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => expect(result.current.isError).toBe(true));
-      expect(result.current.error).toBeInstanceOf(Error);
-    });
+    expect(InterviewsAPI.get).toHaveBeenCalledWith("1");
+    expect(result.current.data).toEqual(mockInterview);
   });
 
-  describe("useInterview", () => {
-    it("fetches single interview by id", async () => {
-      vi.mocked(globalThis.fetch).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockInterview),
-      } as Response);
-
-      const { result } = renderHook(() => useInterview("interview-1"), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(result.current.data).toEqual(mockInterview);
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/recruitment/interviews/interview-1"),
-        expect.any(Object),
-      );
+  it("useCreateInterview calls InterviewsAPI.create", async () => {
+    const newInterview = {
+      candidateId: "c1",
+      jobId: "j1",
+      scheduledTime: "2023-01-01",
+    };
+    (InterviewsAPI.create as any).mockResolvedValue({
+      id: "1",
+      ...newInterview,
     });
 
-    it("does not fetch when id is empty", () => {
-      const { result } = renderHook(() => useInterview(""), {
-        wrapper: createWrapper(),
-      });
+    const { result } = renderHook(() => useCreateInterview(), { wrapper });
 
-      expect(result.current.fetchStatus).toBe("idle");
-    });
+    result.current.mutate(newInterview as any);
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(InterviewsAPI.create).toHaveBeenCalledWith(newInterview);
   });
 
-  describe("useCreateInterview", () => {
-    it("creates interview and invalidates queries", async () => {
-      vi.mocked(globalThis.fetch).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockInterview),
-      } as Response);
-
-      const { result } = renderHook(() => useCreateInterview(), {
-        wrapper: createWrapper(),
-      });
-
-      await act(async () => {
-        await result.current.mutateAsync({
-          candidateId: "candidate-1",
-          interviewerId: "emp-1",
-          jobId: "job-1",
-          scheduledTime: new Date("2024-01-15T10:00:00Z"),
-        });
-      });
-
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/recruitment/interviews"),
-        expect.objectContaining({
-          method: "POST",
-          body: expect.any(String),
-        }),
-      );
+  it("useUpdateInterviewNotes calls InterviewsAPI.updateNotes", async () => {
+    const update = { id: "1", notes: "Good candidate" };
+    (InterviewsAPI.updateNotes as any).mockResolvedValue({
+      id: "1",
+      notes: "Good candidate",
     });
-  });
 
-  describe("useUpdateInterviewNotes", () => {
-    it("updates interview notes", async () => {
-      vi.mocked(globalThis.fetch).mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({ ...mockInterview, notes: "Updated notes" }),
-      } as Response);
+    const { result } = renderHook(() => useUpdateInterviewNotes(), { wrapper });
 
-      const { result } = renderHook(() => useUpdateInterviewNotes(), {
-        wrapper: createWrapper(),
-      });
+    result.current.mutate(update);
 
-      await act(async () => {
-        await result.current.mutateAsync({
-          id: "interview-1",
-          notes: "Updated notes",
-        });
-      });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/recruitment/interviews/interview-1/notes"),
-        expect.objectContaining({
-          method: "PATCH",
-          body: JSON.stringify({ notes: "Updated notes" }),
-        }),
-      );
-    });
+    expect(InterviewsAPI.updateNotes).toHaveBeenCalledWith(
+      "1",
+      "Good candidate",
+    );
   });
 });

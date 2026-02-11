@@ -27,6 +27,15 @@ vi.mock("@/stores/useAuthStore", () => ({
   }),
 }));
 
+vi.mock("@/hooks/useUserRole", () => ({
+  useUserRole: vi.fn(() => ({
+    isInterviewer: false,
+    isAdmin: false,
+    isRecruiter: false,
+    isHR: false,
+  })),
+}));
+
 function renderHeader() {
   return render(<Header />);
 }

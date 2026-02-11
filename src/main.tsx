@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -8,20 +8,12 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import App from "./App.tsx";
 import { router } from "./router";
 
+import { queryClient } from "@/lib/queryClient";
+
 // Setup global 401 handler
 setUnauthorizedCallback(() => {
   useAuthStore.getState().reset();
   router.navigate({ to: "/login" });
-});
-
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-  },
 });
 
 const rootElement = document.getElementById("root");

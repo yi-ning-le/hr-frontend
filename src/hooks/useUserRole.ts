@@ -1,11 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-import type { RecruitmentRoleResponse } from "@/lib/api";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { RecruitmentAPI } from "@/lib/api";
 
 /**
  * Query key for user role data
  */
 export const USER_ROLE_QUERY_KEY = ["userRole"] as const;
+
+/**
+ * Query options for user role data
+ */
+export const userRoleQueryOptions = queryOptions({
+  queryKey: USER_ROLE_QUERY_KEY,
+  queryFn: RecruitmentAPI.getMyRole,
+  staleTime: 1000, // 1 second to deduplicate sequential router guard checks
+  retry: 1,
+  refetchOnWindowFocus: true, // Enable window focus refetching for role updates
+});
 
 /**
  * Hook to fetch the current user's recruitment role status.
@@ -22,13 +32,7 @@ export const USER_ROLE_QUERY_KEY = ["userRole"] as const;
  */
 export const useUserRole = () => {
   const { data, isLoading, isError, error, refetch } =
-    useQuery<RecruitmentRoleResponse>({
-      queryKey: USER_ROLE_QUERY_KEY,
-      queryFn: RecruitmentAPI.getMyRole,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-      refetchOnWindowFocus: false,
-    });
+    useQuery(userRoleQueryOptions);
 
   return {
     isAdmin: data?.isAdmin ?? false,

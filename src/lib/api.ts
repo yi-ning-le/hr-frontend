@@ -5,6 +5,7 @@ import type {
   CandidateStatusDefinition,
 } from "@/types/candidate"; // CandidateStatus is string, Definition is object
 import type { JobPosition } from "@/types/job";
+import type { CreateInterviewInput, Interview } from "@/types/recruitment.d";
 
 // Create Axios instance with default config
 const api = axios.create({
@@ -443,5 +444,30 @@ export const RecruitmentAPI = {
 
   revokeHR: async (employeeId: string): Promise<void> => {
     await api.delete("/recruitment/admin/hrs", { data: { employeeId } });
+  },
+};
+
+export const InterviewsAPI = {
+  create: async (data: CreateInterviewInput): Promise<Interview> => {
+    const response = await api.post<Interview>("/recruitment/interviews", data);
+    return response.data;
+  },
+
+  getMyInterviews: async (): Promise<Interview[]> => {
+    const response = await api.get<Interview[]>("/recruitment/interviews/me");
+    return response.data;
+  },
+
+  get: async (id: string): Promise<Interview> => {
+    const response = await api.get<Interview>(`/recruitment/interviews/${id}`);
+    return response.data;
+  },
+
+  updateNotes: async (id: string, notes: string): Promise<Interview> => {
+    const response = await api.patch<Interview>(
+      `/recruitment/interviews/${id}/notes`,
+      { notes },
+    );
+    return response.data;
   },
 };

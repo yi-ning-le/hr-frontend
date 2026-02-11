@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useUserRole } from "@/hooks/useUserRole";
 
 function HeaderLink({
   className,
@@ -44,7 +45,8 @@ function HeaderLink({
 export function Header() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, roles, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const roles = useUserRole();
 
   const handleLogout = async () => {
     const result = await logout();

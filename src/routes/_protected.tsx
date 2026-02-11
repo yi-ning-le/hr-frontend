@@ -1,14 +1,15 @@
 import { createRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { Toaster } from "@/components/ui/sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Route as RootRoute } from "./__root";
 
+import { queryClient } from "@/lib/queryClient";
+import { userRoleQueryOptions } from "@/hooks/useUserRole";
+
 // Before load guard - checks authentication
-export function beforeLoadGuard() {
-  const { isAuthenticated, user, roles, fetchUserRoles } =
-    useAuthStore.getState();
+export async function beforeLoadGuard() {
+  const { isAuthenticated } = useAuthStore.getState();
 
   if (!isAuthenticated) {
     throw redirect({
@@ -16,17 +17,14 @@ export function beforeLoadGuard() {
     });
   }
 
-  if (user && !roles) {
-    return fetchUserRoles();
+  // Ensure role data matches the requirements
+  try {
+    await queryClient.ensureQueryData(userRoleQueryOptions);
+  } catch (error) {
+    console.error("Failed to fetch user roles in guard:", error);
+    // Optionally redirect or allow partial access, but for now we just log
   }
 }
-
-export const Route = createRoute({
-  getParentRoute: () => RootRoute,
-  id: "_protected",
-  beforeLoad: beforeLoadGuard,
-  component: ProtectedLayout,
-});
 
 function ProtectedLayout() {
   return (
@@ -36,7 +34,13 @@ function ProtectedLayout() {
         <Outlet />
       </main>
       <Footer />
-      <Toaster />
     </div>
   );
 }
+
+export const Route = createRoute({
+  getParentRoute: () => RootRoute,
+  id: "_protected",
+  beforeLoad: beforeLoadGuard,
+  component: ProtectedLayout,
+});

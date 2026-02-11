@@ -1,12 +1,7 @@
 import { isAxiosError } from "axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
-  AuthAPI,
-  RecruitmentAPI,
-  type RecruitmentRoleResponse,
-  setAuthToken,
-} from "@/lib/api";
+import { AuthAPI, setAuthToken } from "@/lib/api";
 import i18n from "@/lib/i18n";
 
 // User type definition
@@ -22,7 +17,6 @@ export interface User {
 interface AuthState {
   user: User | null;
   token: string | null;
-  roles: RecruitmentRoleResponse | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -40,7 +34,6 @@ interface AuthActions {
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<{ success: boolean; error?: string }>;
   reset: () => void;
-  fetchUserRoles: () => Promise<void>;
   // Reserved for future third-party login
   loginWithProvider: (
     provider: "wechat" | "dingtalk" | "feishu",
@@ -58,7 +51,6 @@ export const useAuthStore = create<AuthStore>()(
       // Initial state
       user: null,
       token: null,
-      roles: null,
       isAuthenticated: false,
       isLoading: false,
 
@@ -68,7 +60,6 @@ export const useAuthStore = create<AuthStore>()(
         set({
           user: null,
           token: null,
-          roles: null,
           isAuthenticated: false,
           isLoading: false,
         });
@@ -91,21 +82,9 @@ export const useAuthStore = create<AuthStore>()(
             createdAt: new Date().toISOString(), // or data.user.createdAt
           };
 
-          // Fetch user roles
-          let roles: RecruitmentRoleResponse | null = null;
-          try {
-            roles = await RecruitmentAPI.getMyRole();
-            console.log("AuthStore: Fetched roles:", roles);
-          } catch (error) {
-            console.error("Failed to fetch user roles:", error);
-            // Don't fail login if role fetch fails, just set roles to null (or maybe retry?)
-            // For now, allow login but features dependent on roles might be disabled.
-          }
-
           set({
             user,
             token: data.token,
-            roles,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -178,15 +157,6 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      fetchUserRoles: async () => {
-        try {
-          const roles = await RecruitmentAPI.getMyRole();
-          set({ roles });
-        } catch (error) {
-          console.error("Failed to fetch user roles:", error);
-        }
-      },
-
       // Third-party login placeholder
       loginWithProvider: async (provider) => {
         set({ isLoading: true });
@@ -203,7 +173,6 @@ export const useAuthStore = create<AuthStore>()(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        roles: state.roles,
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
