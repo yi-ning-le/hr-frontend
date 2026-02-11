@@ -69,22 +69,6 @@ const mockCandidate: Candidate = {
   note: "Good candidate",
 };
 
-// Mock stores with selectors pattern (for UI state only)
-interface CandidateStoreState {
-  selectedCandidateId: string;
-  selectCandidate: ReturnType<typeof vi.fn>;
-}
-
-vi.mock("@/stores/useCandidateStore", () => ({
-  useCandidateStore: <T,>(selector: (state: CandidateStoreState) => T): T => {
-    const state: CandidateStoreState = {
-      selectedCandidateId: "1",
-      selectCandidate: vi.fn(),
-    };
-    return selector(state);
-  },
-}));
-
 // Mock TanStack Query hooks
 vi.mock("@/hooks/queries/useCandidates", () => ({
   useCandidates: () => ({
@@ -151,15 +135,13 @@ vi.stubGlobal(
     disconnect() {}
   } as typeof globalThis.ResizeObserver,
 );
-
-// Helper to render with Dialog context
 const renderInDialog = () => {
   const queryClient = new QueryClient();
   return render(
     <QueryClientProvider client={queryClient}>
       <Dialog open={true}>
         <DialogContent className="max-w-4xl">
-          <CandidateDetail />
+          <CandidateDetail candidateId="1" onClose={vi.fn()} />
         </DialogContent>
       </Dialog>
     </QueryClientProvider>,

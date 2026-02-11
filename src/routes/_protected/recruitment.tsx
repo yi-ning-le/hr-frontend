@@ -8,6 +8,11 @@ const recruitmentSearchSchema = z.object({
     .enum(["overview", "jobs", "candidates", "calendar"])
     .optional()
     .catch("overview"),
+  jobId: z.string().optional().catch("all"),
+  q: z.string().optional().catch(""),
+  candidateId: z.string().optional(),
+  view: z.enum(["list", "board"]).optional().catch("board"),
+  status: z.array(z.string()).optional().catch([]),
 });
 
 export const Route = createRoute({

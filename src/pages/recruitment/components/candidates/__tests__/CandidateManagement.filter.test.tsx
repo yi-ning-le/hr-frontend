@@ -33,11 +33,18 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-// Mock store
-const mockStore = vi.fn();
-vi.mock("@/stores/useCandidateStore", () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useCandidateStore: (selector: any) => mockStore(selector),
+// Mock Router
+vi.mock("@/routes/_protected/recruitment", () => ({
+  Route: {
+    useNavigate: vi.fn(() => vi.fn()),
+    useSearch: vi.fn(() => ({
+      jobId: "all",
+      q: "",
+      candidateId: undefined,
+      view: "list",
+      status: [],
+    })),
+  },
 }));
 
 // Mock components
@@ -103,22 +110,6 @@ globalThis.ResizeObserver = class ResizeObserver {
 describe("CandidateManagement Filter Logic", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Default store implementation
-    mockStore.mockImplementation((selector) =>
-      selector({
-        selectedJobId: "all",
-        searchQuery: "",
-        selectedCandidateId: null,
-        viewMode: "list",
-        statusFilter: [],
-        selectCandidate: vi.fn(),
-        setSearchQuery: vi.fn(),
-        setSelectedJobId: vi.fn(),
-        setViewMode: vi.fn(),
-        setStatusFilter: vi.fn(),
-      }),
-    );
   });
 
   it("should verify that candidates in closed jobs are filtered out", async () => {

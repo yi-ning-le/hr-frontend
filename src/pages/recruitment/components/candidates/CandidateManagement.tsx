@@ -10,7 +10,7 @@ import {
   useUpdateCandidateStatus,
 } from "@/hooks/queries/useCandidates";
 import { useJobs } from "@/hooks/queries/useJobs";
-import { useCandidateStore } from "@/stores/useCandidateStore";
+import { Route } from "@/routes/_protected/recruitment";
 import type { Candidate, CandidateStatus } from "@/types/candidate";
 import { CandidateDetail } from "./CandidateDetail";
 import { CandidateKanban } from "./CandidateKanban";
@@ -23,22 +23,39 @@ export function CandidateManagement() {
   const { data: jobs = [] } = useJobs();
   const { data: candidates = [] } = useCandidates();
 
-  // Use selectors to avoid unnecessary re-renders
-  const selectedJobId = useCandidateStore((state) => state.selectedJobId);
-  const searchQuery = useCandidateStore((state) => state.searchQuery);
-  const selectedCandidateId = useCandidateStore(
-    (state) => state.selectedCandidateId,
-  );
-  const viewMode = useCandidateStore((state) => state.viewMode);
-  const statusFilter = useCandidateStore((state) => state.statusFilter);
+  const navigate = Route.useNavigate();
+  const search = Route.useSearch();
+
+  // State from URL
+  const selectedJobId = search.jobId || "all";
+  const searchQuery = search.q || "";
+  const selectedCandidateId = search.candidateId;
+  const viewMode = search.view || "board";
+  const statusFilter = search.status || [];
 
   // Actions
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
-  const selectCandidate = useCandidateStore((state) => state.selectCandidate);
-  const setSearchQuery = useCandidateStore((state) => state.setSearchQuery);
-  const setSelectedJobId = useCandidateStore((state) => state.setSelectedJobId);
-  const setViewMode = useCandidateStore((state) => state.setViewMode);
-  const setStatusFilter = useCandidateStore((state) => state.setStatusFilter);
+
+  const setSelectedJobId = (id: string) =>
+    navigate({ search: (prev) => ({ ...prev, jobId: id }), replace: true });
+
+  const setSearchQuery = (q: string) =>
+    navigate({ search: (prev) => ({ ...prev, q }), replace: true });
+
+  const selectCandidate = (id: string | null) =>
+    navigate({
+      search: (prev) => ({ ...prev, candidateId: id || undefined }),
+      replace: true,
+    });
+
+  const setViewMode = (mode: "list" | "board") =>
+    navigate({ search: (prev) => ({ ...prev, view: mode }), replace: true });
+
+  const setStatusFilter = (statuses: CandidateStatus[]) =>
+    navigate({
+      search: (prev) => ({ ...prev, status: statuses }),
+      replace: true,
+    });
 
   // Filter out closed jobs and their candidates
   const openJobs = useMemo(
@@ -50,13 +67,6 @@ export function CandidateManagement() {
     const openJobIds = new Set(openJobs.map((j) => j.id));
     return candidates.filter((c) => openJobIds.has(c.appliedJobId));
   }, [candidates, openJobs]);
-
-  // Derived state for the main view
-  const selectedCandidate = useMemo(
-    () =>
-      candidatesInOpenJobs.find((c) => c.id === selectedCandidateId) || null,
-    [candidatesInOpenJobs, selectedCandidateId],
-  );
 
   const filteredCandidates = useMemo(() => {
     return candidatesInOpenJobs.filter((candidate: Candidate) => {
@@ -159,11 +169,16 @@ export function CandidateManagement() {
 
       {/* Candidate Detail Modal */}
       <Dialog
-        open={!!selectedCandidate}
+        open={!!selectedCandidateId}
         onOpenChange={(open: boolean) => !open && selectCandidate(null)}
       >
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
-          {selectedCandidate && <CandidateDetail />}
+          {selectedCandidateId && (
+            <CandidateDetail
+              candidateId={selectedCandidateId}
+              onClose={() => selectCandidate(null)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

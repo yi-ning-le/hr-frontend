@@ -22,7 +22,6 @@ import {
   useUpdateCandidateStatus,
   useUploadResume,
 } from "@/hooks/queries/useCandidates";
-import { useCandidateStore } from "@/stores/useCandidateStore";
 import type { Candidate } from "@/types/candidate";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { CandidateDetailHeader } from "./detail/CandidateDetailHeader";
@@ -31,7 +30,15 @@ import { CandidateNoteSection } from "./detail/CandidateNoteSection";
 import { CandidateResumeSection } from "./detail/CandidateResumeSection";
 import { ResumePreviewModal } from "./ResumePreviewModal";
 
-export function CandidateDetail() {
+interface CandidateDetailProps {
+  candidateId: string;
+  onClose: () => void;
+}
+
+export function CandidateDetail({
+  candidateId,
+  onClose,
+}: CandidateDetailProps) {
   const { t } = useTranslation();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -44,12 +51,6 @@ export function CandidateDetail() {
   // Resume Upload State
   const [isUploadingResume, setIsUploadingResume] = useState(false);
 
-  // Get selectedCandidateId from UI store
-  const selectedCandidateId = useCandidateStore(
-    (state) => state.selectedCandidateId,
-  );
-  const selectCandidate = useCandidateStore((state) => state.selectCandidate);
-
   // Use TanStack Query
   const { data: candidates = [] } = useCandidates();
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
@@ -58,9 +59,7 @@ export function CandidateDetail() {
   const { mutate: deleteCandidate } = useDeleteCandidate();
   const { mutateAsync: uploadResumeAsync } = useUploadResume();
 
-  const candidate = candidates.find(
-    (c: Candidate) => c.id === selectedCandidateId,
-  );
+  const candidate = candidates.find((c: Candidate) => c.id === candidateId);
 
   if (!candidate) return null;
 
@@ -108,7 +107,7 @@ export function CandidateDetail() {
 
   const handleDelete = () => {
     deleteCandidate(candidate.id);
-    selectCandidate(null); // Close the detail view
+    onClose(); // Close the detail view
     toast.success(t("recruitment.candidates.dialog.deleteSuccess"));
   };
 

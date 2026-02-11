@@ -44,22 +44,12 @@ vi.mock("@/hooks/useCandidateStatuses", () => ({
   }),
 }));
 
-// Mock useCandidateStore for UI state only
-vi.mock("@/stores/useCandidateStore", () => ({
-  useCandidateStore: vi.fn((selector) =>
-    selector({
-      selectedJobId: "all",
-      searchQuery: "",
-      selectedCandidateId: null,
-      viewMode: "list",
-      statusFilter: [],
-      selectCandidate: vi.fn(),
-      setSearchQuery: vi.fn(),
-      setSelectedJobId: vi.fn(),
-      setViewMode: vi.fn(),
-      setStatusFilter: vi.fn(),
-    }),
-  ),
+// Mock Router
+vi.mock("@/routes/_protected/recruitment", () => ({
+  Route: {
+    useNavigate: vi.fn(() => vi.fn()),
+    useSearch: vi.fn(() => ({})),
+  },
 }));
 
 // Mock TanStack Query hooks
