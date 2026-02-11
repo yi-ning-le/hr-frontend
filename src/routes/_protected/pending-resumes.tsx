@@ -1,10 +1,8 @@
-import { createRoute } from "@tanstack/react-router";
+import { createRoute, redirect } from "@tanstack/react-router";
+import { userRoleQueryOptions } from "@/hooks/useUserRole";
+import { queryClient } from "@/lib/queryClient";
 import PendingResumesPage from "@/pages/interviews/PendingResumesPage";
 import { Route as ProtectedLayoutRoute } from "../_protected";
-
-import { redirect } from "@tanstack/react-router";
-import { queryClient } from "@/lib/queryClient";
-import { userRoleQueryOptions } from "@/hooks/useUserRole";
 
 export const Route = createRoute({
   getParentRoute: () => ProtectedLayoutRoute,

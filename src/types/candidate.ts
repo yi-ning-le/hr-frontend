@@ -30,3 +30,13 @@ export interface Candidate {
   reviewStatus?: string;
   reviewNote?: string;
 }
+export interface CandidateListResponse {
+  data: Candidate[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+  };
+}
+
+export type CandidateJobsCount = Record<string, number>;

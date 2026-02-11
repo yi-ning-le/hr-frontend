@@ -209,18 +209,28 @@ describe("lib/api", () => {
 
     describe("list", () => {
       it("should fetch candidates list and transform dates", async () => {
-        mockAxios.get.mockResolvedValueOnce({ data: [mockCandidate] });
+        mockAxios.get.mockResolvedValueOnce({
+          data: {
+            data: [mockCandidate],
+            meta: { total: 1, page: 1, limit: 10 },
+          },
+        });
 
         const result = await CandidatesAPI.list();
 
         expect(mockAxios.get).toHaveBeenCalledWith("/candidates", {
           params: {},
         });
-        expect(result[0].appliedAt).toBeInstanceOf(Date);
+        expect(result.data[0].appliedAt).toBeInstanceOf(Date);
       });
 
       it("should filter by jobId when provided", async () => {
-        mockAxios.get.mockResolvedValueOnce({ data: [mockCandidate] });
+        mockAxios.get.mockResolvedValueOnce({
+          data: {
+            data: [mockCandidate],
+            meta: { total: 1, page: 1, limit: 10 },
+          },
+        });
 
         await CandidatesAPI.list({ jobId: "job-123" });
 
@@ -230,7 +240,12 @@ describe("lib/api", () => {
       });
 
       it("should not filter when params are empty", async () => {
-        mockAxios.get.mockResolvedValueOnce({ data: [mockCandidate] });
+        mockAxios.get.mockResolvedValueOnce({
+          data: {
+            data: [mockCandidate],
+            meta: { total: 1, page: 1, limit: 10 },
+          },
+        });
 
         await CandidatesAPI.list({});
 

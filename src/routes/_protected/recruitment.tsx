@@ -13,6 +13,8 @@ const recruitmentSearchSchema = z.object({
   candidateId: z.string().optional(),
   view: z.enum(["list", "board"]).optional().catch("board"),
   status: z.array(z.string()).optional().catch([]),
+  page: z.number().optional().catch(1),
+  limit: z.number().optional().catch(50),
 });
 
 export const Route = createRoute({

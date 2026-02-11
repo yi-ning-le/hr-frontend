@@ -34,19 +34,22 @@ describe("useCandidates", () => {
 
   it("fetches candidates and transforms dates", async () => {
     const mockCandidates = [
-      { id: "1", name: "Alice", appliedAt: "2023-01-01T00:00:00Z" },
+      { id: "1", name: "Alice", appliedAt: new Date("2023-01-01T00:00:00Z") },
     ];
     vi.mocked(CandidatesAPI.list).mockResolvedValue(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockCandidates as unknown as any,
+      {
+        data: mockCandidates,
+        meta: { total: 1, page: 1, limit: 10 },
+      } as unknown as any,
     );
 
-    const { result } = renderHook(() => useCandidates("all"), {
+    const { result } = renderHook(() => useCandidates({ jobId: "all" }), {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data?.[0].appliedAt).toBeInstanceOf(Date);
-    expect(CandidatesAPI.list).toHaveBeenCalledWith({ jobId: undefined });
+    expect(result.current.data?.data?.[0].appliedAt).toBeInstanceOf(Date);
+    expect(CandidatesAPI.list).toHaveBeenCalledWith({ jobId: "all" });
   });
 });

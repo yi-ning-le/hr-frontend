@@ -52,7 +52,8 @@ export function CandidateDetail({
   const [isUploadingResume, setIsUploadingResume] = useState(false);
 
   // Use TanStack Query
-  const { data: candidates = [] } = useCandidates();
+  const { data: candidateData } = useCandidates();
+  const candidates = candidateData?.data || [];
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
   const { mutate: updateCandidateNote } = useUpdateCandidateNote();
   const { mutate: updateCandidate } = useUpdateCandidate();

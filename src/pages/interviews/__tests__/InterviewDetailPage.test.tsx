@@ -61,7 +61,7 @@ describe("InterviewDetailPage", () => {
     } as unknown as ReturnType<typeof useInterviews.useInterview>);
 
     vi.mocked(useCandidates.useCandidates).mockReturnValue({
-      data: [mockCandidate],
+      data: { data: [mockCandidate], meta: { total: 1, page: 1, limit: 10 } },
       isLoading: false,
     } as unknown as ReturnType<typeof useCandidates.useCandidates>);
 
@@ -88,7 +88,7 @@ describe("InterviewDetailPage", () => {
     } as unknown as ReturnType<typeof useInterviews.useInterview>);
 
     vi.mocked(useCandidates.useCandidates).mockReturnValue({
-      data: [mockCandidate],
+      data: { data: [mockCandidate], meta: { total: 1, page: 1, limit: 10 } },
       isLoading: false,
     } as unknown as ReturnType<typeof useCandidates.useCandidates>);
 

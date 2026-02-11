@@ -72,7 +72,7 @@ const mockCandidate: Candidate = {
 // Mock TanStack Query hooks
 vi.mock("@/hooks/queries/useCandidates", () => ({
   useCandidates: () => ({
-    data: [mockCandidate],
+    data: { data: [mockCandidate], meta: { total: 1, page: 1, limit: 10 } },
     isLoading: false,
     isError: false,
   }),

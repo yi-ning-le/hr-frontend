@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { Route } from "../_protected/pending-resumes";
 import { queryClient } from "@/lib/queryClient";
+import { Route } from "../_protected/pending-resumes";
 
 // Mock queryClient
 vi.mock("@/lib/queryClient", () => ({

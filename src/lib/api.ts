@@ -1,6 +1,8 @@
 import axios from "axios";
 import type {
   Candidate,
+  CandidateJobsCount,
+  CandidateListResponse,
   CandidateStatus,
   CandidateStatusDefinition,
 } from "@/types/candidate"; // CandidateStatus is string, Definition is object
@@ -142,16 +144,28 @@ export const CandidatesAPI = {
       jobId?: string;
       reviewerId?: string;
       reviewStatus?: string;
+      status?: string;
+      q?: string;
+      page?: number;
+      limit?: number;
     } = {},
-  ): Promise<Candidate[]> => {
-    // Legacy support if just jobId string was passed (not applicable here as we change signature, but strict check)
-    // Actually, callers might pass string. Let's force object.
+  ): Promise<CandidateListResponse> => {
     const params = filters;
-    const response = await api.get<Candidate[]>("/candidates", { params });
-    return response.data.map((c) => ({
-      ...c,
-      appliedAt: new Date(c.appliedAt),
-    }));
+    const response = await api.get<CandidateListResponse>("/candidates", {
+      params,
+    });
+    return {
+      ...response.data,
+      data: response.data.data.map((c) => ({
+        ...c,
+        appliedAt: new Date(c.appliedAt),
+      })),
+    };
+  },
+
+  getCounts: async (): Promise<CandidateJobsCount> => {
+    const response = await api.get<CandidateJobsCount>("/candidates/counts");
+    return response.data;
   },
 
   create: async (data: Partial<Candidate>): Promise<Candidate> => {

@@ -19,7 +19,9 @@ export function MyInterviewsPage() {
   const { t } = useTranslation();
   const { data: interviews, isLoading: isLoadingInterviews } =
     useMyInterviews();
-  const { data: candidates, isLoading: isLoadingCandidates } = useCandidates();
+  const { data: candidateData, isLoading: isLoadingCandidates } =
+    useCandidates();
+  const candidates = candidateData?.data || [];
 
   if (isLoadingInterviews || isLoadingCandidates) {
     return (

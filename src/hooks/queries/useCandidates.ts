@@ -4,19 +4,30 @@ import type { Candidate, CandidateStatus } from "@/types/candidate";
 
 export const CANDIDATES_QUERY_KEY = ["candidates"] as const;
 
-export const useCandidates = (jobId: string = "all") => {
+import { keepPreviousData } from "@tanstack/react-query";
+
+export const useCandidates = (
+  filters: {
+    jobId?: string;
+    reviewerId?: string;
+    reviewStatus?: string;
+    status?: string;
+    q?: string;
+    page?: number;
+    limit?: number;
+  } = {},
+) => {
   return useQuery({
-    queryKey: [...CANDIDATES_QUERY_KEY, jobId],
-    queryFn: async () => {
-      const result = await CandidatesAPI.list({
-        jobId: jobId === "all" ? undefined : jobId,
-      });
-      // Ensure we have Date objects
-      return result.map((c) => ({
-        ...c,
-        appliedAt: new Date(c.appliedAt),
-      }));
-    },
+    queryKey: [...CANDIDATES_QUERY_KEY, filters],
+    queryFn: () => CandidatesAPI.list(filters),
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useCandidateCounts = () => {
+  return useQuery({
+    queryKey: [...CANDIDATES_QUERY_KEY, "counts"],
+    queryFn: CandidatesAPI.getCounts,
   });
 };
 

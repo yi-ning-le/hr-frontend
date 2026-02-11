@@ -11,35 +11,42 @@ vi.mock("react-i18next", () => ({
 }));
 
 // Mock react-pdf
-vi.mock("react-pdf", () => ({
-  pdfjs: {
-    GlobalWorkerOptions: {
-      workerSrc: "",
+vi.mock("react-pdf", async () => {
+  const { useEffect } = await import("react");
+  return {
+    pdfjs: {
+      GlobalWorkerOptions: {
+        workerSrc: "",
+      },
     },
-  },
-  Document: ({
-    children,
-    onLoadSuccess,
-    file,
-  }: {
-    children?: React.ReactNode;
-    onLoadSuccess?: (pdf: { numPages: number }) => void;
-    file: string;
-  }) => {
-    // Simulate async load success
-    setTimeout(() => {
-      if (onLoadSuccess) onLoadSuccess({ numPages: 5 });
-    }, 10);
-    return (
-      <div data-testid="pdf-document" data-file={file}>
-        {children}
-      </div>
-    );
-  },
-  Page: ({ pageNumber }: { pageNumber: number }) => {
-    return <div data-testid="pdf-page">Page {pageNumber}</div>;
-  },
-}));
+    Document: ({
+      children,
+      onLoadSuccess,
+      file,
+    }: {
+      children?: React.ReactNode;
+      onLoadSuccess?: (pdf: { numPages: number }) => void;
+      file: string;
+    }) => {
+      // Simulate async load success
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          if (onLoadSuccess) onLoadSuccess({ numPages: 5 });
+        }, 10);
+        return () => clearTimeout(timer);
+      }, [onLoadSuccess]);
+
+      return (
+        <div data-testid="pdf-document" data-file={file}>
+          {children}
+        </div>
+      );
+    },
+    Page: ({ pageNumber }: { pageNumber: number }) => {
+      return <div data-testid="pdf-page">Page {pageNumber}</div>;
+    },
+  };
+});
 
 // Mock ResizeObserver
 vi.stubGlobal(

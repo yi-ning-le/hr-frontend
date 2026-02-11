@@ -1,11 +1,10 @@
 import { createRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { userRoleQueryOptions } from "@/hooks/useUserRole";
+import { queryClient } from "@/lib/queryClient";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Route as RootRoute } from "./__root";
-
-import { queryClient } from "@/lib/queryClient";
-import { userRoleQueryOptions } from "@/hooks/useUserRole";
 
 // Before load guard - checks authentication
 export async function beforeLoadGuard() {

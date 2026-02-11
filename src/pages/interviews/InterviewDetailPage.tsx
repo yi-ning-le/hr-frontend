@@ -41,7 +41,9 @@ export function InterviewDetailPage() {
   // We need candidate details too. Ideally, the interview API should return expandable fields or we fetch candidate separately.
   // Currently fetching all candidates to find one is inefficient but fits current hook structure.
   // A better approach would be useCandidate(id) hook.
-  const { data: candidates, isLoading: isLoadingCandidates } = useCandidates();
+  const { data: candidateData, isLoading: isLoadingCandidates } =
+    useCandidates();
+  const candidates = candidateData?.data || [];
 
   const { mutateAsync: updateNotes, isPending: isUpdating } =
     useUpdateInterviewNotes();

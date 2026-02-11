@@ -1,7 +1,7 @@
 import { createRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { SettingsPage } from "@/pages/settings/SettingsPage";
 import { SettingsTabId } from "@/pages/settings/constants";
+import { SettingsPage } from "@/pages/settings/SettingsPage";
 import { Route as ProtectedRoute } from "../_protected";
 
 const settingsSearchSchema = z.object({

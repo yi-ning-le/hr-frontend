@@ -1,14 +1,15 @@
 // @vitest-environment jsdom
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { InterviewsAPI } from "@/lib/api";
 import {
   useCreateInterview,
-  useMyInterviews,
   useInterview,
+  useMyInterviews,
   useUpdateInterviewNotes,
 } from "../useInterviews";
-import { InterviewsAPI } from "@/lib/api";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Mock the API
 vi.mock("@/lib/api", () => ({

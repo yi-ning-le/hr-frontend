@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useCandidates } from "@/hooks/queries/useCandidates";
+import { useState } from "react";
+import { useCandidateCounts } from "@/hooks/queries/useCandidates";
 import {
   useCreateJob,
   useDeleteJob,
@@ -8,7 +8,6 @@ import {
   useUpdateJob,
 } from "@/hooks/queries/useJobs";
 import { useJobStore } from "@/stores/useJobStore";
-import type { Candidate } from "@/types/candidate";
 import type { JobPosition } from "@/types/job";
 import type { JobFormValues } from "./forms/JobPositionForm";
 import { JobDialogs } from "./JobDialogs";
@@ -21,7 +20,7 @@ import { JobPositionList } from "./JobPositionList";
 export function JobManagementTab() {
   const { isAddDialogOpen, setIsAddDialogOpen } = useJobStore();
   const { data: jobs = [] } = useJobs();
-  const { data: candidates = [] } = useCandidates();
+  const { data: jobCounts = {} } = useCandidateCounts();
 
   const { mutate: addJob } = useCreateJob();
   const { mutate: updateJob } = useUpdateJob();
@@ -34,14 +33,6 @@ export function JobManagementTab() {
   const [viewingJob, setViewingJob] = useState<JobPosition | undefined>(
     undefined,
   );
-
-  const jobCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    candidates.forEach((c: Candidate) => {
-      counts[c.appliedJobId] = (counts[c.appliedJobId] || 0) + 1;
-    });
-    return counts;
-  }, [candidates]);
 
   const handleEditJob = (job: JobPosition) => {
     setEditingJob(job);

@@ -73,7 +73,11 @@ vi.mock("@/hooks/queries/useJobs", () => ({
 
 vi.mock("@/hooks/queries/useCandidates", () => ({
   useCandidates: vi.fn(() => ({
-    data: [],
+    data: { data: [], meta: { total: 0, page: 1, limit: 50 } },
+    isLoading: false,
+  })),
+  useCandidateCounts: vi.fn(() => ({
+    data: {},
     isLoading: false,
   })),
 }));

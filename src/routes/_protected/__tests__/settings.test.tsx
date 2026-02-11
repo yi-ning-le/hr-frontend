@@ -6,12 +6,12 @@ import {
 } from "@tanstack/react-router";
 import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { userRoleQueryOptions } from "@/hooks/useUserRole";
+import { queryClient } from "@/lib/queryClient";
 import { SettingsTabId } from "@/pages/settings/constants";
 import { Route as RootRoute } from "../../__root";
 import { Route as ProtectedRoute } from "../../_protected";
 import { Route as SettingsRoute } from "../settings";
-import { userRoleQueryOptions } from "@/hooks/useUserRole";
-import { queryClient } from "@/lib/queryClient";
 
 // Mock window.matchMedia for Toaster/Sonner
 Object.defineProperty(window, "matchMedia", {

@@ -4,14 +4,23 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
+  useCandidateCounts,
   useCandidates,
   useUpdateCandidateStatus,
 } from "@/hooks/queries/useCandidates";
 import { useJobs } from "@/hooks/queries/useJobs";
 import { Route } from "@/routes/_protected/recruitment";
-import type { Candidate, CandidateStatus } from "@/types/candidate";
+import type { CandidateStatus } from "@/types/candidate";
 import { CandidateDetail } from "./CandidateDetail";
 import { CandidateKanban } from "./CandidateKanban";
 import { CandidateList } from "./CandidateList";
@@ -21,7 +30,7 @@ import { JobSidebar } from "./JobSidebar";
 export function CandidateManagement() {
   const { t } = useTranslation();
   const { data: jobs = [] } = useJobs();
-  const { data: candidates = [] } = useCandidates();
+  const { data: jobCounts = {} } = useCandidateCounts();
 
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
@@ -32,15 +41,32 @@ export function CandidateManagement() {
   const selectedCandidateId = search.candidateId;
   const viewMode = search.view || "board";
   const statusFilter = search.status || [];
+  const page = search.page || 1;
+  const limit = search.limit || (viewMode === "list" ? 50 : 1000);
 
   // Actions
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
 
+  const { data: candidateData } = useCandidates({
+    jobId: selectedJobId === "all" ? undefined : selectedJobId,
+    q: searchQuery,
+    status: statusFilter.length > 0 ? statusFilter[0] : undefined, // Currently API only supports single status filter
+    page,
+    limit,
+  });
+
+  const candidates = candidateData?.data || [];
+  const total = candidateData?.meta?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
   const setSelectedJobId = (id: string) =>
-    navigate({ search: (prev) => ({ ...prev, jobId: id }), replace: true });
+    navigate({
+      search: (prev) => ({ ...prev, jobId: id, page: 1 }),
+      replace: true,
+    });
 
   const setSearchQuery = (q: string) =>
-    navigate({ search: (prev) => ({ ...prev, q }), replace: true });
+    navigate({ search: (prev) => ({ ...prev, q, page: 1 }), replace: true });
 
   const selectCandidate = (id: string | null) =>
     navigate({
@@ -49,49 +75,25 @@ export function CandidateManagement() {
     });
 
   const setViewMode = (mode: "list" | "board") =>
-    navigate({ search: (prev) => ({ ...prev, view: mode }), replace: true });
-
-  const setStatusFilter = (statuses: CandidateStatus[]) =>
     navigate({
-      search: (prev) => ({ ...prev, status: statuses }),
+      search: (prev) => ({ ...prev, view: mode, page: 1 }),
       replace: true,
     });
 
-  // Filter out closed jobs and their candidates
+  const setStatusFilter = (statuses: CandidateStatus[]) =>
+    navigate({
+      search: (prev) => ({ ...prev, status: statuses, page: 1 }),
+      replace: true,
+    });
+
+  const setPage = (p: number) =>
+    navigate({ search: (prev) => ({ ...prev, page: p }), replace: true });
+
+  // Filter out closed jobs for sidebar
   const openJobs = useMemo(
     () => jobs.filter((j) => j.status === "OPEN"),
     [jobs],
   );
-
-  const candidatesInOpenJobs = useMemo(() => {
-    const openJobIds = new Set(openJobs.map((j) => j.id));
-    return candidates.filter((c) => openJobIds.has(c.appliedJobId));
-  }, [candidates, openJobs]);
-
-  const filteredCandidates = useMemo(() => {
-    return candidatesInOpenJobs.filter((candidate: Candidate) => {
-      const matchesJob =
-        selectedJobId === "all" || candidate.appliedJobId === selectedJobId;
-      const matchesSearch =
-        candidate.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.email.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus =
-        statusFilter.length === 0 || statusFilter.includes(candidate.status);
-
-      return matchesJob && matchesSearch && matchesStatus;
-    });
-  }, [candidatesInOpenJobs, selectedJobId, searchQuery, statusFilter]);
-
-  // Aggregate counts based on OPEN jobs only
-  const jobCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    candidatesInOpenJobs.forEach((c: Candidate) => {
-      counts[c.appliedJobId] = (counts[c.appliedJobId] || 0) + 1;
-    });
-    return counts;
-  }, [candidatesInOpenJobs]);
-
-  const totalCandidates = candidatesInOpenJobs.length;
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -117,7 +119,9 @@ export function CandidateManagement() {
         selectedJobId={selectedJobId}
         onSelectJob={setSelectedJobId}
         jobCounts={jobCounts}
-        totalCandidates={totalCandidates}
+        totalCandidates={
+          selectedJobId === "all" ? total : jobCounts[selectedJobId] || 0
+        }
       />
 
       {/* Main Content */}
@@ -151,18 +155,64 @@ export function CandidateManagement() {
           </ToggleGroup>
         </div>
 
-        <div className="flex-1 overflow-hidden p-4 pt-2">
-          {viewMode === "list" ? (
-            <CandidateList
-              candidates={filteredCandidates}
-              onCandidateClick={(c) => selectCandidate(c.id)}
-            />
-          ) : (
-            <CandidateKanban
-              candidates={filteredCandidates}
-              onDragEnd={handleDragEnd}
-              onCandidateClick={(c) => selectCandidate(c.id)}
-            />
+        <div className="flex-1 overflow-hidden p-4 pt-2 flex flex-col">
+          <div className="flex-1 overflow-hidden">
+            {viewMode === "list" ? (
+              <CandidateList
+                candidates={candidates}
+                onCandidateClick={(c) => selectCandidate(c.id)}
+              />
+            ) : (
+              <CandidateKanban
+                candidates={candidates}
+                onDragEnd={handleDragEnd}
+                onCandidateClick={(c) => selectCandidate(c.id)}
+              />
+            )}
+          </div>
+
+          {viewMode === "list" && totalPages > 1 && (
+            <div className="p-4 border-t">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setPage(Math.max(1, page - 1))}
+                      aria-disabled={page <= 1}
+                      className={
+                        page <= 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (p) => (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={p === page}
+                          onClick={() => setPage(p)}
+                          className="cursor-pointer"
+                        >
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ),
+                  )}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setPage(Math.min(totalPages, page + 1))}
+                      aria-disabled={page >= totalPages}
+                      className={
+                        page >= totalPages
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </div>
       </div>
