@@ -4,12 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { type EmployeeAPIResponse, EmployeesAPI } from "@/lib/api";
-import { useEmployees } from "../useEmployees";
+import { useEmployee, useEmployees } from "../useEmployees";
 
 // Mock EmployeesAPI
 vi.mock("@/lib/api", () => ({
   EmployeesAPI: {
     list: vi.fn(),
+    get: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
@@ -75,5 +76,30 @@ describe("useEmployees", () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toBeDefined();
+  });
+
+  it("fetches single employee", async () => {
+    const mockEmployee = {
+      id: "1",
+      firstName: "John",
+      lastName: "Doe",
+      joinDate: "2023-01-01T00:00:00Z",
+      status: "Active",
+      employmentType: "FullTime",
+    };
+
+    vi.mocked(EmployeesAPI.get).mockResolvedValue(
+      mockEmployee as unknown as EmployeeAPIResponse,
+    );
+
+    const { result } = renderHook(() => useEmployee("1"), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data?.firstName).toBe("John");
+    expect(result.current.data?.joinDate).toBeInstanceOf(Date);
+    expect(EmployeesAPI.get).toHaveBeenCalledWith("1");
   });
 });

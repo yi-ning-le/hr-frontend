@@ -41,13 +41,8 @@ const mockEmployee: Employee = {
 
 // Mock useEmployees hook
 vi.mock("@/hooks/queries/useEmployees", () => ({
-  useEmployees: () => ({
-    data: {
-      employees: [mockEmployee],
-      total: 1,
-      page: 1,
-      limit: 20,
-    },
+  useEmployee: () => ({
+    data: mockEmployee,
     isLoading: false,
     isError: false,
   }),

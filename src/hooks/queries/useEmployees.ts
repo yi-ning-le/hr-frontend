@@ -40,6 +40,22 @@ export const useEmployees = (options: UseEmployeesOptions = {}) => {
   });
 };
 
+export const useEmployee = (id: string) => {
+  return useQuery({
+    queryKey: [...EMPLOYEE_QUERY_KEY, id],
+    queryFn: async () => {
+      const result = await EmployeesAPI.get(id);
+      return {
+        ...result,
+        status: result.status as EmployeeStatus,
+        employmentType: result.employmentType as EmploymentType,
+        joinDate: new Date(result.joinDate),
+      } as Employee;
+    },
+    enabled: !!id,
+  });
+};
+
 export const useCreateEmployee = () => {
   const queryClient = useQueryClient();
   return useMutation({
