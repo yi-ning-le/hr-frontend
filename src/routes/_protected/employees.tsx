@@ -3,7 +3,7 @@ import { z } from "zod";
 import { EmployeesPage } from "@/pages/employees/EmployeesPage";
 import { Route as ProtectedLayoutRoute } from "../_protected";
 
-const employeeSearchSchema = z.object({
+export const employeeSearchSchema = z.object({
   page: z.number().min(1).catch(1),
   limit: z.number().min(1).catch(20),
   search: z.string().optional(),

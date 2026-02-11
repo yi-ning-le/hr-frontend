@@ -1,8 +1,13 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useDeleteEmployee, useEmployees } from "@/hooks/queries/useEmployees";
+import {
+  EMPLOYEE_QUERY_KEY,
+  useDeleteEmployee,
+  useEmployees,
+} from "@/hooks/queries/useEmployees";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Route } from "@/routes/_protected/employees";
 import type { Employee } from "@/types/employee";
@@ -22,6 +27,7 @@ export function EmployeesPage() {
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
   const filters = Route.useSearch();
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useEmployees({
     status: filters.status || undefined,
@@ -43,6 +49,10 @@ export function EmployeesPage() {
   const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(
     null,
   );
+
+  const handleRefresh = () => {
+    void queryClient.invalidateQueries({ queryKey: EMPLOYEE_QUERY_KEY });
+  };
 
   const handleSearch = (term: string) => {
     navigate({ search: (prev) => ({ ...prev, search: term, page: 1 }) });
@@ -86,7 +96,7 @@ export function EmployeesPage() {
         <p className="text-red-500">
           {t("common.error.fetch", "Failed to fetch data")}
         </p>
-        <Button onClick={() => window.location.reload()}>
+        <Button onClick={handleRefresh}>
           {t("common.retry", "Retry")}
         </Button>
       </div>
@@ -98,7 +108,7 @@ export function EmployeesPage() {
       <EmployeesHeader
         total={total}
         isHR={isHR}
-        onRefresh={() => window.location.reload()}
+        onRefresh={handleRefresh}
         onAdd={() => setDialogState({ mode: "create" })}
       />
 

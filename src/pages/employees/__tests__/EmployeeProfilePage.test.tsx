@@ -4,6 +4,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Employee } from "@/types/employee";
 import { EmployeeProfilePage } from "../EmployeeProfilePage";
 
+const mockReturnSearch = {
+  page: 3,
+  limit: 50,
+  search: "john",
+  status: "Active",
+  department: "Engineering",
+};
+
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -14,8 +22,21 @@ vi.mock("react-i18next", () => ({
 
 // Mock TanStack Router
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, to }: { children: React.ReactNode; to: string }) => (
-    <a href={to}>{children}</a>
+  Link: ({
+    children,
+    to,
+    search,
+  }: {
+    children: React.ReactNode;
+    to: string;
+    search?: unknown;
+  }) => (
+    <a
+      href={to}
+      data-search={search ? JSON.stringify(search) : undefined}
+    >
+      {children}
+    </a>
   ),
 }));
 
@@ -23,6 +44,7 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/routes/_protected/employees.$employeeId", () => ({
   Route: {
     useParams: () => ({ employeeId: "emp-1" }),
+    useSearch: () => mockReturnSearch,
   },
 }));
 
@@ -39,18 +61,21 @@ const mockEmployee: Employee = {
   joinDate: new Date("2024-01-15"),
 };
 
+const mockUseEmployee = vi.fn();
+
 // Mock useEmployees hook
 vi.mock("@/hooks/queries/useEmployees", () => ({
-  useEmployee: () => ({
-    data: mockEmployee,
-    isLoading: false,
-    isError: false,
-  }),
+  useEmployee: (id: string) => mockUseEmployee(id),
 }));
 
 describe("EmployeeProfilePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseEmployee.mockReturnValue({
+      data: mockEmployee,
+      isLoading: false,
+      isError: false,
+    });
   });
 
   it("renders back button", () => {
@@ -96,5 +121,29 @@ describe("EmployeeProfilePage", () => {
     expect(screen.getByText("Department")).toBeInTheDocument();
     expect(screen.getByText("Employment Type")).toBeInTheDocument();
     expect(screen.getByText("Join Date")).toBeInTheDocument();
+  });
+
+  it("keeps list search context in back link", () => {
+    render(<EmployeeProfilePage />);
+
+    expect(screen.getByRole("link", { name: "Back" })).toHaveAttribute(
+      "data-search",
+      JSON.stringify(mockReturnSearch),
+    );
+  });
+
+  it("keeps list search context when employee is not found", () => {
+    mockUseEmployee.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+    });
+
+    render(<EmployeeProfilePage />);
+
+    expect(screen.getByRole("link", { name: "Back to List" })).toHaveAttribute(
+      "data-search",
+      JSON.stringify(mockReturnSearch),
+    );
   });
 });

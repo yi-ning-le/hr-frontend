@@ -7,6 +7,8 @@ import { useUserRole } from "@/hooks/useUserRole";
 import type { Employee } from "@/types/employee";
 import { EmployeesPage } from "../EmployeesPage";
 
+const mockInvalidateQueries = vi.fn();
+
 // Mock react-i18next
 vi.mock("react-i18next", async (importOriginal) => {
   const actual = await importOriginal<typeof import("react-i18next")>();
@@ -22,6 +24,12 @@ vi.mock("react-i18next", async (importOriginal) => {
     },
   };
 });
+
+vi.mock("@tanstack/react-query", () => ({
+  useQueryClient: () => ({
+    invalidateQueries: mockInvalidateQueries,
+  }),
+}));
 
 // Mock TanStack Router
 const mockNavigate = vi.fn();
@@ -52,6 +60,7 @@ vi.mock("@/routes/_protected/employees", () => ({
 // Mock TanStack Query hooks
 const mockDeleteEmployee = vi.fn();
 vi.mock("@/hooks/queries/useEmployees", () => ({
+  EMPLOYEE_QUERY_KEY: ["employees"],
   useEmployees: vi.fn(() => ({
     data: { employees: [], total: 0 },
     isLoading: false,
@@ -171,6 +180,11 @@ vi.mock("@/components/ui/alert-dialog", () => ({
 describe("EmployeesPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useEmployees).mockReturnValue({
+      data: { employees: [], total: 0 },
+      isLoading: false,
+      isError: false,
+    } as unknown as ReturnType<typeof useEmployees>);
   });
 
   it("renders page header and add button", () => {
@@ -259,11 +273,43 @@ describe("EmployeesPage", () => {
 
     expect(mockDeleteEmployee).toHaveBeenCalledWith("1");
   });
+
+  it("refresh button invalidates employees query", async () => {
+    const user = userEvent.setup();
+    render(<EmployeesPage />);
+
+    await user.click(screen.getByTitle("Refresh"));
+
+    expect(mockInvalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["employees"],
+    });
+  });
+
+  it("retry button invalidates employees query on error", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useEmployees).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+    } as unknown as ReturnType<typeof useEmployees>);
+
+    render(<EmployeesPage />);
+    await user.click(screen.getByText("Retry"));
+
+    expect(mockInvalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["employees"],
+    });
+  });
 });
 
 describe("EmployeesPage - HR Access Control", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useEmployees).mockReturnValue({
+      data: { employees: [], total: 0 },
+      isLoading: false,
+      isError: false,
+    } as unknown as ReturnType<typeof useEmployees>);
   });
 
   it("shows Add Employee button for HR users", () => {

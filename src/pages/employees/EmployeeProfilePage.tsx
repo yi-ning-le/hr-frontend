@@ -19,6 +19,7 @@ import { Route } from "@/routes/_protected/employees.$employeeId";
 export function EmployeeProfilePage() {
   const { t } = useTranslation();
   const { employeeId } = Route.useParams();
+  const returnSearch = Route.useSearch();
   const { data: employee, isLoading, isError } = useEmployee(employeeId);
 
   if (isLoading) {
@@ -39,7 +40,7 @@ export function EmployeeProfilePage() {
         <p className="text-xl font-semibold text-slate-900 dark:text-white">
           {t("employees.notFound", "Employee not found")}
         </p>
-        <Link to="/employees" search={{ page: 1, limit: 20 }}>
+        <Link to="/employees" search={returnSearch}>
           <Button variant="outline">{t("common.back", "Back to List")}</Button>
         </Link>
       </div>
@@ -60,7 +61,7 @@ export function EmployeeProfilePage() {
   return (
     <div className="space-y-6">
       {/* Back Button */}
-      <Link to="/employees" search={{ page: 1, limit: 20 }}>
+      <Link to="/employees" search={returnSearch}>
         <Button variant="ghost" className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           {t("common.back", "Back")}
