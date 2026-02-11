@@ -10,7 +10,7 @@ import {
   Save,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -50,9 +50,11 @@ export function InterviewDetailPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Update local notes state when data is loaded
-  if (interview?.notes && notes === "" && !hasUnsavedChanges) {
-    setNotes(interview.notes);
-  }
+  useEffect(() => {
+    if (interview?.notes && notes === "" && !hasUnsavedChanges) {
+      setNotes(interview.notes);
+    }
+  }, [interview?.notes, notes, hasUnsavedChanges]);
 
   if (isLoadingInterview || isLoadingCandidates) {
     return (
