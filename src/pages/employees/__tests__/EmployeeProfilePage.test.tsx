@@ -31,10 +31,7 @@ vi.mock("@tanstack/react-router", () => ({
     to: string;
     search?: unknown;
   }) => (
-    <a
-      href={to}
-      data-search={search ? JSON.stringify(search) : undefined}
-    >
+    <a href={to} data-search={search ? JSON.stringify(search) : undefined}>
       {children}
     </a>
   ),

@@ -56,6 +56,15 @@
     "retryLater": "Please try again later",
     "admin": "Admin"
   },
+  "candidate": {
+    "assignReviewer": "Assign Reviewer",
+    "assignReviewerTitle": "Assign Reviewer",
+    "assignDescription": "Select a reviewer to evaluate this candidate's resume.",
+    "reviewer": "Reviewer",
+    "selectReviewer": "Select reviewer",
+    "assignSuccess": "Reviewer assigned successfully",
+    "assignFailed": "Failed to assign reviewer"
+  },
   "home": {
     "welcome": "Welcome back, Admin 👋",
     "todayInfo": "Today is {{date}}. Here's your work overview.",

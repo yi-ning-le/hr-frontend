@@ -102,7 +102,7 @@ export function AssignReviewerDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t("candidate.reviewer", "Interviewer")}
+                    {t("candidate.reviewer", "Reviewer")}
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}

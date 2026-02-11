@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CandidatesAPI } from "@/lib/api";
 import { ReviewCandidateDialog } from "../ReviewCandidateDialog";
 
+const mockInvalidateQueries = vi.fn();
+
 // Mock dependencies
 vi.mock("@/lib/api", () => ({
   CandidatesAPI: {
@@ -13,7 +15,7 @@ vi.mock("@/lib/api", () => ({
 
 vi.mock("@tanstack/react-query", () => ({
   useQueryClient: vi.fn(() => ({
-    invalidateQueries: vi.fn(),
+    invalidateQueries: mockInvalidateQueries,
   })),
 }));
 
@@ -59,6 +61,7 @@ describe("ReviewCandidateDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockInvalidateQueries.mockReset();
   });
 
   it("should render correctly when open", () => {
@@ -110,6 +113,12 @@ describe("ReviewCandidateDialog", () => {
       );
     });
 
+    expect(mockInvalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["pending-resumes"],
+    });
+    expect(mockInvalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["candidates"],
+    });
     expect(mockOnOpenChange).toHaveBeenCalledWith(false);
   });
 

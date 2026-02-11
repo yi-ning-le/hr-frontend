@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { useCandidateCounts } from "@/hooks/queries/useCandidates";
 import {
   useCreateJob,
@@ -18,12 +20,13 @@ import { JobPositionList } from "./JobPositionList";
  * It manages its own dialog state and uses useJobStore for job-related actions.
  */
 export function JobManagementTab() {
+  const { t } = useTranslation();
   const { isAddDialogOpen, setIsAddDialogOpen } = useJobStore();
   const { data: jobs = [] } = useJobs();
   const { data: jobCounts = {} } = useCandidateCounts();
 
-  const { mutate: addJob } = useCreateJob();
-  const { mutate: updateJob } = useUpdateJob();
+  const { mutateAsync: addJob } = useCreateJob();
+  const { mutateAsync: updateJob } = useUpdateJob();
   const { mutate: deleteJob } = useDeleteJob();
   const { mutate: toggleJobStatus } = useToggleJobStatus();
 
@@ -51,13 +54,19 @@ export function JobManagementTab() {
     toggleJobStatus(job.id);
   };
 
-  const handleSaveJob = (data: JobFormValues) => {
-    if (editingJob) {
-      updateJob({ id: editingJob.id, data });
-    } else {
-      addJob(data);
+  const handleSaveJob = async (data: JobFormValues) => {
+    try {
+      if (editingJob) {
+        await updateJob({ id: editingJob.id, data });
+      } else {
+        await addJob(data);
+      }
+      setIsAddDialogOpen(false);
+    } catch {
+      toast.error(
+        t("recruitment.jobs.messages.saveFailed", "Failed to save job"),
+      );
     }
-    setIsAddDialogOpen(false);
   };
 
   return (

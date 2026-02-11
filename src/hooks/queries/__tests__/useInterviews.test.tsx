@@ -22,7 +22,9 @@ vi.mock("@/lib/api", () => ({
 }));
 
 vi.mock("@/stores/useAuthStore", () => ({
-  useAuthStore: (selector: (state: { user: { id: string }; token: string }) => unknown) =>
+  useAuthStore: (
+    selector: (state: { user: { id: string }; token: string }) => unknown,
+  ) =>
     selector({
       user: { id: "user-1" },
       token: "token-1",

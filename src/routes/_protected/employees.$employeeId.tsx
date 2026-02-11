@@ -1,7 +1,7 @@
 import { createRoute } from "@tanstack/react-router";
 import { EmployeeProfilePage } from "@/pages/employees/EmployeeProfilePage";
-import { employeeSearchSchema } from "./employees";
 import { Route as ProtectedLayoutRoute } from "../_protected";
+import { employeeSearchSchema } from "./employees";
 
 export const Route = createRoute({
   getParentRoute: () => ProtectedLayoutRoute,

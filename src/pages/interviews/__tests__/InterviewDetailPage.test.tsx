@@ -125,7 +125,12 @@ describe("InterviewDetailPage", () => {
   it("resets notes when interview id changes", async () => {
     const interviewById = {
       "1": { ...mockInterview, notes: "Notes for interview 1" },
-      "2": { ...mockInterview, id: "2", candidateId: "c2", notes: "Notes for interview 2" },
+      "2": {
+        ...mockInterview,
+        id: "2",
+        candidateId: "c2",
+        notes: "Notes for interview 2",
+      },
     };
 
     vi.mocked(useInterviews.useInterview).mockImplementation(
@@ -154,11 +159,15 @@ describe("InterviewDetailPage", () => {
 
     const { rerender } = render(<InterviewDetailPage />);
 
-    expect(screen.getByDisplayValue("Notes for interview 1")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("Notes for interview 1"),
+    ).toBeInTheDocument();
 
     currentInterviewId = "2";
     rerender(<InterviewDetailPage />);
 
-    expect(screen.getByDisplayValue("Notes for interview 2")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("Notes for interview 2"),
+    ).toBeInTheDocument();
   });
 });

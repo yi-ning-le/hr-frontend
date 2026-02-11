@@ -56,6 +56,15 @@
     "retryLater": "请稍后重试",
     "admin": "管理员"
   },
+  "candidate": {
+    "assignReviewer": "分配评审人",
+    "assignReviewerTitle": "分配评审人",
+    "assignDescription": "选择一位评审人来处理该候选人简历。",
+    "reviewer": "评审人",
+    "selectReviewer": "选择评审人",
+    "assignSuccess": "评审人分配成功",
+    "assignFailed": "评审人分配失败"
+  },
   "home": {
     "welcome": "欢迎回来，管理员 👋",
     "todayInfo": "今天是 {{date}}。以下是您的工作概览。",

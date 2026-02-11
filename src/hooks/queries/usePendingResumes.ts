@@ -10,10 +10,12 @@ export function usePendingResumes() {
     queryFn: async () => {
       if (!employee?.id) return [];
 
-      return CandidatesAPI.list({
+      const response = await CandidatesAPI.list({
         reviewerId: employee.id,
         reviewStatus: "pending",
       });
+
+      return response.data;
     },
     enabled: !!employee?.id,
   });

@@ -55,9 +55,10 @@ describe("usePendingResumes with /employees/me", () => {
       isLoading: false,
     });
 
-    (CandidatesAPI.list as any).mockResolvedValue([
-      { id: "c1", name: "Candidate 1" },
-    ]);
+    (CandidatesAPI.list as any).mockResolvedValue({
+      data: [{ id: "c1", name: "Candidate 1" }],
+      meta: { total: 1, page: 1, limit: 50 },
+    });
 
     const { result } = renderHook(() => usePendingResumes(), { wrapper });
 

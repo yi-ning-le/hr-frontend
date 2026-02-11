@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -96,9 +96,7 @@ export function EmployeesPage() {
         <p className="text-red-500">
           {t("common.error.fetch", "Failed to fetch data")}
         </p>
-        <Button onClick={handleRefresh}>
-          {t("common.retry", "Retry")}
-        </Button>
+        <Button onClick={handleRefresh}>{t("common.retry", "Retry")}</Button>
       </div>
     );
   }

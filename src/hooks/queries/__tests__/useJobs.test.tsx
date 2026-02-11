@@ -31,9 +31,9 @@ describe("useJobs", () => {
     vi.clearAllMocks();
   });
 
-  it("fetches jobs and transforms dates", async () => {
+  it("fetches jobs using API-level date normalization", async () => {
     const mockJobs = [
-      { id: "1", title: "Dev", openDate: "2023-01-01T00:00:00Z" },
+      { id: "1", title: "Dev", openDate: new Date("2023-01-01T00:00:00Z") },
     ];
     vi.mocked(JobsAPI.list).mockResolvedValue(
       mockJobs as unknown as JobPosition[],

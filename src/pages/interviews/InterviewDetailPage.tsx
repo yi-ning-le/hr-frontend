@@ -64,7 +64,7 @@ export function InterviewDetailPage() {
     if (!hasUnsavedChanges) {
       setNotes(interview.notes ?? "");
     }
-  }, [interview?.id, interview?.notes, hasUnsavedChanges]);
+  }, [interview, hasUnsavedChanges]);
 
   if (isLoadingInterview || (!!candidateId && isLoadingCandidate)) {
     return (

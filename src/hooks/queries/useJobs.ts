@@ -7,14 +7,7 @@ export const JOBS_QUERY_KEY = ["jobs"] as const;
 export const useJobs = () => {
   return useQuery({
     queryKey: JOBS_QUERY_KEY,
-    queryFn: async () => {
-      const result = await JobsAPI.list();
-      // Ensure we have Date objects
-      return result.map((job) => ({
-        ...job,
-        openDate: new Date(job.openDate),
-      }));
-    },
+    queryFn: JobsAPI.list,
   });
 };
 

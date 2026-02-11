@@ -1,25 +1,55 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { JobManagementTab } from "../JobManagementTab";
 
-// Mock react-i18next
+const mockSetIsAddDialogOpen = vi.fn();
+const mockAddJob = vi.fn();
+const mockUpdateJob = vi.fn();
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, defaultValue?: string) => defaultValue ?? key,
     i18n: { language: "zh-CN", changeLanguage: vi.fn() },
   }),
 }));
 
-// Mock child components
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn(),
+  },
+}));
+
 vi.mock("../JobPositionList", () => ({
   JobPositionList: ({
     onEdit,
   }: {
-    onEdit: (job: { id: string; title: string }) => void;
+    onEdit: (job: {
+      id: string;
+      title: string;
+      department: string;
+      headCount: number;
+      openDate: Date;
+      jobDescription: string;
+      status: "OPEN" | "CLOSED";
+    }) => void;
   }) => (
     <div data-testid="job-list">
-      <button onClick={() => onEdit({ id: "1", title: "Test Job" })}>
+      <button
+        onClick={() =>
+          onEdit({
+            id: "1",
+            title: "Test Job",
+            department: "Engineering",
+            headCount: 1,
+            openDate: new Date("2025-01-01"),
+            jobDescription: "test job description",
+            status: "OPEN",
+          })
+        }
+      >
         Edit Job
       </button>
     </div>
@@ -32,36 +62,52 @@ vi.mock("../JobDialogs", () => ({
     handleSaveJob,
   }: {
     isDialogOpen: boolean;
-    handleSaveJob: (data: { title: string }) => void;
+    handleSaveJob: (data: {
+      title: string;
+      department: string;
+      headCount: number;
+      openDate: Date;
+      jobDescription: string;
+      status: "OPEN" | "CLOSED";
+    }) => Promise<void>;
   }) => (
     <div data-testid="job-dialogs">
       {isDialogOpen && <div data-testid="dialog-open">Dialog Open</div>}
-      <button onClick={() => handleSaveJob({ title: "New Job" })}>
+      <button
+        onClick={() =>
+          handleSaveJob({
+            title: "Updated Job",
+            department: "Engineering",
+            headCount: 2,
+            openDate: new Date("2025-01-02"),
+            jobDescription: "updated job description",
+            status: "OPEN",
+          })
+        }
+      >
         Save Job
       </button>
     </div>
   ),
 }));
 
-// Mock useJobStore
 vi.mock("@/stores/useJobStore", () => ({
   useJobStore: vi.fn(() => ({
-    isAddDialogOpen: false,
-    setIsAddDialogOpen: vi.fn(),
+    isAddDialogOpen: true,
+    setIsAddDialogOpen: mockSetIsAddDialogOpen,
   })),
 }));
 
-// Mock TanStack Query hooks
 vi.mock("@/hooks/queries/useJobs", () => ({
   useJobs: vi.fn(() => ({
     data: [],
     isLoading: false,
   })),
   useCreateJob: vi.fn(() => ({
-    mutate: vi.fn(),
+    mutateAsync: mockAddJob,
   })),
   useUpdateJob: vi.fn(() => ({
-    mutate: vi.fn(),
+    mutateAsync: mockUpdateJob,
   })),
   useDeleteJob: vi.fn(() => ({
     mutate: vi.fn(),
@@ -72,10 +118,6 @@ vi.mock("@/hooks/queries/useJobs", () => ({
 }));
 
 vi.mock("@/hooks/queries/useCandidates", () => ({
-  useCandidates: vi.fn(() => ({
-    data: { data: [], meta: { total: 0, page: 1, limit: 50 } },
-    isLoading: false,
-  })),
   useCandidateCounts: vi.fn(() => ({
     data: {},
     isLoading: false,
@@ -85,11 +127,32 @@ vi.mock("@/hooks/queries/useCandidates", () => ({
 describe("JobManagementTab", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockAddJob.mockResolvedValue(undefined);
+    mockUpdateJob.mockResolvedValue(undefined);
   });
 
   it("renders JobPositionList and JobDialogs", () => {
     render(<JobManagementTab />);
     expect(screen.getByTestId("job-list")).toBeInTheDocument();
     expect(screen.getByTestId("job-dialogs")).toBeInTheDocument();
+  });
+
+  it("keeps dialog open and shows error when saving edited job fails", async () => {
+    mockUpdateJob.mockRejectedValueOnce(new Error("save failed"));
+    render(<JobManagementTab />);
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Edit Job" }));
+    await user.click(screen.getByRole("button", { name: "Save Job" }));
+
+    await waitFor(() => {
+      expect(mockUpdateJob).toHaveBeenCalledWith({
+        id: "1",
+        data: expect.objectContaining({ title: "Updated Job" }),
+      });
+    });
+
+    expect(mockSetIsAddDialogOpen).not.toHaveBeenCalledWith(false);
+    expect(toast.error).toHaveBeenCalled();
   });
 });

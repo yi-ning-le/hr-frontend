@@ -42,14 +42,16 @@ export const userRoleQueryOptions = (sessionScope = getSessionScope()) =>
  */
 export const useUserRole = () => {
   const sessionScope = useAuthStore((state) => state.user?.id ?? state.token);
-  const { data, isLoading, isError, error, refetch } =
-    useQuery(userRoleQueryOptions(sessionScope ?? "anonymous"));
+  const { data, isLoading, isError, error, refetch } = useQuery(
+    userRoleQueryOptions(sessionScope ?? "anonymous"),
+  );
 
   return {
     isAdmin: data?.isAdmin ?? false,
     isRecruiter: data?.isRecruiter ?? false,
-    isInterviewer: data?.isInterviewer ?? false,
+    isInterviewer: data?.isInterviewer ?? data?.canReviewResumes ?? false,
     isHR: data?.isHR ?? false,
+    canReviewResumes: data?.canReviewResumes ?? data?.isInterviewer ?? false,
     isLoading,
     isError,
     error,

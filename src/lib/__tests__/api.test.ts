@@ -353,6 +353,8 @@ describe("lib/api", () => {
           isAdmin: true,
           isRecruiter: true,
           isInterviewer: false,
+          isHR: false,
+          canReviewResumes: true,
         };
         mockAxios.get.mockResolvedValueOnce({ data: mockRole });
 

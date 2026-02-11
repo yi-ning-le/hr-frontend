@@ -31,6 +31,7 @@ vi.mock("@tanstack/react-router", async () => {
 describe("pending-resumes route", () => {
   it("redirects if user is not an interviewer", async () => {
     vi.mocked(queryClient.ensureQueryData).mockResolvedValue({
+      canReviewResumes: false,
       isInterviewer: false,
     } as any);
 
@@ -42,7 +43,8 @@ describe("pending-resumes route", () => {
 
   it("succeeds if user is an interviewer", async () => {
     vi.mocked(queryClient.ensureQueryData).mockResolvedValue({
-      isInterviewer: true,
+      canReviewResumes: true,
+      isInterviewer: false,
     } as any);
 
     await expect(Route.options.beforeLoad?.({} as any)).resolves.not.toThrow();

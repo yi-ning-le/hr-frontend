@@ -405,6 +405,7 @@ export interface RecruitmentRoleResponse {
   isRecruiter: boolean;
   isInterviewer: boolean;
   isHR: boolean;
+  canReviewResumes: boolean;
 }
 
 // Recruiter type

@@ -75,6 +75,7 @@ export function ReviewCandidateDialog({
         t("candidate.reviewSuccess", "Review submitted successfully"),
       );
       queryClient.invalidateQueries({ queryKey: ["pending-resumes"] });
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to submit review:", error);
