@@ -4,7 +4,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RecruitmentAPI } from "@/lib/api";
-import { USER_ROLE_QUERY_KEY, useUserRole } from "../useUserRole";
+import {
+  buildUserRoleQueryKey,
+  USER_ROLE_QUERY_KEY,
+  useUserRole,
+} from "../useUserRole";
 
 // Mock the API
 vi.mock("@/lib/api", () => ({
@@ -29,6 +33,10 @@ describe("useUserRole", () => {
 
   it("exports correct query key", () => {
     expect(USER_ROLE_QUERY_KEY).toEqual(["userRole"]);
+    expect(buildUserRoleQueryKey("session-1")).toEqual([
+      "userRole",
+      "session-1",
+    ]);
   });
 
   it("returns role flags when API succeeds", async () => {

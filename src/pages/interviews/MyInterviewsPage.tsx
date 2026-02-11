@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { Briefcase, Calendar, Clock, User } from "lucide-react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,10 @@ export function MyInterviewsPage() {
   const { data: candidateData, isLoading: isLoadingCandidates } =
     useCandidates();
   const candidates = candidateData?.data || [];
+  const candidatesById = useMemo(
+    () => new Map(candidates.map((candidate) => [candidate.id, candidate])),
+    [candidates],
+  );
 
   if (isLoadingInterviews || isLoadingCandidates) {
     return (
@@ -35,17 +40,6 @@ export function MyInterviewsPage() {
       </div>
     );
   }
-
-  const getCandidateName = (candidateId: string) => {
-    const candidate = candidates?.find((c) => c.id === candidateId);
-    return candidate
-      ? candidate.name
-      : t("recruitment.candidates.unknownCandidate", "Unknown Candidate");
-  };
-
-  const getCandidate = (candidateId: string) => {
-    return candidates?.find((c) => c.id === candidateId);
-  };
 
   return (
     <div className="container mx-auto py-8">
@@ -66,7 +60,7 @@ export function MyInterviewsPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {interviews?.map((interview) => {
-            const candidate = getCandidate(interview.candidateId);
+            const candidate = candidatesById.get(interview.candidateId);
             return (
               <Card
                 key={interview.id}
@@ -95,7 +89,11 @@ export function MyInterviewsPage() {
                   </div>
                   <CardTitle className="mt-3 flex items-center gap-2">
                     <User className="h-5 w-5 text-primary" />
-                    {getCandidateName(interview.candidateId)}
+                    {candidate?.name ||
+                      t(
+                        "recruitment.candidates.unknownCandidate",
+                        "Unknown Candidate",
+                      )}
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Briefcase className="h-4 w-4" />

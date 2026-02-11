@@ -31,6 +31,14 @@ export const useCandidateCounts = () => {
   });
 };
 
+export const useCandidate = (id: string) => {
+  return useQuery({
+    queryKey: [...CANDIDATES_QUERY_KEY, id],
+    queryFn: () => CandidatesAPI.get(id),
+    enabled: !!id,
+  });
+};
+
 export const useCreateCandidate = () => {
   const queryClient = useQueryClient();
   return useMutation({

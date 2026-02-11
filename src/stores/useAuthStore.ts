@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { AuthAPI, setAuthToken } from "@/lib/api";
 import i18n from "@/lib/i18n";
+import { queryClient } from "@/lib/queryClient";
 
 // User type definition
 export interface User {
@@ -56,6 +57,7 @@ export const useAuthStore = create<AuthStore>()(
 
       // Reset action (client-side logout)
       reset: () => {
+        queryClient.clear();
         setAuthToken(null);
         set({
           user: null,

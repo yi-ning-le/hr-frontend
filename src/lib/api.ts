@@ -1,4 +1,5 @@
 import axios from "axios";
+import { z } from "zod";
 import type {
   Candidate,
   CandidateJobsCount,
@@ -160,6 +161,14 @@ export const CandidatesAPI = {
         ...c,
         appliedAt: new Date(c.appliedAt),
       })),
+    };
+  },
+
+  get: async (id: string): Promise<Candidate> => {
+    const response = await api.get<Candidate>(`/candidates/${id}`);
+    return {
+      ...response.data,
+      appliedAt: new Date(response.data.appliedAt),
     };
   },
 
@@ -461,27 +470,48 @@ export const RecruitmentAPI = {
   },
 };
 
+const interviewSchema = z.object({
+  id: z.string().min(1),
+  candidateId: z.string().min(1),
+  interviewerId: z.string().min(1),
+  jobId: z.string().min(1),
+  scheduledTime: z.string().min(1),
+  status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]),
+  notes: z.string().optional(),
+  createdAt: z.string().min(1),
+});
+
+const interviewsSchema = z.array(interviewSchema);
+
+const normalizeInterviewInput = (data: CreateInterviewInput) => ({
+  ...data,
+  scheduledTime: data.scheduledTime.toISOString(),
+});
+
 export const InterviewsAPI = {
   create: async (data: CreateInterviewInput): Promise<Interview> => {
-    const response = await api.post<Interview>("/recruitment/interviews", data);
-    return response.data;
+    const response = await api.post<unknown>(
+      "/recruitment/interviews",
+      normalizeInterviewInput(data),
+    );
+    return interviewSchema.parse(response.data);
   },
 
   getMyInterviews: async (): Promise<Interview[]> => {
-    const response = await api.get<Interview[]>("/recruitment/interviews/me");
-    return response.data;
+    const response = await api.get<unknown>("/recruitment/interviews/me");
+    return interviewsSchema.parse(response.data);
   },
 
   get: async (id: string): Promise<Interview> => {
-    const response = await api.get<Interview>(`/recruitment/interviews/${id}`);
-    return response.data;
+    const response = await api.get<unknown>(`/recruitment/interviews/${id}`);
+    return interviewSchema.parse(response.data);
   },
 
   updateNotes: async (id: string, notes: string): Promise<Interview> => {
-    const response = await api.patch<Interview>(
+    const response = await api.patch<unknown>(
       `/recruitment/interviews/${id}/notes`,
       { notes },
     );
-    return response.data;
+    return interviewSchema.parse(response.data);
   },
 };

@@ -10,7 +10,7 @@ import {
   Save,
   User,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { useCandidates } from "@/hooks/queries/useCandidates";
+import { useCandidate } from "@/hooks/queries/useCandidates";
 import {
   useInterview,
   useUpdateInterviewNotes,
@@ -38,27 +38,35 @@ export function InterviewDetailPage() {
   const { t } = useTranslation();
   const { data: interview, isLoading: isLoadingInterview } =
     useInterview(interviewId);
-  // We need candidate details too. Ideally, the interview API should return expandable fields or we fetch candidate separately.
-  // Currently fetching all candidates to find one is inefficient but fits current hook structure.
-  // A better approach would be useCandidate(id) hook.
-  const { data: candidateData, isLoading: isLoadingCandidates } =
-    useCandidates();
-  const candidates = candidateData?.data || [];
+  const candidateId = interview?.candidateId ?? "";
+  const { data: candidate, isLoading: isLoadingCandidate } =
+    useCandidate(candidateId);
 
   const { mutateAsync: updateNotes, isPending: isUpdating } =
     useUpdateInterviewNotes();
 
-  const [notes, setNotes] = useState(interview?.notes || "");
+  const [notes, setNotes] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const lastInterviewIdRef = useRef<string | null>(null);
 
-  // Update local notes state when data is loaded
   useEffect(() => {
-    if (interview?.notes && notes === "" && !hasUnsavedChanges) {
-      setNotes(interview.notes);
+    if (!interview) {
+      return;
     }
-  }, [interview?.notes, notes, hasUnsavedChanges]);
 
-  if (isLoadingInterview || isLoadingCandidates) {
+    if (lastInterviewIdRef.current !== interview.id) {
+      lastInterviewIdRef.current = interview.id;
+      setNotes(interview.notes ?? "");
+      setHasUnsavedChanges(false);
+      return;
+    }
+
+    if (!hasUnsavedChanges) {
+      setNotes(interview.notes ?? "");
+    }
+  }, [interview?.id, interview?.notes, hasUnsavedChanges]);
+
+  if (isLoadingInterview || (!!candidateId && isLoadingCandidate)) {
     return (
       <div className="container mx-auto py-8 space-y-6">
         <Skeleton className="h-10 w-48" />
@@ -70,8 +78,6 @@ export function InterviewDetailPage() {
   if (!interview) {
     return <div>{t("common.notFound")}</div>;
   }
-
-  const candidate = candidates?.find((c) => c.id === interview.candidateId);
 
   const handleSaveNotes = async () => {
     try {

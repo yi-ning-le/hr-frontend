@@ -57,7 +57,7 @@ describe("Settings Route Validation", () => {
       isAuthenticated: true,
     });
     // Stage the query data for role (required by ProtectedRoute)
-    queryClient.setQueryData(userRoleQueryOptions.queryKey, {
+    queryClient.setQueryData(userRoleQueryOptions().queryKey, {
       isAdmin: false,
       isInterviewer: false,
       isRecruiter: false,

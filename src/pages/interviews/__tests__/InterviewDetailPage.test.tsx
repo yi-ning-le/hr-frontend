@@ -8,11 +8,13 @@ import { InterviewDetailPage } from "../InterviewDetailPage";
 // Mock hooks
 vi.mock("@/hooks/queries/useInterviews");
 vi.mock("@/hooks/queries/useCandidates");
+let currentInterviewId = "1";
+
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to }: { children: React.ReactNode; to: string }) => (
     <a href={to}>{children}</a>
   ),
-  useParams: () => ({ interviewId: "1" }),
+  useParams: () => ({ interviewId: currentInterviewId }),
 }));
 
 vi.mock("sonner", () => ({
@@ -33,6 +35,7 @@ vi.mock("react-i18next", () => ({
 describe("InterviewDetailPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    currentInterviewId = "1";
   });
 
   const mockInterview = {
@@ -60,10 +63,10 @@ describe("InterviewDetailPage", () => {
       isLoading: false,
     } as unknown as ReturnType<typeof useInterviews.useInterview>);
 
-    vi.mocked(useCandidates.useCandidates).mockReturnValue({
-      data: { data: [mockCandidate], meta: { total: 1, page: 1, limit: 10 } },
+    vi.mocked(useCandidates.useCandidate).mockReturnValue({
+      data: mockCandidate,
       isLoading: false,
-    } as unknown as ReturnType<typeof useCandidates.useCandidates>);
+    } as unknown as ReturnType<typeof useCandidates.useCandidate>);
 
     vi.mocked(useInterviews.useUpdateInterviewNotes).mockReturnValue({
       mutateAsync: vi.fn(),
@@ -87,10 +90,10 @@ describe("InterviewDetailPage", () => {
       isLoading: false,
     } as unknown as ReturnType<typeof useInterviews.useInterview>);
 
-    vi.mocked(useCandidates.useCandidates).mockReturnValue({
-      data: { data: [mockCandidate], meta: { total: 1, page: 1, limit: 10 } },
+    vi.mocked(useCandidates.useCandidate).mockReturnValue({
+      data: mockCandidate,
       isLoading: false,
-    } as unknown as ReturnType<typeof useCandidates.useCandidates>);
+    } as unknown as ReturnType<typeof useCandidates.useCandidate>);
 
     vi.mocked(useInterviews.useUpdateInterviewNotes).mockReturnValue({
       mutateAsync: updateNotesMock,
@@ -117,5 +120,45 @@ describe("InterviewDetailPage", () => {
       id: "1",
       notes: "Initial notes updated",
     });
+  });
+
+  it("resets notes when interview id changes", async () => {
+    const interviewById = {
+      "1": { ...mockInterview, notes: "Notes for interview 1" },
+      "2": { ...mockInterview, id: "2", candidateId: "c2", notes: "Notes for interview 2" },
+    };
+
+    vi.mocked(useInterviews.useInterview).mockImplementation(
+      (id: string) =>
+        ({
+          data: interviewById[id as "1" | "2"],
+          isLoading: false,
+        }) as unknown as ReturnType<typeof useInterviews.useInterview>,
+    );
+
+    vi.mocked(useCandidates.useCandidate).mockImplementation(
+      (id: string) =>
+        ({
+          data:
+            id === "c2"
+              ? { ...mockCandidate, id: "c2", name: "Jane Doe" }
+              : mockCandidate,
+          isLoading: false,
+        }) as unknown as ReturnType<typeof useCandidates.useCandidate>,
+    );
+
+    vi.mocked(useInterviews.useUpdateInterviewNotes).mockReturnValue({
+      mutateAsync: vi.fn(),
+      isPending: false,
+    } as unknown as ReturnType<typeof useInterviews.useUpdateInterviewNotes>);
+
+    const { rerender } = render(<InterviewDetailPage />);
+
+    expect(screen.getByDisplayValue("Notes for interview 1")).toBeInTheDocument();
+
+    currentInterviewId = "2";
+    rerender(<InterviewDetailPage />);
+
+    expect(screen.getByDisplayValue("Notes for interview 2")).toBeInTheDocument();
   });
 });

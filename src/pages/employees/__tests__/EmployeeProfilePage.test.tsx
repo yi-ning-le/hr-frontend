@@ -146,4 +146,20 @@ describe("EmployeeProfilePage", () => {
       JSON.stringify(mockReturnSearch),
     );
   });
+
+  it("shows not found state when request succeeds but employee is missing", () => {
+    mockUseEmployee.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: false,
+    });
+
+    render(<EmployeeProfilePage />);
+
+    expect(screen.getByText("Employee not found")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Back to List" })).toHaveAttribute(
+      "data-search",
+      JSON.stringify(mockReturnSearch),
+    );
+  });
 });

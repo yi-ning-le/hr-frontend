@@ -13,9 +13,6 @@ vi.mock("react-i18next", () => ({
 // Mock @tanstack/react-router
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
-  useRouter: () => ({
-    invalidate: vi.fn(),
-  }),
 }));
 
 // Mock useAuthStore

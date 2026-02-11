@@ -17,6 +17,8 @@ interface CandidateKanbanProps {
   onCandidateClick: (candidate: Candidate) => void;
 }
 
+export const UNKNOWN_CANDIDATE_STATUS_SLUG = "__unknown__";
+
 export function CandidateKanban({
   candidates,
   onDragEnd,
@@ -25,31 +27,54 @@ export function CandidateKanban({
   const { t } = useTranslation();
   const { statuses } = useCandidateStatuses();
 
+  const statusSet = useMemo(
+    () => new Set(statuses.map((status) => status.slug)),
+    [statuses],
+  );
+
+  const hasUnknownCandidates = useMemo(
+    () => candidates.some((candidate) => !statusSet.has(candidate.status)),
+    [candidates, statusSet],
+  );
+
+  const displayStatuses = useMemo(() => {
+    if (!hasUnknownCandidates) {
+      return statuses;
+    }
+
+    return [
+      ...statuses,
+      {
+        id: UNKNOWN_CANDIDATE_STATUS_SLUG,
+        name: t("common.unknown", "Unknown"),
+        slug: UNKNOWN_CANDIDATE_STATUS_SLUG,
+        type: "system" as const,
+        sort_order: Number.MAX_SAFE_INTEGER,
+        color: "#64748b",
+      },
+    ];
+  }, [hasUnknownCandidates, statuses, t]);
+
   const groupedCandidates = useMemo(() => {
     const groups: Record<string, Candidate[]> = {};
-    statuses.forEach((s: CandidateStatus) => {
+    displayStatuses.forEach((s: CandidateStatus) => {
       groups[s.slug] = [];
     });
 
     candidates.forEach((c) => {
-      // If candidate status is valid (exists in statuses), add it
-      // If not (maybe deleted status), we could handle it. For now, we only add if exists or maybe fallback?
-      // Let's safe guard:
       if (!groups[c.status]) {
-        // You might want to show these in a specific "Unknown" column or just create the entry
-        // creating entry means it won't show in the column map iteration unless we handle it there.
-        // For now, let's assume candidates always have valid status or won't be shown.
+        groups[UNKNOWN_CANDIDATE_STATUS_SLUG].push(c);
         return;
       }
       groups[c.status].push(c);
     });
     return groups;
-  }, [candidates, statuses]);
+  }, [candidates, displayStatuses]);
 
   return (
     <div className="flex h-full overflow-x-auto p-4 gap-4 bg-slate-50/50 dark:bg-slate-900/50">
       <DragDropContext onDragEnd={onDragEnd}>
-        {statuses.map((status: CandidateStatus) => (
+        {displayStatuses.map((status: CandidateStatus) => (
           <div
             key={status.slug}
             className="flex-shrink-0 w-80 flex flex-col gap-3"
@@ -74,7 +99,10 @@ export function CandidateKanban({
               </div>
             </div>
 
-            <Droppable droppableId={status.slug}>
+            <Droppable
+              droppableId={status.slug}
+              isDropDisabled={status.slug === UNKNOWN_CANDIDATE_STATUS_SLUG}
+            >
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}

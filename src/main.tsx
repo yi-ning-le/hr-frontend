@@ -11,6 +11,7 @@ import { router } from "./router";
 
 // Setup global 401 handler
 setUnauthorizedCallback(() => {
+  queryClient.clear();
   useAuthStore.getState().reset();
   router.navigate({ to: "/login" });
 });

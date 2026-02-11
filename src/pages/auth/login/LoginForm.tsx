@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -93,12 +93,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>{t("auth.login.password")}</FormLabel>
-                <Link
-                  to="/login"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <span className="text-sm text-muted-foreground">
                   {t("auth.login.forgotPassword")}
-                </Link>
+                </span>
               </div>
               <FormControl>
                 <div className="relative">
@@ -116,7 +113,6 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                     size="icon-sm"
                     className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => setShowPassword(!showPassword)}
-                    tabIndex={-1}
                   >
                     {showPassword ? (
                       <EyeOff className="size-4" />

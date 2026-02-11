@@ -65,7 +65,7 @@ describe("PendingResumes Route Guard", () => {
 
   it("renders page when user is interviewer", async () => {
     // Stage the query data
-    queryClient.setQueryData(userRoleQueryOptions.queryKey, {
+    queryClient.setQueryData(userRoleQueryOptions().queryKey, {
       isInterviewer: true,
       isAdmin: false,
       isRecruiter: false,
@@ -90,7 +90,7 @@ describe("PendingResumes Route Guard", () => {
 
   it("redirects to home when user is NOT interviewer", async () => {
     // Stage the query data
-    queryClient.setQueryData(userRoleQueryOptions.queryKey, {
+    queryClient.setQueryData(userRoleQueryOptions().queryKey, {
       isInterviewer: false, // Not an interviewer
       isAdmin: false,
       isRecruiter: false,

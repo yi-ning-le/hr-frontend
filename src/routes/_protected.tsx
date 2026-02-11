@@ -18,7 +18,7 @@ export async function beforeLoadGuard() {
 
   // Ensure role data matches the requirements
   try {
-    await queryClient.ensureQueryData(userRoleQueryOptions);
+    await queryClient.ensureQueryData(userRoleQueryOptions());
   } catch (error) {
     console.error("Failed to fetch user roles in guard:", error);
     // Optionally redirect or allow partial access, but for now we just log

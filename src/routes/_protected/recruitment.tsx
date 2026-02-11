@@ -1,5 +1,7 @@
-import { createRoute } from "@tanstack/react-router";
+import { createRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
+import { userRoleQueryOptions } from "@/hooks/useUserRole";
+import { queryClient } from "@/lib/queryClient";
 import { RecruitmentPage } from "@/pages/recruitment/RecruitmentPage";
 import { Route as ProtectedLayoutRoute } from "../_protected";
 
@@ -21,5 +23,11 @@ export const Route = createRoute({
   getParentRoute: () => ProtectedLayoutRoute,
   path: "/recruitment",
   validateSearch: (search) => recruitmentSearchSchema.parse(search),
+  beforeLoad: async () => {
+    const roles = await queryClient.ensureQueryData(userRoleQueryOptions());
+    if (!roles.isAdmin && !roles.isRecruiter) {
+      throw redirect({ to: "/" });
+    }
+  },
   component: RecruitmentPage,
 });

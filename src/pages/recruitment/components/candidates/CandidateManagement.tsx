@@ -22,7 +22,10 @@ import { useJobs } from "@/hooks/queries/useJobs";
 import { Route } from "@/routes/_protected/recruitment";
 import type { CandidateStatus } from "@/types/candidate";
 import { CandidateDetail } from "./CandidateDetail";
-import { CandidateKanban } from "./CandidateKanban";
+import {
+  CandidateKanban,
+  UNKNOWN_CANDIDATE_STATUS_SLUG,
+} from "./CandidateKanban";
 import { CandidateList } from "./CandidateList";
 import { CandidateToolbar } from "./CandidateToolbar";
 import { JobSidebar } from "./JobSidebar";
@@ -104,6 +107,9 @@ export function CandidateManagement() {
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
+      return;
+    }
+    if (destination.droppableId === UNKNOWN_CANDIDATE_STATUS_SLUG) {
       return;
     }
 

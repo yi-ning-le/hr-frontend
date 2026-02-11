@@ -8,12 +8,11 @@ export const Route = createRoute({
   getParentRoute: () => ProtectedLayoutRoute,
   path: "/pending-resumes",
   beforeLoad: async () => {
-    // Ensure roles are loaded (though _protected should have handled it)
-    const roles = await queryClient.ensureQueryData(userRoleQueryOptions);
+    const roles = await queryClient.ensureQueryData(userRoleQueryOptions());
+    const canAccessInterviews =
+      roles.isInterviewer || roles.isRecruiter || roles.isAdmin;
 
-    if (!roles.isInterviewer) {
-      // Redirect to home or show error
-      // Ideally redirect to 403 page or home
+    if (!canAccessInterviews) {
       throw redirect({
         to: "/",
       });

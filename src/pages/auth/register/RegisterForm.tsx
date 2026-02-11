@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useRouter } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ const createRegisterSchema = (t: (key: string) => string) =>
         .string()
         .min(3, t("auth.register.usernameMin"))
         .max(20, t("auth.register.usernameMax"))
-        .regex(/^[a-zA-Z0-9_]+$/, t("auth.register.usernamePattern")),
+        .regex(/^[a-zA-Z0-9]+$/, t("auth.register.usernamePattern")),
       email: z.string().email(t("auth.register.emailInvalid")),
       password: z
         .string()
@@ -50,7 +50,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const router = useRouter();
   const navigate = useNavigate();
   const { register, isLoading } = useAuthStore();
 
@@ -74,8 +73,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         description: t("auth.register.welcomeMessage"),
       });
       onSuccess?.();
-      await router.invalidate();
-      await navigate({ to: "/login" });
+      await navigate({ to: "/login", replace: true });
     } else {
       toast.error(t("auth.register.failed"), {
         description: result.error,
@@ -147,7 +145,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
                     size="icon-sm"
                     className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => setShowPassword(!showPassword)}
-                    tabIndex={-1}
                   >
                     {showPassword ? (
                       <EyeOff className="size-4" />
@@ -189,7 +186,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
                     size="icon-sm"
                     className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    tabIndex={-1}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="size-4" />

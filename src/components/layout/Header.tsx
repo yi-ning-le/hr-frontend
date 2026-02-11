@@ -82,11 +82,14 @@ export function Header() {
 
           <nav className="hidden md:flex items-center gap-1">
             <HeaderLink to="/">{t("nav.overview")}</HeaderLink>
-            <HeaderLink to="/recruitment">{t("nav.recruitment")}</HeaderLink>
+            {(roles?.isAdmin || roles?.isRecruiter) && (
+              <HeaderLink to="/recruitment">{t("nav.recruitment")}</HeaderLink>
+            )}
             <HeaderLink to="/employees" search={{ page: 1, limit: 20 }}>
               {t("nav.employees", "Employees")}
             </HeaderLink>
-            {user && roles?.isInterviewer && (
+            {user &&
+              (roles?.isInterviewer || roles?.isRecruiter || roles?.isAdmin) && (
               <HeaderLink to="/pending-resumes">
                 {t("nav.pendingResumes", "Pending Resumes")}
               </HeaderLink>
