@@ -1,10 +1,14 @@
 import { createRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { SettingsPage } from "@/pages/settings/SettingsPage";
+import { SettingsTabId } from "@/pages/settings/constants";
 import { Route as ProtectedRoute } from "../_protected";
 
 const settingsSearchSchema = z.object({
-  tab: z.string().optional(),
+  tab: z
+    .nativeEnum(SettingsTabId)
+    .optional()
+    .catch(SettingsTabId.CandidateStatuses),
 });
 
 export const Route = createRoute({

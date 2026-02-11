@@ -5,45 +5,38 @@ import { CandidateStatusSettings } from "@/pages/settings/components/CandidateSt
 import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
 import { HRManagement } from "@/pages/settings/components/HRManagement";
 import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
+import {
+  SETTINGS_TABS,
+  SettingsTabId,
+  type SettingsTabIdType,
+} from "./constants";
 
 export interface SettingsPageProps {
-  activeTab?: string;
-  onTabChange?: (tab: string) => void;
+  activeTab?: SettingsTabIdType;
+  onTabChange?: (tab: SettingsTabIdType) => void;
 }
 
 export function SettingsPage({ activeTab, onTabChange }: SettingsPageProps) {
   const { t } = useTranslation();
   const { isAdmin } = useUserRole();
 
-  const TABS = [
-    {
-      id: "candidate-statuses",
-      label: t("settings.tabs.candidateStatuses", "Candidate Statuses"),
-      component: <CandidateStatusSettings />,
-    },
-    {
-      id: "general",
-      label: t("settings.tabs.general", "General"),
-      component: <GeneralSettings />,
-    },
-    // Admin-only tabs
-    ...(isAdmin
-      ? [
-          {
-            id: "recruiters",
-            label: t("settings.tabs.recruiters", "Recruiters"),
-            component: <RecruiterManagement />,
-          },
-          {
-            id: "hr-management",
-            label: t("settings.tabs.hrManagement", "HR Management"),
-            component: <HRManagement />,
-          },
-        ]
-      : []),
-  ];
+  const TABS = SETTINGS_TABS.filter((tab) => {
+    if ("adminOnly" in tab && tab.adminOnly) {
+      return isAdmin;
+    }
+    return true;
+  }).map((tab) => ({
+    ...tab,
+    label: t(tab.labelKey, tab.defaultLabel),
+    component: {
+      [SettingsTabId.CandidateStatuses]: <CandidateStatusSettings />,
+      [SettingsTabId.General]: <GeneralSettings />,
+      [SettingsTabId.Recruiters]: <RecruiterManagement />,
+      [SettingsTabId.HRManagement]: <HRManagement />,
+    }[tab.id],
+  }));
 
-  const defaultTab = TABS[0]?.id;
+  const defaultTab = SettingsTabId.CandidateStatuses;
 
   return (
     <div className="space-y-6">
@@ -62,7 +55,7 @@ export function SettingsPage({ activeTab, onTabChange }: SettingsPageProps) {
       <Tabs
         defaultValue={defaultTab}
         value={activeTab}
-        onValueChange={onTabChange}
+        onValueChange={(value) => onTabChange?.(value as SettingsTabIdType)}
         className="space-y-4"
       >
         <TabsList>
