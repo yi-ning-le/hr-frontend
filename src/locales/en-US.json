@@ -36,7 +36,13 @@
     "years": "years",
     "total": "Total",
     "refresh": "Refresh",
+    "unknown": "Unknown",
     "pageOf": "Page {{page}} of {{total}}",
+    "saving": "Saving...",
+    "submitting": "Submitting...",
+    "name": "Name",
+    "contact": "Contact",
+    "notFound": "Not Found",
     "error": {
       "fetch": "Failed to fetch data"
     }
@@ -56,6 +62,12 @@
     "retryLater": "Please try again later",
     "admin": "Admin"
   },
+  "admin": {
+    "title": "System Administration",
+    "description": "Manage recruitment roles and HR staff.",
+    "console": "HR Admin Console",
+    "management": "System Management"
+  },
   "candidate": {
     "assignReviewer": "Assign Reviewer",
     "assignReviewerTitle": "Assign Reviewer",
@@ -63,7 +75,20 @@
     "reviewer": "Reviewer",
     "selectReviewer": "Select reviewer",
     "assignSuccess": "Reviewer assigned successfully",
-    "assignFailed": "Failed to assign reviewer"
+    "assignFailed": "Failed to assign reviewer",
+    "reviewTitle": "Review Candidate",
+    "reviewDescription": "Provide your feedback for {{name}}.",
+    "reviewStatus": "Decision",
+    "selectDecision": "Select decision",
+    "suitable": "Suitable",
+    "unsuitable": "Unsuitable",
+    "reviewNote": "Comments",
+    "reviewNotePlaceholder": "Add any comments here...",
+    "reviewSuccess": "Review submitted successfully",
+    "reviewFailed": "Failed to submit review",
+    "validation": {
+      "reviewerRequired": "Please select a reviewer"
+    }
   },
   "home": {
     "welcome": "Welcome back, Admin 👋",
@@ -278,6 +303,7 @@
         "appliedOn": "Applied {{date}}"
       },
       "detail": {
+        "title": "Candidate Details",
         "appliedPosition": "Applied for:",
         "assignInterviewer": "Assign Interviewer",
         "basicInfo": "Basic Information",
@@ -364,6 +390,9 @@
         "description": "Fill in the job details, then click save.",
         "detailTitle": "Job Details"
       },
+      "messages": {
+        "saveFailed": "Failed to save job"
+      },
       "detail": {
         "jobDescription": "Job Description (JD)",
         "headCountUnit": "people",
@@ -407,11 +436,19 @@
       "assignDescription": "Set up an interview for {{candidateName}}.",
       "assignSuccess": "Interview assigned successfully",
       "assignFailed": "Failed to assign interview",
+      "backToMyInterviews": "Back to My Interviews",
+      "interviewDetails": "Interview Details",
+      "interviewNotes": "Interview Notes",
+      "notesDescription": "Record key information and evaluations from the interview here.",
+      "notesPlaceholder": "Enter interview notes...",
+      "schedule": "Schedule",
+      "date": "Date",
+      "time": "Time",
       "interviewer": "Interviewer",
       "selectInterviewer": "Select an interviewer",
       "scheduledTime": "Scheduled Time",
       "initialNotes": "Initial Notes",
-      "notesPlaceholder": "Add interview notes or instructions...",
+      "initialNotesPlaceholder": "Add interview notes or instructions...",
       "myInterviews": "My Interviews",
       "noInterviews": "No Interviews Scheduled",
       "noInterviewsDesc": "You don't have any upcoming interviews at the moment.",

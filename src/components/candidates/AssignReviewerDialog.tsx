@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -33,11 +33,19 @@ import { useEmployees } from "@/hooks/queries/useEmployees";
 import { CandidatesAPI } from "@/lib/api";
 import type { Candidate } from "@/types/candidate";
 
-const assignSchema = z.object({
-  reviewerId: z.string().min(1, "Please select a reviewer"),
-});
+const createAssignSchema = (
+  t: (key: string, defaultValue?: string) => string,
+) =>
+  z.object({
+    reviewerId: z
+      .string()
+      .min(
+        1,
+        t("candidate.validation.reviewerRequired", "Please select a reviewer"),
+      ),
+  });
 
-type AssignFormValues = z.infer<typeof assignSchema>;
+type AssignFormValues = z.infer<ReturnType<typeof createAssignSchema>>;
 
 interface AssignReviewerDialogProps {
   candidate: Candidate;
@@ -54,6 +62,8 @@ export function AssignReviewerDialog({
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: employeesData } = useEmployees({ status: "Active" }); // Fetch all active employees
+
+  const assignSchema = useMemo(() => createAssignSchema(t), [t]);
 
   const form = useForm<AssignFormValues>({
     resolver: zodResolver(assignSchema),
@@ -101,9 +111,7 @@ export function AssignReviewerDialog({
               name="reviewerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("candidate.reviewer", "Reviewer")}
-                  </FormLabel>
+                  <FormLabel>{t("candidate.reviewer", "Reviewer")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}

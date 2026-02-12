@@ -204,7 +204,9 @@ export function AssignInterviewerDialog({
                   </FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("recruitment.interviews.notesPlaceholder")}
+                      placeholder={t(
+                        "recruitment.interviews.initialNotesPlaceholder",
+                      )}
                       className="resize-none"
                       {...field}
                     />

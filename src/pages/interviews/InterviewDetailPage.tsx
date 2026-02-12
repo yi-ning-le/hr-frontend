@@ -113,7 +113,7 @@ export function InterviewDetailPage() {
               }
               className="text-base px-3 py-1"
             >
-              {interview.status}
+              {t(`recruitment.interviews.status.${interview.status}`)}
             </Badge>
           </h1>
         </div>
@@ -173,7 +173,7 @@ export function InterviewDetailPage() {
                   {t("common.name")}
                 </div>
                 <div className="text-lg font-semibold">
-                  {candidate?.name || "Unknown"}
+                  {candidate?.name || t("common.unknown")}
                 </div>
               </div>
               <Separator />

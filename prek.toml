@@ -1,0 +1,23 @@
+# prek.toml configuration file
+# For more information, see https://prek.j178.dev
+
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v5.0.0"
+hooks = [{ id = "check-yaml" }, { id = "check-added-large-files" }]
+
+[[repos]]
+repo = "https://github.com/biomejs/pre-commit"
+rev = "v0.6.1"
+hooks = [{ id = "biome-check" }]
+
+[[repos]]
+repo = "local"
+hooks = [
+    { id = "lint", name = "lint", entry = "bun run lint", language = "system", types = [
+        "text",
+    ] },
+    { id = "unit-test", name = "unit-test", entry = "bun run test:run", language = "system", types = [
+        "text",
+    ], pass_filenames = false },
+]

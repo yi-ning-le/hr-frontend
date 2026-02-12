@@ -7,6 +7,7 @@ import { Route as RegisterRoute } from "./routes/_auth/register";
 
 // Protected routes
 import { Route as ProtectedLayoutRoute } from "./routes/_protected";
+import { Route as AdminRoute } from "./routes/_protected/admin";
 import { Route as EmployeesRoute } from "./routes/_protected/employees";
 import { Route as EmployeeProfileRoute } from "./routes/_protected/employees.$employeeId";
 import { Route as IndexRoute } from "./routes/_protected/index";
@@ -29,6 +30,7 @@ const protectedRouteTree = ProtectedLayoutRoute.addChildren([
   SettingsRoute,
   MyInterviewsRoute,
   InterviewDetailRoute,
+  AdminRoute,
 ]);
 // Main route tree
 const routeTree = RootRoute.addChildren([authRouteTree, protectedRouteTree]);

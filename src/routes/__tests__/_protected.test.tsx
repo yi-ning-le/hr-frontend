@@ -115,7 +115,7 @@ describe("beforeLoadGuard", () => {
     // The error object typically has { options: { to: ... } } or similar structure depending on version
     // We can just catch it and inspect
     try {
-      await beforeLoadGuard();
+      await beforeLoadGuard({ location: { pathname: "/" } });
       expect.fail("Should have thrown redirect");
     } catch (error: any) {
       // Check if it looks like a redirect object
@@ -136,8 +136,54 @@ describe("beforeLoadGuard", () => {
   it("calls queryClient.ensureQueryData if authenticated", async () => {
     mockGetState.mockReturnValue(mockAuthenticated);
 
-    await beforeLoadGuard();
+    await beforeLoadGuard({ location: { pathname: "/" } });
 
     expect(queryClient.ensureQueryData).toHaveBeenCalled();
+  });
+
+  it("redirects to /login when role fetch fails", async () => {
+    vi.mocked(queryClient.ensureQueryData).mockRejectedValueOnce(
+      new Error("role fetch failed"),
+    );
+
+    await expect(
+      beforeLoadGuard({ location: { pathname: "/admin" } }),
+    ).rejects.toMatchObject({
+      options: expect.objectContaining({ to: "/login" }),
+    });
+  });
+
+  it("redirects admin users to /admin from non-admin protected paths", async () => {
+    vi.mocked(queryClient.ensureQueryData).mockResolvedValueOnce({
+      isAdmin: true,
+    } as any);
+
+    await expect(
+      beforeLoadGuard({ location: { pathname: "/employees" } }),
+    ).rejects.toMatchObject({
+      options: expect.objectContaining({ to: "/admin" }),
+    });
+  });
+
+  it("redirects non-admin users away from /admin", async () => {
+    vi.mocked(queryClient.ensureQueryData).mockResolvedValueOnce({
+      isAdmin: false,
+    } as any);
+
+    await expect(
+      beforeLoadGuard({ location: { pathname: "/admin" } }),
+    ).rejects.toMatchObject({
+      options: expect.objectContaining({ to: "/" }),
+    });
+  });
+
+  it("allows admin users to stay on /admin routes", async () => {
+    vi.mocked(queryClient.ensureQueryData).mockResolvedValueOnce({
+      isAdmin: true,
+    } as any);
+
+    await expect(
+      beforeLoadGuard({ location: { pathname: "/admin/settings" } }),
+    ).resolves.toBeUndefined();
   });
 });

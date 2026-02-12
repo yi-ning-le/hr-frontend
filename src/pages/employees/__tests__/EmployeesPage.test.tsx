@@ -79,6 +79,7 @@ vi.mock("@/hooks/useUserRole", () => ({
     isRecruiter: false,
     isInterviewer: false,
     isHR: true, // Default to HR for existing tests
+    canReviewResumes: false,
     isLoading: false,
     isError: false,
     error: null,
@@ -318,6 +319,7 @@ describe("EmployeesPage - HR Access Control", () => {
       isRecruiter: false,
       isInterviewer: false,
       isHR: true,
+      canReviewResumes: false,
       isLoading: false,
       isError: false,
       error: null,
@@ -334,6 +336,7 @@ describe("EmployeesPage - HR Access Control", () => {
       isRecruiter: false,
       isInterviewer: false,
       isHR: false,
+      canReviewResumes: false,
       isLoading: false,
       isError: false,
       error: null,

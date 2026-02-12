@@ -53,25 +53,12 @@ describe("SettingsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders only non-admin tabs for regular users", () => {
+  it("renders settings tabs", () => {
     render(<SettingsPage />);
 
     expect(screen.getByText("Candidate Statuses")).toBeInTheDocument();
     expect(screen.getByText("General")).toBeInTheDocument();
     expect(screen.queryByText("Recruiters")).not.toBeInTheDocument();
-  });
-
-  it("renders Recruiters tab for admin users", () => {
-    mockUseUserRole.mockReturnValue({
-      isAdmin: true,
-      isLoading: false,
-    });
-
-    render(<SettingsPage />);
-
-    expect(screen.getByText("Candidate Statuses")).toBeInTheDocument();
-    expect(screen.getByText("General")).toBeInTheDocument();
-    expect(screen.getByText("Recruiters")).toBeInTheDocument();
   });
 
   it("switches content when tabs are clicked (uncontrolled)", async () => {

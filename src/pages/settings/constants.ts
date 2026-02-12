@@ -1,8 +1,6 @@
 export const SettingsTabId = {
   CandidateStatuses: "candidate-statuses",
   General: "general",
-  Recruiters: "recruiters",
-  HRManagement: "hr-management",
 } as const;
 
 export type SettingsTabIdType =
@@ -18,17 +16,5 @@ export const SETTINGS_TABS = [
     id: SettingsTabId.General,
     labelKey: "settings.tabs.general",
     defaultLabel: "General",
-  },
-  {
-    id: SettingsTabId.Recruiters,
-    labelKey: "settings.tabs.recruiters",
-    defaultLabel: "Recruiters",
-    adminOnly: true,
-  },
-  {
-    id: SettingsTabId.HRManagement,
-    labelKey: "settings.tabs.hrManagement",
-    defaultLabel: "HR Management",
-    adminOnly: true,
   },
 ] as const;

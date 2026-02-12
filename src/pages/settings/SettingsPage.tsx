@@ -1,10 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useUserRole } from "@/hooks/useUserRole";
 import { CandidateStatusSettings } from "@/pages/settings/components/CandidateStatusSettings";
 import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
-import { HRManagement } from "@/pages/settings/components/HRManagement";
-import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
 import {
   SETTINGS_TABS,
   SettingsTabId,
@@ -18,21 +15,13 @@ export interface SettingsPageProps {
 
 export function SettingsPage({ activeTab, onTabChange }: SettingsPageProps) {
   const { t } = useTranslation();
-  const { isAdmin } = useUserRole();
 
-  const TABS = SETTINGS_TABS.filter((tab) => {
-    if ("adminOnly" in tab && tab.adminOnly) {
-      return isAdmin;
-    }
-    return true;
-  }).map((tab) => ({
+  const TABS = SETTINGS_TABS.map((tab) => ({
     ...tab,
     label: t(tab.labelKey, tab.defaultLabel),
     component: {
       [SettingsTabId.CandidateStatuses]: <CandidateStatusSettings />,
       [SettingsTabId.General]: <GeneralSettings />,
-      [SettingsTabId.Recruiters]: <RecruiterManagement />,
-      [SettingsTabId.HRManagement]: <HRManagement />,
     }[tab.id],
   }));
 

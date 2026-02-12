@@ -36,7 +36,13 @@
     "years": "年",
     "total": "总计",
     "refresh": "刷新",
+    "unknown": "未知",
     "pageOf": "第 {{page}} 页，共 {{total}} 页",
+    "saving": "正在保存...",
+    "submitting": "正在提交...",
+    "name": "姓名",
+    "contact": "联系方式",
+    "notFound": "未找到",
     "error": {
       "fetch": "获取数据失败"
     }
@@ -56,6 +62,12 @@
     "retryLater": "请稍后重试",
     "admin": "管理员"
   },
+  "admin": {
+    "title": "系统管理",
+    "description": "管理招聘角色和人事员工。",
+    "console": "HR 管理控制台",
+    "management": "系统管理"
+  },
   "candidate": {
     "assignReviewer": "分配评审人",
     "assignReviewerTitle": "分配评审人",
@@ -63,7 +75,20 @@
     "reviewer": "评审人",
     "selectReviewer": "选择评审人",
     "assignSuccess": "评审人分配成功",
-    "assignFailed": "评审人分配失败"
+    "assignFailed": "评审人分配失败",
+    "reviewTitle": "评审候选人",
+    "reviewDescription": "请为 {{name}} 提供反馈意见。",
+    "reviewStatus": "评审结果",
+    "selectDecision": "选择结果",
+    "suitable": "合适",
+    "unsuitable": "不合适",
+    "reviewNote": "评语",
+    "reviewNotePlaceholder": "在此处添加评语...",
+    "reviewSuccess": "评审提交成功",
+    "reviewFailed": "评审提交失败",
+    "validation": {
+      "reviewerRequired": "请选择评审人"
+    }
   },
   "home": {
     "welcome": "欢迎回来，管理员 👋",
@@ -278,6 +303,7 @@
         "appliedOn": "{{date}} 申请"
       },
       "detail": {
+        "title": "候选人详情",
         "appliedPosition": "申请职位：",
         "assignInterviewer": "安排面试",
         "basicInfo": "基本信息",
@@ -364,6 +390,9 @@
         "description": "填写职位详情信息，完成后点击保存。",
         "detailTitle": "职位详情"
       },
+      "messages": {
+        "saveFailed": "职位保存失败"
+      },
       "detail": {
         "jobDescription": "职位描述 (JD)",
         "headCountUnit": "人",
@@ -407,11 +436,19 @@
       "assignDescription": "为 {{candidateName}} 设定面试安排。",
       "assignSuccess": "面试安排成功",
       "assignFailed": "面试安排失败",
+      "backToMyInterviews": "返回我的面试",
+      "interviewDetails": "面试详情",
+      "interviewNotes": "面试笔记",
+      "notesDescription": "在此处记录面试过程中的关键信息和评价。",
+      "notesPlaceholder": "输入面试笔记...",
+      "schedule": "日程安排",
+      "date": "日期",
+      "time": "时间",
       "interviewer": "面试官",
       "selectInterviewer": "选择面试官",
       "scheduledTime": "面试时间",
       "initialNotes": "初始备注",
-      "notesPlaceholder": "添加面试备注或说明...",
+      "initialNotesPlaceholder": "添加面试备注或说明...",
       "myInterviews": "我的面试",
       "noInterviews": "暂无面试安排",
       "noInterviewsDesc": "您目前没有即将进行的面试。",

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import {
   createMemoryHistory,
+  createRoute,
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
@@ -8,6 +9,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { userRoleQueryOptions } from "@/hooks/useUserRole";
 import { queryClient } from "@/lib/queryClient";
+import { AdminTabId } from "@/pages/admin/constants";
 import { SettingsTabId } from "@/pages/settings/constants";
 import { Route as RootRoute } from "../../__root";
 import { Route as ProtectedRoute } from "../../_protected";
@@ -62,6 +64,7 @@ describe("Settings Route Validation", () => {
       isInterviewer: false,
       isRecruiter: false,
       isHR: false,
+      canReviewResumes: false,
     });
   });
 
@@ -71,9 +74,15 @@ describe("Settings Route Validation", () => {
   });
 
   const createTestRouter = (initialUrl: string) => {
+    const AdminRoute = createRoute({
+      getParentRoute: () => ProtectedRoute,
+      path: "/admin",
+      component: () => <div data-testid="admin-page">Admin Page</div>,
+    });
+
     return createRouter({
       routeTree: RootRoute.addChildren([
-        ProtectedRoute.addChildren([SettingsRoute]),
+        ProtectedRoute.addChildren([SettingsRoute, AdminRoute]),
       ]),
       history: createMemoryHistory({
         initialEntries: [initialUrl],
@@ -97,17 +106,7 @@ describe("Settings Route Validation", () => {
     render(<RouterProvider router={router} />);
 
     await waitFor(() => {
-      // If optional and not defaulted in schema, it might be undefined
-      // But we used .catch(SettingsTabId.CandidateStatuses) which usually catches errors.
-      // Wait, .catch() catches PARSING errors. optional() allows undefined.
-      // If I want a default value, I should use .default().
-      // Let's check the schema implementation:
-      // tab: z.nativeEnum(SettingsTabId).optional().catch(SettingsTabId.CandidateStatuses)
-      // If I pass nothing, it is undefined (valid because optional).
-      // So activeTab will be undefined.
-      // Let's verify what happens.
-      // In SettingsPage, we verified `activeTab={tab}`.
-      // And in SettingsPage, `defaultTab` is set if `value` is undefined.
+      // Missing tab is allowed and handled by SettingsPage default tab behavior.
       expect(screen.getByTestId("settings-page")).toHaveTextContent(
         "Settings Page:",
       );
@@ -119,10 +118,27 @@ describe("Settings Route Validation", () => {
     render(<RouterProvider router={router} />);
 
     await waitFor(() => {
-      // z.nativeEnum(...).catch(...) should catch the enum validation error and return the fallback properly
       expect(screen.getByTestId("settings-page")).toHaveTextContent(
         `Settings Page: ${SettingsTabId.CandidateStatuses}`,
       );
+    });
+  });
+
+  it("redirects legacy admin tabs to /admin", async () => {
+    queryClient.setQueryData(userRoleQueryOptions().queryKey, {
+      isAdmin: true,
+      isInterviewer: false,
+      isRecruiter: false,
+      isHR: false,
+      canReviewResumes: false,
+    });
+
+    const router = createTestRouter(`/settings?tab=${AdminTabId.Recruiters}`);
+    render(<RouterProvider router={router} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("admin-page")).toBeInTheDocument();
+      expect(router.state.location.pathname).toBe("/admin");
     });
   });
 });
