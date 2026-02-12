@@ -95,20 +95,6 @@ export const useUpdateCandidateStatus = () => {
   });
 };
 
-export const useUpdateCandidateNote = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, note }: { id: string; note: string }) =>
-      CandidatesAPI.updateNote(id, note),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
-      queryClient.invalidateQueries({
-        queryKey: [...CANDIDATES_QUERY_KEY, id],
-      });
-    },
-  });
-};
-
 export const useDeleteCandidate = () => {
   const queryClient = useQueryClient();
   return useMutation({

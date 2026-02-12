@@ -2,6 +2,7 @@ import axios from "axios";
 import { z } from "zod";
 import type {
   Candidate,
+  CandidateComment,
   CandidateJobsCount,
   CandidateListResponse,
   CandidateStatus,
@@ -203,16 +204,6 @@ export const CandidatesAPI = {
   ): Promise<Candidate> => {
     const response = await api.patch<Candidate>(`/candidates/${id}/status`, {
       status,
-    });
-    return {
-      ...response.data,
-      appliedAt: new Date(response.data.appliedAt),
-    };
-  },
-
-  updateNote: async (id: string, note: string): Promise<Candidate> => {
-    const response = await api.patch<Candidate>(`/candidates/${id}/note`, {
-      note,
     });
     return {
       ...response.data,
@@ -514,5 +505,31 @@ export const InterviewsAPI = {
       { notes },
     );
     return interviewSchema.parse(response.data);
+  },
+};
+
+export const CommentsAPI = {
+  list: async (candidateId: string): Promise<CandidateComment[]> => {
+    const response = await api.get<CandidateComment[]>(
+      `/candidates/${candidateId}/comments`,
+    );
+    return response.data;
+  },
+
+  create: async (
+    candidateId: string,
+    content: string,
+  ): Promise<CandidateComment> => {
+    const response = await api.post<CandidateComment>(
+      `/candidates/${candidateId}/comments`,
+      {
+        content,
+      },
+    );
+    return response.data;
+  },
+
+  delete: async (commentId: string): Promise<void> => {
+    await api.delete(`/comments/${commentId}`);
   },
 };

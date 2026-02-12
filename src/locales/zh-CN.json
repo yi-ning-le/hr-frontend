@@ -298,6 +298,22 @@
         "resumeUploadFailed": "简历上传失败",
         "resumeFormatError": "格式错误：只支持PDF格式的简历上传。"
       },
+      "comments": {
+        "title": "评论",
+        "empty": "暂无评论",
+        "placeholder": "写下您的评论...",
+        "submit": "发布",
+        "immersive": "沉浸式编辑",
+        "saving": "正在发布...",
+        "success": "评论已发布",
+        "error": "发布失败",
+        "deleteConfirm": "确定要删除这条评论吗？",
+        "deleteSuccess": "评论已删除",
+        "discardConfirm": "您有未保存的内容，确定要退出吗？",
+        "ctrlEnter": "Cmd + Enter 发送",
+        "hrRole": "HR",
+        "interviewerRole": "面试官"
+      },
       "card": {
         "yearsExp": "{{years}}年经验",
         "appliedOn": "{{date}} 申请"

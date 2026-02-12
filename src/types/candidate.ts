@@ -24,11 +24,22 @@ export interface Candidate {
   channel: string; // e.g., "LinkedIn", "Referral", "Official Site"
   resumeUrl: string;
   status: CandidateStatus;
-  note: string;
+  note?: string;
   appliedAt: Date;
   reviewerId?: string;
   reviewStatus?: string;
   reviewNote?: string;
+}
+
+export interface CandidateComment {
+  id: string;
+  candidateId: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  authorRole: "HR" | "INTERVIEWER";
+  content: string; // Supports simplified Markdown
+  createdAt: string; // ISO Date String
 }
 export interface CandidateListResponse {
   data: Candidate[];

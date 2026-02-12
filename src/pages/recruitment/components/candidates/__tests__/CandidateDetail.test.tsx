@@ -66,21 +66,17 @@ const mockCandidate: Candidate = {
   resumeUrl: "resume.pdf",
   status: "new",
   appliedAt: new Date("2024-01-01"),
-  note: "Good candidate",
 };
 
 // Mock TanStack Query hooks
 vi.mock("@/hooks/queries/useCandidates", () => ({
+  CANDIDATES_QUERY_KEY: ["candidates"],
   useCandidates: () => ({
     data: { data: [mockCandidate], meta: { total: 1, page: 1, limit: 10 } },
     isLoading: false,
     isError: false,
   }),
   useUpdateCandidateStatus: () => ({
-    mutate: vi.fn(),
-    isPending: false,
-  }),
-  useUpdateCandidateNote: () => ({
     mutate: vi.fn(),
     isPending: false,
   }),

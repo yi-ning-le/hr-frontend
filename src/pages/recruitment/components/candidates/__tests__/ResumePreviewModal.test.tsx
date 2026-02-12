@@ -40,6 +40,19 @@ vi.mock("@/hooks/queries/useJobs", () => ({
   }),
 }));
 
+// Mock useCandidateComments
+vi.mock("@/hooks/queries/useCandidateComments", () => ({
+  useCandidateComments: () => ({
+    data: [],
+    isLoading: false,
+  }),
+}));
+
+// Mock CandidateCommentSidebar
+vi.mock("@/components/candidates/comments/CandidateCommentSidebar", () => ({
+  CandidateCommentSidebar: () => <div data-testid="comment-sidebar" />,
+}));
+
 // Mock scroll area
 vi.mock("@/components/ui/scroll-area", () => ({
   ScrollArea: ({
@@ -91,9 +104,8 @@ describe("ResumePreviewModal", () => {
     render(<ResumePreviewModal {...defaultProps} />);
 
     expect(
-      screen.getByText("resumeModal.resumeOf John Doe"),
+      screen.getByRole("heading", { name: "resumeModal.resumeOf John Doe" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/john@example.com/)).toBeInTheDocument();
     expect(screen.getByTestId("pdf-preview")).toHaveTextContent(
       "http://example.com/resume.pdf",
     );
@@ -121,9 +133,7 @@ describe("ResumePreviewModal", () => {
   it("opens resume in new tab when download clicked", () => {
     render(<ResumePreviewModal {...defaultProps} />);
 
-    const downloadBtn = screen.getByText("resumeModal.download");
-    fireEvent.click(downloadBtn);
-
+    fireEvent.click(screen.getByLabelText("resumeModal.download"));
     expect(mockOpen).toHaveBeenCalledWith(
       "http://example.com/resume.pdf",
       "_blank",
@@ -166,17 +176,7 @@ describe("ResumePreviewModal", () => {
   it("calls onOpenChange when close button is clicked", () => {
     render(<ResumePreviewModal {...defaultProps} />);
 
-    // Find the close button by its SVG icon's parent button
-    const buttons = screen.getAllByRole("button");
-    // The close button is the last one with no text (icon-only)
-    const closeBtn = buttons.find((btn) => btn.textContent === "");
-
-    if (closeBtn) {
-      fireEvent.click(closeBtn);
-      expect(defaultProps.onOpenChange).toHaveBeenCalledWith(false);
-    } else {
-      // If we can't find it, check dialog is at least present
-      expect(screen.getByRole("dialog")).toBeInTheDocument();
-    }
+    fireEvent.click(screen.getByLabelText("common.close"));
+    expect(defaultProps.onOpenChange).toHaveBeenCalledWith(false);
   });
 });

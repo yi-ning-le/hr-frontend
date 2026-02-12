@@ -85,7 +85,7 @@ export function Header() {
             {(roles?.isAdmin || roles?.isRecruiter) && (
               <HeaderLink to="/recruitment">{t("nav.recruitment")}</HeaderLink>
             )}
-            <HeaderLink to="/employees" search={{ page: 1, limit: 20 }}>
+            <HeaderLink to="/employees">
               {t("nav.employees", "Employees")}
             </HeaderLink>
             {user &&

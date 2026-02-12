@@ -33,19 +33,9 @@ import { useEmployees } from "@/hooks/queries/useEmployees";
 import { CandidatesAPI } from "@/lib/api";
 import type { Candidate } from "@/types/candidate";
 
-const createAssignSchema = (
-  t: (key: string, defaultValue?: string) => string,
-) =>
-  z.object({
-    reviewerId: z
-      .string()
-      .min(
-        1,
-        t("candidate.validation.reviewerRequired", "Please select a reviewer"),
-      ),
-  });
-
-type AssignFormValues = z.infer<ReturnType<typeof createAssignSchema>>;
+type AssignFormValues = {
+  reviewerId: string;
+};
 
 interface AssignReviewerDialogProps {
   candidate: Candidate;
@@ -63,7 +53,21 @@ export function AssignReviewerDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: employeesData } = useEmployees({ status: "Active" }); // Fetch all active employees
 
-  const assignSchema = useMemo(() => createAssignSchema(t), [t]);
+  const assignSchema = useMemo(
+    () =>
+      z.object({
+        reviewerId: z
+          .string()
+          .min(
+            1,
+            t(
+              "candidate.validation.reviewerRequired",
+              "Please select a reviewer",
+            ),
+          ),
+      }),
+    [t],
+  );
 
   const form = useForm<AssignFormValues>({
     resolver: zodResolver(assignSchema),

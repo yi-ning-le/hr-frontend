@@ -308,19 +308,6 @@ describe("lib/api", () => {
       });
     });
 
-    describe("updateNote", () => {
-      it("should update candidate note and transform dates", async () => {
-        mockAxios.patch.mockResolvedValueOnce({ data: mockCandidate });
-
-        const result = await CandidatesAPI.updateNote("1", "Good candidate");
-
-        expect(mockAxios.patch).toHaveBeenCalledWith("/candidates/1/note", {
-          note: "Good candidate",
-        });
-        expect(result.appliedAt).toBeInstanceOf(Date);
-      });
-    });
-
     describe("uploadResume", () => {
       it("should upload resume with multipart form data", async () => {
         const mockFile = new File(["resume content"], "resume.pdf", {

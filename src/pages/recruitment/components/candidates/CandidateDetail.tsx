@@ -18,7 +18,6 @@ import {
   useCandidates,
   useDeleteCandidate,
   useUpdateCandidate,
-  useUpdateCandidateNote,
   useUpdateCandidateStatus,
   useUploadResume,
 } from "@/hooks/queries/useCandidates";
@@ -26,7 +25,6 @@ import type { Candidate } from "@/types/candidate";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { CandidateDetailHeader } from "./detail/CandidateDetailHeader";
 import { CandidateInfoSection } from "./detail/CandidateInfoSection";
-import { CandidateNoteSection } from "./detail/CandidateNoteSection";
 import { CandidateResumeSection } from "./detail/CandidateResumeSection";
 import { ResumePreviewModal } from "./ResumePreviewModal";
 
@@ -44,10 +42,6 @@ export function CandidateDetail({
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
-  // Note Editing State
-  const [isEditingNote, setIsEditingNote] = useState(false);
-  const [noteContent, setNoteContent] = useState("");
-
   // Resume Upload State
   const [isUploadingResume, setIsUploadingResume] = useState(false);
 
@@ -55,7 +49,6 @@ export function CandidateDetail({
   const { data: candidateData } = useCandidates();
   const candidates = candidateData?.data || [];
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
-  const { mutate: updateCandidateNote } = useUpdateCandidateNote();
   const { mutate: updateCandidate } = useUpdateCandidate();
   const { mutate: deleteCandidate } = useDeleteCandidate();
   const { mutateAsync: uploadResumeAsync } = useUploadResume();
@@ -63,22 +56,6 @@ export function CandidateDetail({
   const candidate = candidates.find((c: Candidate) => c.id === candidateId);
 
   if (!candidate) return null;
-
-  // Initialize note content when candidate changes
-  if (!isEditingNote && noteContent !== (candidate.note || "")) {
-    setNoteContent(candidate.note || "");
-  }
-
-  const handleNoteSave = () => {
-    updateCandidateNote({ id: candidate.id, note: noteContent });
-    setIsEditingNote(false);
-    toast.success(t("recruitment.candidates.dialog.noteUpdated"));
-  };
-
-  const handleNoteCancel = () => {
-    setNoteContent(candidate.note || "");
-    setIsEditingNote(false);
-  };
 
   const handleResumeUpload = async (file: File) => {
     // 1. Validate file format (PDF only)
@@ -125,7 +102,6 @@ export function CandidateDetail({
             defaultValues={candidate}
             onSubmit={handleEditSubmit}
             onCancel={() => setIsEditing(false)}
-            hideNote={true}
           />
         </ScrollArea>
       </div>
@@ -157,16 +133,6 @@ export function CandidateDetail({
           />
 
           <Separator />
-
-          <CandidateNoteSection
-            candidate={candidate}
-            isEditingNote={isEditingNote}
-            noteContent={noteContent}
-            onNoteChange={setNoteContent}
-            onNoteSave={handleNoteSave}
-            onNoteCancel={handleNoteCancel}
-            onEditClick={() => setIsEditingNote(true)}
-          />
         </div>
       </ScrollArea>
 

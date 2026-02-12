@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useJobs } from "@/hooks/queries/useJobs";
 import { useCandidateStatuses } from "@/hooks/useCandidateStatuses";
 import type { CandidateStatusDefinition as CandidateStatus } from "@/types/candidate";
@@ -44,7 +43,6 @@ const createCandidateSchema = (t: (key: string) => string) =>
     channel: z
       .string()
       .min(1, t("recruitment.candidates.form.validation.channelRequired")),
-    note: z.string().default(""),
     // Hidden/Auto fields
     appliedJobId: z
       .string()
@@ -64,7 +62,6 @@ interface CandidateFormProps {
   onSubmit: (data: CandidateFormValues) => void;
   onCancel?: () => void;
   submitLabel?: string;
-  hideNote?: boolean;
 }
 
 export function CandidateForm({
@@ -72,7 +69,6 @@ export function CandidateForm({
   onSubmit,
   onCancel,
   submitLabel,
-  hideNote = false,
 }: CandidateFormProps) {
   const { t } = useTranslation();
   const { data: jobs = [], isLoading: isLoadingJobs } = useJobs();
@@ -89,7 +85,6 @@ export function CandidateForm({
       education: "",
       experienceYears: 0,
       channel: "",
-      note: "",
       appliedJobId: "",
       appliedJobTitle: "",
       ...defaultValues,
@@ -328,27 +323,6 @@ export function CandidateForm({
             )}
           />
         </div>
-
-        {!hideNote && (
-          <FormField
-            control={form.control}
-            name="note"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("recruitment.candidates.note")}</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder={t(
-                      "recruitment.candidates.form.notePlaceholder",
-                    )}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
 
         <div className="flex justify-end gap-2">
           {onCancel && (
