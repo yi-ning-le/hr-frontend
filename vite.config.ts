@@ -34,15 +34,6 @@ export default defineConfig({
             if (id.includes("react-dom")) {
               return "vendor-react-dom";
             }
-            if (
-              id.includes("react") &&
-              !id.includes("react-dom") &&
-              !id.includes("react-big-calendar") &&
-              !id.includes("react-pdf") &&
-              !id.includes("recharts")
-            ) {
-              return "vendor-react";
-            }
             if (id.includes("@radix-ui")) {
               return "vendor-radix";
             }
@@ -83,6 +74,15 @@ export default defineConfig({
               id.includes("@hello-pangea")
             ) {
               return "vendor-utils";
+            }
+            if (
+              id.includes("react") &&
+              !id.includes("react-dom") &&
+              !id.includes("react-big-calendar") &&
+              !id.includes("react-pdf") &&
+              !id.includes("recharts")
+            ) {
+              return "vendor-react";
             }
           }
         },

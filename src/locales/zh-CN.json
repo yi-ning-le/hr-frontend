@@ -480,6 +480,8 @@
       "interviewer": "面试官",
       "selectInterviewer": "选择面试官",
       "scheduledTime": "面试时间",
+      "startTime": "开始时间",
+      "endTime": "结束时间",
       "initialNotes": "初始备注",
       "initialNotesPlaceholder": "添加面试备注或说明...",
       "myInterviews": "我的面试",
@@ -500,7 +502,12 @@
       "viewDetails": "查看详情",
       "validation": {
         "interviewerRequired": "请选择面试官",
-        "scheduledTimeRequired": "请选择面试时间"
+        "scheduledTimeRequired": "请选择面试时间",
+        "dateRequired": "请选择日期",
+        "startTimeRequired": "请选择开始时间",
+        "endTimeRequired": "请选择结束时间",
+        "futureTimeRequired": "开始时间必须晚于当前时间",
+        "endTimeMustBeAfterStartTime": "结束时间必须晚于开始时间"
       },
       "status": {
         "PENDING": "待定",

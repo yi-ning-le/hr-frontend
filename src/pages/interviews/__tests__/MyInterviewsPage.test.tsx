@@ -59,6 +59,14 @@ vi.mock("@tanstack/react-router", () => ({
   }),
 }));
 
+// Mock the specific route
+vi.mock("@/routes/_protected/my-interviews", () => ({
+  Route: {
+    useNavigate: () => mockNavigate,
+    useSearch: () => ({ viewMode: routeState.viewMode }),
+  },
+}));
+
 // Mock translation
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -152,12 +160,8 @@ describe("MyInterviewsPage", () => {
 
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Software Engineer")).toBeInTheDocument();
-    // The mock returns the translation key as-is
-    expect(
-      screen.getByText("recruitment.interviews.status.PENDING"),
-    ).toBeInTheDocument();
 
-    expect(screen.getByText(/Oct 27/)).toBeInTheDocument();
+    expect(screen.getByText("27")).toBeInTheDocument();
   });
 
   it("switches to calendar view", async () => {

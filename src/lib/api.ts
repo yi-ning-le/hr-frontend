@@ -504,8 +504,8 @@ const interviewSchema = z.object({
   interviewerId: z.string().min(1),
   jobId: z.string().min(1),
   scheduledTime: z.string().min(1),
+  scheduledEndTime: z.string().min(1),
   status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]),
-  notes: z.string().optional(),
   createdAt: z.string().min(1),
 });
 
@@ -514,6 +514,7 @@ const interviewsSchema = z.array(interviewSchema);
 const normalizeInterviewInput = (data: CreateInterviewInput) => ({
   ...data,
   scheduledTime: data.scheduledTime.toISOString(),
+  scheduledEndTime: data.scheduledEndTime.toISOString(),
 });
 
 export const InterviewsAPI = {
@@ -532,14 +533,6 @@ export const InterviewsAPI = {
 
   get: async (id: string): Promise<Interview> => {
     const response = await api.get<unknown>(`/recruitment/interviews/${id}`);
-    return interviewSchema.parse(response.data);
-  },
-
-  updateNotes: async (id: string, notes: string): Promise<Interview> => {
-    const response = await api.patch<unknown>(
-      `/recruitment/interviews/${id}/notes`,
-      { notes },
-    );
     return interviewSchema.parse(response.data);
   },
 };

@@ -34,8 +34,10 @@ describe("InterviewCalendar", () => {
       interviewerId: "int1",
       jobId: "j1",
       scheduledTime: today.toISOString(),
+      scheduledEndTime: new Date(
+        today.getTime() + 60 * 60 * 1000,
+      ).toISOString(),
       status: "PENDING",
-      notes: "",
       createdAt: "",
     },
   ];

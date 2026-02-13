@@ -480,6 +480,8 @@
       "interviewer": "Interviewer",
       "selectInterviewer": "Select an interviewer",
       "scheduledTime": "Scheduled Time",
+      "startTime": "Start Time",
+      "endTime": "End Time",
       "initialNotes": "Initial Notes",
       "initialNotesPlaceholder": "Add interview notes or instructions...",
       "myInterviews": "My Interviews",
@@ -500,7 +502,12 @@
       "viewDetails": "View Details",
       "validation": {
         "interviewerRequired": "Interviewer is required",
-        "scheduledTimeRequired": "Scheduled time is required"
+        "scheduledTimeRequired": "Scheduled time is required",
+        "dateRequired": "Date is required",
+        "startTimeRequired": "Start time is required",
+        "endTimeRequired": "End time is required",
+        "futureTimeRequired": "Start time must be in the future",
+        "endTimeMustBeAfterStartTime": "End time must be after start time"
       },
       "status": {
         "PENDING": "Pending",

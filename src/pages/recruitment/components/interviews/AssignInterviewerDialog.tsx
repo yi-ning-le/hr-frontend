@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, isSameDay, startOfToday } from "date-fns";
+import { format, startOfToday } from "date-fns";
 import { CalendarIcon, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -48,6 +48,13 @@ interface AssignInterviewerDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const combineDateAndTime = (date: Date, timeSlot: string) => {
+  const [hour, minute] = timeSlot.split(":").map(Number);
+  const result = new Date(date);
+  result.setHours(hour, minute, 0, 0);
+  return result;
+};
+
 export function AssignInterviewerDialog({
   candidate,
   open,
@@ -55,23 +62,52 @@ export function AssignInterviewerDialog({
 }: AssignInterviewerDialogProps) {
   const { t } = useTranslation();
 
-  const formSchema = z.object({
-    interviewerId: z
-      .string()
-      .min(1, t("recruitment.interviews.validation.interviewerRequired")),
-    scheduledTime: z
-      .date({
-        message: t("recruitment.interviews.validation.scheduledTimeRequired"),
-      })
-      .refine(
-        (date) => {
-          return date >= new Date();
-        },
-        {
+  const formSchema = z
+    .object({
+      interviewerId: z
+        .string()
+        .min(1, t("recruitment.interviews.validation.interviewerRequired")),
+      date: z.date({
+        message: t("recruitment.interviews.validation.dateRequired"),
+      }),
+      startTime: z
+        .string({
+          error: t("recruitment.interviews.validation.startTimeRequired"),
+        })
+        .min(1, t("recruitment.interviews.validation.startTimeRequired")),
+      endTime: z
+        .string({
+          error: t("recruitment.interviews.validation.endTimeRequired"),
+        })
+        .min(1, t("recruitment.interviews.validation.endTimeRequired")),
+    })
+    .superRefine((data, ctx) => {
+      if (!data.startTime || !data.endTime) {
+        return;
+      }
+
+      const scheduledTime = combineDateAndTime(data.date, data.startTime);
+      const scheduledEndTime = combineDateAndTime(data.date, data.endTime);
+
+      if (scheduledTime <= new Date()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["startTime"],
           message: t("recruitment.interviews.validation.futureTimeRequired"),
-        },
-      ),
-  });
+        });
+      }
+
+      if (scheduledEndTime <= scheduledTime) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["endTime"],
+          message: t(
+            "recruitment.interviews.validation.endTimeMustBeAfterStartTime",
+          ),
+        });
+      }
+    });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch employees to select from
@@ -91,19 +127,25 @@ export function AssignInterviewerDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       interviewerId: "",
+      startTime: "",
+      endTime: "",
     },
   });
+  const selectedDate = form.watch("date");
+  const selectedStartTime = form.watch("startTime");
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
+      const scheduledTime = combineDateAndTime(values.date, values.startTime);
+      const endTime = combineDateAndTime(values.date, values.endTime);
+
       await createInterview({
         candidateId: candidate.id,
         jobId: candidate.appliedJobId,
         interviewerId: values.interviewerId,
-        scheduledTime: values.scheduledTime,
-        // Don't save notes to interview object, save as comment instead
-        notes: "",
+        scheduledTime: scheduledTime,
+        scheduledEndTime: endTime,
       });
 
       toast.success(t("recruitment.interviews.assignSuccess"));
@@ -167,117 +209,83 @@ export function AssignInterviewerDialog({
 
             <FormField
               control={form.control}
-              name="scheduledTime"
+              name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>
-                    {t("recruitment.interviews.scheduledTime")}
+                    {t("recruitment.interviews.date", "Date")}
                   </FormLabel>
-                  <div className="flex gap-2">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-left font-normal flex-1",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>{t("common.pickDate")}</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => {
-                            if (!date) return;
-                            const newDate = new Date(date);
-                            const now = new Date();
-                            if (field.value) {
-                              newDate.setHours(
-                                field.value.getHours(),
-                                field.value.getMinutes(),
-                              );
-                            } else {
-                              // If selecting today, default to current time + 1 hour (or next hour mark)
-                              // If selecting future date, default to 9:00
-                              if (isSameDay(newDate, now)) {
-                                newDate.setHours(now.getHours() + 1, 0);
-                              } else {
-                                newDate.setHours(9, 0);
-                              }
-                            }
-                            // Ensure we don't set a time in the past if it's today
-                            if (newDate < now) {
-                              newDate.setHours(now.getHours() + 1, 0);
-                            }
-                            field.onChange(newDate);
-                          }}
-                          disabled={(date) =>
-                            date < startOfToday() ||
-                            date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <Select
-                      value={
-                        field.value ? format(field.value, "HH:mm") : undefined
-                      }
-                      onValueChange={(time) => {
-                        if (!time) return;
-                        const [hours, minutes] = time.split(":").map(Number);
-                        const newDate = field.value
-                          ? new Date(field.value)
-                          : startOfToday();
-                        newDate.setHours(hours, minutes);
-
-                        // If it's today, prevent setting past time
-                        const now = new Date();
-                        if (isSameDay(newDate, now) && newDate < now) {
-                          newDate.setHours(now.getHours(), now.getMinutes());
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>{t("common.pickDate", "Pick a date")}</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < startOfToday() || date < new Date("1900-01-01")
                         }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                        field.onChange(newDate);
-                      }}
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>
+                      {t("recruitment.interviews.startTime", "Start Time")}
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
                     >
-                      <SelectTrigger className="w-[120px]">
-                        <SelectValue placeholder={t("common.time")} />
-                      </SelectTrigger>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t(
+                              "common.startTime",
+                              "Select start time",
+                            )}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
                       <SelectContent className="max-h-[200px]">
                         {timeSlots.map((time) => {
-                          const [hours, minutes] = time.split(":").map(Number);
-                          // Ensure field.value exists, if not use today
-                          const dateBase = field.value || new Date();
-                          const isToday = isSameDay(dateBase, new Date());
-                          const now = new Date();
-                          let isDisabled = false;
-
-                          if (isToday) {
-                            const timeDate = new Date(dateBase);
-                            timeDate.setHours(hours, minutes);
-                            isDisabled = timeDate < now;
-                          }
+                          const isDisabled = selectedDate
+                            ? combineDateAndTime(selectedDate, time) <=
+                              new Date()
+                            : false;
 
                           return (
                             <SelectItem
-                              key={time}
+                              key={`start-${time}`}
                               value={time}
                               disabled={isDisabled}
-                              className={
-                                isDisabled
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                              }
                             >
                               {time}
                             </SelectItem>
@@ -285,11 +293,62 @@ export function AssignInterviewerDialog({
                         })}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endTime"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>
+                      {t("recruitment.interviews.endTime", "End Time")}
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("common.endTime", "Select end time")}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="max-h-[200px]">
+                        {timeSlots.map((time) => {
+                          const isInPast = selectedDate
+                            ? combineDateAndTime(selectedDate, time) <=
+                              new Date()
+                            : false;
+                          const isBeforeOrEqualStart =
+                            selectedDate && selectedStartTime
+                              ? combineDateAndTime(selectedDate, time) <=
+                                combineDateAndTime(
+                                  selectedDate,
+                                  selectedStartTime,
+                                )
+                              : false;
+
+                          return (
+                            <SelectItem
+                              key={`end-${time}`}
+                              value={time}
+                              disabled={isInPast || isBeforeOrEqualStart}
+                            >
+                              {time}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting}>

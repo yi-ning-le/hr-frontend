@@ -183,7 +183,17 @@ export function InterviewDetailPage() {
                 <Clock className="h-10 w-10 text-muted-foreground bg-muted p-2 rounded-md" />
                 <div>
                   <div className="font-medium">
-                    {format(new Date(interview.scheduledTime), "h:mm a")}
+                    {(() => {
+                      const start = new Date(interview.scheduledTime);
+                      const end = interview.scheduledEndTime
+                        ? new Date(interview.scheduledEndTime)
+                        : null;
+
+                      if (end) {
+                        return `${format(start, "h:mm a")} - ${format(end, "h:mm a")}`;
+                      }
+                      return format(start, "h:mm a");
+                    })()}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {t("recruitment.interviews.time")}

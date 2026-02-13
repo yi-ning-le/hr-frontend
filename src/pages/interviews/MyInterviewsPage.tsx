@@ -1,13 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import {
-  Briefcase,
-  Calendar,
-  Clock,
-  FileText,
-  LayoutList,
-  User,
-} from "lucide-react";
+import { Briefcase, Calendar, Clock, FileText, LayoutList } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ResumePreviewModal } from "@/components/candidates/ResumePreviewModal";
@@ -18,6 +11,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -113,56 +107,91 @@ export function MyInterviewsPage() {
           return (
             <Card
               key={interview.id}
-              className="hover:shadow-md transition-shadow"
+              className="hover:shadow-md transition-shadow flex flex-col"
             >
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <Badge
-                    variant={
-                      interview.status === "PENDING"
-                        ? "default"
-                        : interview.status === "COMPLETED"
+              <CardHeader className="pb-4">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="space-y-1.5 min-w-0">
+                    <CardTitle className="flex items-center gap-2 text-lg truncate">
+                      <span className="truncate" title={candidate?.name}>
+                        {candidate?.name ||
+                          t(
+                            "recruitment.candidates.unknownCandidate",
+                            "Unknown Candidate",
+                          )}
+                      </span>
+                    </CardTitle>
+                    <CardDescription className="flex items-center gap-1.5 truncate">
+                      <Briefcase className="h-3.5 w-3.5 shrink-0" />
+                      <span
+                        className="truncate"
+                        title={candidate?.appliedJobTitle}
+                      >
+                        {candidate?.appliedJobTitle ||
+                          t(
+                            "recruitment.candidates.unknownPosition",
+                            "Unknown Position",
+                          )}
+                      </span>
+                    </CardDescription>
+                  </div>
+                  {interview.status !== "PENDING" && (
+                    <Badge
+                      variant={
+                        interview.status === "COMPLETED"
                           ? "secondary"
                           : "destructive"
-                    }
-                  >
-                    {t(`recruitment.interviews.status.${interview.status}`)}
-                  </Badge>
-                  <div className="text-sm text-muted-foreground flex items-center">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {format(new Date(interview.scheduledTime), "MMM d, h:mm a")}
+                      }
+                      className="shrink-0"
+                    >
+                      {t(`recruitment.interviews.status.${interview.status}`)}
+                    </Badge>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="flex-1 pb-4">
+                <div className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg border border-border/50">
+                  <div className="flex flex-col items-center justify-center bg-background border rounded-md min-w-14 h-14 shadow-sm">
+                    <span className="text-xs text-muted-foreground uppercase font-medium">
+                      {format(new Date(interview.scheduledTime), "MMM")}
+                    </span>
+                    <span className="text-lg font-bold leading-none">
+                      {format(new Date(interview.scheduledTime), "d")}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <div className="text-sm font-medium flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                      {(() => {
+                        const start = new Date(interview.scheduledTime);
+                        const end = interview.scheduledEndTime
+                          ? new Date(interview.scheduledEndTime)
+                          : null;
+                        if (end) {
+                          return `${format(start, "h:mm a")} - ${format(end, "h:mm a")}`;
+                        }
+                        return format(start, "h:mm a");
+                      })()}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {format(new Date(interview.scheduledTime), "EEEE")}
+                    </div>
                   </div>
                 </div>
-                <CardTitle className="mt-3 flex items-center gap-2">
-                  <User className="h-5 w-5 text-primary" />
-                  {candidate?.name ||
-                    t(
-                      "recruitment.candidates.unknownCandidate",
-                      "Unknown Candidate",
-                    )}
-                </CardTitle>
-                <CardDescription className="flex items-center gap-2">
-                  <Briefcase className="h-4 w-4" />
-                  {candidate?.appliedJobTitle ||
-                    t(
-                      "recruitment.candidates.unknownPosition",
-                      "Unknown Position",
-                    )}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex gap-2">
+              </CardContent>
+              <CardFooter className="pt-0 gap-2">
                 <Link
                   to="/interviews/$interviewId"
                   params={{ interviewId: interview.id }}
                   className="flex-1"
                 >
-                  <Button className="w-full">
+                  <Button variant="outline" className="w-full">
                     {t("recruitment.interviews.viewDetails")}
                   </Button>
                 </Link>
                 {candidate?.resumeUrl && (
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="icon"
                     onClick={() => handlePreviewResume(candidate)}
                     title={t(
@@ -173,7 +202,7 @@ export function MyInterviewsPage() {
                     <FileText className="h-4 w-4" />
                   </Button>
                 )}
-              </CardContent>
+              </CardFooter>
             </Card>
           );
         })}

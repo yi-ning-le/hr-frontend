@@ -8,7 +8,6 @@ import {
   useCreateInterview,
   useInterview,
   useMyInterviews,
-  useUpdateInterviewNotes,
 } from "../useInterviews";
 
 // Mock the API
@@ -17,7 +16,6 @@ vi.mock("@/lib/api", () => ({
     create: vi.fn(),
     getMyInterviews: vi.fn(),
     get: vi.fn(),
-    updateNotes: vi.fn(),
   },
 }));
 
@@ -91,24 +89,5 @@ describe("useInterviews Hooks", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(InterviewsAPI.create).toHaveBeenCalledWith(newInterview);
-  });
-
-  it("useUpdateInterviewNotes calls InterviewsAPI.updateNotes", async () => {
-    const update = { id: "1", notes: "Good candidate" };
-    (InterviewsAPI.updateNotes as any).mockResolvedValue({
-      id: "1",
-      notes: "Good candidate",
-    });
-
-    const { result } = renderHook(() => useUpdateInterviewNotes(), { wrapper });
-
-    result.current.mutate(update);
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(InterviewsAPI.updateNotes).toHaveBeenCalledWith(
-      "1",
-      "Good candidate",
-    );
   });
 });

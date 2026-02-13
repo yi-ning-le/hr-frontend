@@ -4,8 +4,8 @@ export interface Interview {
   interviewerId: string;
   jobId: string;
   scheduledTime: string; // ISO date string
+  scheduledEndTime: string; // ISO date string
   status: "PENDING" | "COMPLETED" | "CANCELLED";
-  notes?: string;
   createdAt: string;
 }
 
@@ -14,10 +14,5 @@ export interface CreateInterviewInput {
   interviewerId: string;
   jobId: string;
   scheduledTime: Date;
-  notes?: string;
-}
-
-export interface UpdateInterviewNotesInput {
-  id: string;
-  notes: string;
+  scheduledEndTime: Date;
 }

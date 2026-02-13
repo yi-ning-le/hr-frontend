@@ -144,8 +144,12 @@ describe("AssignInterviewerDialog", () => {
     expect(
       screen.getByText("recruitment.interviews.interviewer"),
     ).toBeInTheDocument();
+    expect(screen.getByText("recruitment.interviews.date")).toBeInTheDocument();
     expect(
-      screen.getByText("recruitment.interviews.scheduledTime"),
+      screen.getByText("recruitment.interviews.startTime"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.interviews.endTime"),
     ).toBeInTheDocument();
   });
 
@@ -168,8 +172,16 @@ describe("AssignInterviewerDialog", () => {
       ),
     ).toBeInTheDocument();
     expect(
+      await screen.findByText("recruitment.interviews.validation.dateRequired"),
+    ).toBeInTheDocument();
+    expect(
       await screen.findByText(
-        "recruitment.interviews.validation.scheduledTimeRequired",
+        "recruitment.interviews.validation.startTimeRequired",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "recruitment.interviews.validation.endTimeRequired",
       ),
     ).toBeInTheDocument();
   });

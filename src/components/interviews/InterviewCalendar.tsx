@@ -66,8 +66,10 @@ export function InterviewCalendar({
     return interviews.map((interview) => {
       const candidate = candidates.get(interview.candidateId);
       const startTime = new Date(interview.scheduledTime);
-      // Assume 1 hour duration if not specified
-      const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+      // Use scheduledEndTime if available, otherwise assume 1 hour duration
+      const endTime = interview.scheduledEndTime
+        ? new Date(interview.scheduledEndTime)
+        : new Date(startTime.getTime() + 60 * 60 * 1000);
 
       return {
         id: interview.id,
