@@ -332,6 +332,7 @@
         "phone": "Phone",
         "education": "Education",
         "appliedAt": "Applied At",
+        "viewResume": "View Resume",
         "resumePreview": "Resume Preview",
         "downloadResume": "Download Resume",
         "noResume": "No resume file",
@@ -450,7 +451,18 @@
     },
     "calendar": {
       "title": "Interview Calendar",
-      "placeholder": "Interview schedule will be displayed here."
+      "placeholder": "Interview schedule will be displayed here.",
+      "today": "Today",
+      "previous": "Back",
+      "next": "Next",
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "agenda": "Agenda",
+      "date": "Date",
+      "time": "Time",
+      "event": "Event",
+      "noEventsInRange": "No interviews in this range"
     },
     "interviews": {
       "assignTitle": "Assign Interviewer",
@@ -471,6 +483,10 @@
       "initialNotes": "Initial Notes",
       "initialNotesPlaceholder": "Add interview notes or instructions...",
       "myInterviews": "My Interviews",
+      "viewMode": "View Mode",
+      "calendarView": "Calendar View",
+      "listView": "List View",
+      "noInterviewsOnDate": "No interviews scheduled for this date",
       "noInterviews": "No Interviews Scheduled",
       "noInterviewsDesc": "You don't have any upcoming interviews at the moment.",
       "tabs": {

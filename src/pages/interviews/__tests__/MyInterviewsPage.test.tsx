@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as useCandidates from "@/hooks/queries/useCandidates";
 import * as useInterviews from "@/hooks/queries/useInterviews";
@@ -10,6 +10,24 @@ vi.mock("@/hooks/queries/useCandidates");
 vi.mock("@/components/candidates/ResumePreviewModal", () => ({
   ResumePreviewModal: () => null,
 }));
+
+// Mock InterviewCalendar
+vi.mock("@/components/interviews/InterviewCalendar", () => ({
+  InterviewCalendar: () => (
+    <div data-testid="interview-calendar">Calendar Component</div>
+  ),
+}));
+
+// Shared route state to simulate TanStack Router navigation
+const routeState = { viewMode: "list" as "list" | "calendar" };
+
+const mockNavigate = vi.fn(
+  (options: { search?: (prev: typeof routeState) => typeof routeState }) => {
+    if (options?.search) {
+      routeState.viewMode = options.search(routeState).viewMode;
+    }
+  },
+);
 
 // Mock Link from tanstack router
 vi.mock("@tanstack/react-router", () => ({
@@ -27,6 +45,18 @@ vi.mock("@tanstack/react-router", () => ({
     </a>
   ),
   useParams: () => ({}),
+  useNavigate: () => mockNavigate,
+  createRootRoute: () => ({
+    component: ({ children }: { children: React.ReactNode }) => children,
+  }),
+  createProtectedRoute: () => ({
+    component: ({ children }: { children: React.ReactNode }) => children,
+  }),
+  createRoute: () => ({
+    component: ({ children }: { children: React.ReactNode }) => children,
+    useSearch: () => ({ viewMode: routeState.viewMode }),
+    useNavigate: () => mockNavigate,
+  }),
 }));
 
 // Mock translation
@@ -40,6 +70,8 @@ vi.mock("react-i18next", () => ({
 describe("MyInterviewsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset route state
+    routeState.viewMode = "list";
   });
 
   it("renders loading skeletons when loading", () => {
@@ -53,12 +85,9 @@ describe("MyInterviewsPage", () => {
     } as unknown as ReturnType<typeof useCandidates.useCandidates>);
 
     render(<MyInterviewsPage />);
-    // Check for skeletons implicitly or structure
-    // Since skeleton doesn't have text, tough to query by text.
-    // We can assume it renders without crashing.
   });
 
-  it("renders empty state when no interviews", async () => {
+  it("renders empty state when no interviews in list view", async () => {
     vi.mocked(useInterviews.useMyInterviews).mockReturnValue({
       data: [],
       isLoading: false,
@@ -73,12 +102,21 @@ describe("MyInterviewsPage", () => {
     expect(
       screen.getByText("recruitment.interviews.myInterviews"),
     ).toBeInTheDocument();
+
+    // Check view toggles exist
+    expect(
+      screen.getByText("recruitment.interviews.listView"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.interviews.calendarView"),
+    ).toBeInTheDocument();
+
     expect(
       screen.getByText("recruitment.interviews.noUpcomingInterviews"),
     ).toBeInTheDocument();
   });
 
-  it("renders interviews list", async () => {
+  it("renders interviews list in default view", async () => {
     const mockInterviews = [
       {
         id: "1",
@@ -119,8 +157,41 @@ describe("MyInterviewsPage", () => {
       screen.getByText("recruitment.interviews.status.PENDING"),
     ).toBeInTheDocument();
 
-    // Check Date formatting (depends on timezone, using partial match or flexible check)
-    // format(new Date(...), "MMM d, h:mm a") -> Oct 27, ...
     expect(screen.getByText(/Oct 27/)).toBeInTheDocument();
+  });
+
+  it("switches to calendar view", async () => {
+    vi.mocked(useInterviews.useMyInterviews).mockReturnValue({
+      data: [],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useInterviews.useMyInterviews>);
+    vi.mocked(useCandidates.useCandidates).mockReturnValue({
+      data: { data: [], meta: { total: 0, page: 1, limit: 10 } },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useCandidates.useCandidates>);
+
+    const { rerender } = render(<MyInterviewsPage />);
+
+    // Initially in list view - should show empty state message
+    expect(
+      screen.getByText("recruitment.interviews.noUpcomingInterviews"),
+    ).toBeInTheDocument();
+
+    // Click calendar view button
+    const calendarBtn = screen.getByText("recruitment.interviews.calendarView");
+    fireEvent.click(calendarBtn);
+
+    // After clicking, routeState is updated. Need to rerender to reflect the change
+    // The component should now show calendar view
+    expect(mockNavigate).toHaveBeenCalledWith({
+      search: expect.any(Function),
+    });
+
+    // Simulate what would happen: update the state and rerender
+    routeState.viewMode = "calendar";
+    rerender(<MyInterviewsPage />);
+
+    // Now calendar should be visible
+    expect(screen.getByTestId("interview-calendar")).toBeInTheDocument();
   });
 });

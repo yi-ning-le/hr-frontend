@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, isSameDay, startOfToday } from "date-fns";
 import { CalendarIcon, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -59,15 +59,31 @@ export function AssignInterviewerDialog({
     interviewerId: z
       .string()
       .min(1, t("recruitment.interviews.validation.interviewerRequired")),
-    scheduledTime: z.date({
-      message: t("recruitment.interviews.validation.scheduledTimeRequired"),
-    }),
+    scheduledTime: z
+      .date({
+        message: t("recruitment.interviews.validation.scheduledTimeRequired"),
+      })
+      .refine(
+        (date) => {
+          return date >= new Date();
+        },
+        {
+          message: t("recruitment.interviews.validation.futureTimeRequired"),
+        },
+      ),
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch employees to select from
   const { data: employeeData } = useEmployees({ limit: 100, status: "Active" }); // Simple fetch, maybe need search later
   const employees = employeeData?.employees || [];
+
+  // Generate time slots (every 30 minutes)
+  const timeSlots = Array.from({ length: 48 }, (_, i) => {
+    const hour = Math.floor(i / 2);
+    const minute = i % 2 === 0 ? "00" : "30";
+    return `${hour.toString().padStart(2, "0")}:${minute}`;
+  });
 
   const { mutateAsync: createInterview } = useCreateInterview();
 
@@ -157,37 +173,119 @@ export function AssignInterviewerDialog({
                   <FormLabel>
                     {t("recruitment.interviews.scheduledTime")}
                   </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>{t("common.pickDate")}</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date() || date < new Date("1900-01-01")
+                  <div className="flex gap-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "pl-3 text-left font-normal flex-1",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>{t("common.pickDate")}</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={(date) => {
+                            if (!date) return;
+                            const newDate = new Date(date);
+                            const now = new Date();
+                            if (field.value) {
+                              newDate.setHours(
+                                field.value.getHours(),
+                                field.value.getMinutes(),
+                              );
+                            } else {
+                              // If selecting today, default to current time + 1 hour (or next hour mark)
+                              // If selecting future date, default to 9:00
+                              if (isSameDay(newDate, now)) {
+                                newDate.setHours(now.getHours() + 1, 0);
+                              } else {
+                                newDate.setHours(9, 0);
+                              }
+                            }
+                            // Ensure we don't set a time in the past if it's today
+                            if (newDate < now) {
+                              newDate.setHours(now.getHours() + 1, 0);
+                            }
+                            field.onChange(newDate);
+                          }}
+                          disabled={(date) =>
+                            date < startOfToday() ||
+                            date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <Select
+                      value={
+                        field.value ? format(field.value, "HH:mm") : undefined
+                      }
+                      onValueChange={(time) => {
+                        if (!time) return;
+                        const [hours, minutes] = time.split(":").map(Number);
+                        const newDate = field.value
+                          ? new Date(field.value)
+                          : startOfToday();
+                        newDate.setHours(hours, minutes);
+
+                        // If it's today, prevent setting past time
+                        const now = new Date();
+                        if (isSameDay(newDate, now) && newDate < now) {
+                          newDate.setHours(now.getHours(), now.getMinutes());
                         }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+
+                        field.onChange(newDate);
+                      }}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder={t("common.time")} />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px]">
+                        {timeSlots.map((time) => {
+                          const [hours, minutes] = time.split(":").map(Number);
+                          // Ensure field.value exists, if not use today
+                          const dateBase = field.value || new Date();
+                          const isToday = isSameDay(dateBase, new Date());
+                          const now = new Date();
+                          let isDisabled = false;
+
+                          if (isToday) {
+                            const timeDate = new Date(dateBase);
+                            timeDate.setHours(hours, minutes);
+                            isDisabled = timeDate < now;
+                          }
+
+                          return (
+                            <SelectItem
+                              key={time}
+                              value={time}
+                              disabled={isDisabled}
+                              className={
+                                isDisabled
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                              }
+                            >
+                              {time}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

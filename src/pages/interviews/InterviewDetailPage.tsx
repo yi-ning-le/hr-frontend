@@ -58,6 +58,7 @@ export function InterviewDetailPage() {
       <div className="mb-6">
         <Link
           to="/my-interviews"
+          search={{ viewMode: "list" }}
           className="flex items-center text-muted-foreground hover:text-foreground transition-colors mb-2"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />

@@ -40,6 +40,7 @@ describe("useAuthStore", () => {
       const mockUser = { id: "1", username: "testuser" };
       const mockResponse = {
         token: "fake-token",
+        sessionId: "test-session-id",
         user: mockUser,
       };
 
