@@ -21,7 +21,7 @@ vi.mock("@/lib/parseResume", () => ({
 }));
 
 // Mock PdfPreview to avoid loading react-pdf
-vi.mock("../PdfPreview", () => ({
+vi.mock("@/components/candidates/PdfPreview", () => ({
   PdfPreview: () => <div data-testid="pdf-preview">PdfPreview</div>,
 }));
 

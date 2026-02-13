@@ -1,10 +1,10 @@
 import { FileText, Loader2, UploadCloud } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PdfPreview } from "@/components/candidates/PdfPreview";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Candidate } from "@/types/candidate";
-import { PdfPreview } from "../PdfPreview";
 
 interface CandidateResumeSectionProps {
   candidate: Candidate;

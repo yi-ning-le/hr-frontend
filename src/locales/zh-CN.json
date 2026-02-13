@@ -86,6 +86,10 @@
     "reviewNotePlaceholder": "在此处添加评语...",
     "reviewSuccess": "评审提交成功",
     "reviewFailed": "评审提交失败",
+    "viewInfo": "查看基本信息",
+    "review": "评审评估",
+    "reviewActions": "评审决定",
+    "reviewActionsDesc": "标记当前候选人为：",
     "validation": {
       "reviewerRequired": "请选择评审人"
     }

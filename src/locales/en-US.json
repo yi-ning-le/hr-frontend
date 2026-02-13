@@ -86,6 +86,10 @@
     "reviewNotePlaceholder": "Add any comments here...",
     "reviewSuccess": "Review submitted successfully",
     "reviewFailed": "Failed to submit review",
+    "viewInfo": "Info Card",
+    "review": "Review Assessment",
+    "reviewActions": "Review Decision",
+    "reviewActionsDesc": "Mark current candidate as:",
     "validation": {
       "reviewerRequired": "Please select a reviewer"
     }

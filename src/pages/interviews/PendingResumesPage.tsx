@@ -2,17 +2,9 @@ import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ReviewCandidateDialog } from "@/components/interviews/ReviewCandidateDialog";
+import { CandidateReviewDialog } from "@/components/interviews/CandidateReviewDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -22,52 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePendingResumes } from "@/hooks/queries/usePendingResumes";
-import { CandidateInfoSection } from "@/pages/recruitment/components/candidates/detail/CandidateInfoSection";
-import { CandidateResumeSection } from "@/pages/recruitment/components/candidates/detail/CandidateResumeSection";
-import { ResumePreviewModal } from "@/pages/recruitment/components/candidates/ResumePreviewModal";
 import type { Candidate } from "@/types/candidate";
-
-function CandidateViewDialog({
-  candidate,
-  open,
-  onOpenChange,
-}: {
-  candidate: Candidate;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-
-  return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
-          <DialogHeader className="p-6 border-b shrink-0">
-            <DialogTitle>{candidate.name}</DialogTitle>
-          </DialogHeader>
-          <ScrollArea className="flex-1 p-6">
-            <div className="grid gap-8 pb-20">
-              <CandidateInfoSection candidate={candidate} />
-              <Separator />
-              <CandidateResumeSection
-                candidate={candidate}
-                isUploadingResume={false}
-                onResumeUpload={() => {}}
-                onPreviewClick={() => setIsPreviewOpen(true)}
-              />
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-
-      <ResumePreviewModal
-        candidate={candidate}
-        open={isPreviewOpen}
-        onOpenChange={setIsPreviewOpen}
-      />
-    </>
-  );
-}
 
 export default function PendingResumesPage() {
   const { t } = useTranslation();
@@ -75,16 +22,9 @@ export default function PendingResumesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
     null,
   );
-  const [isReviewOpen, setIsReviewOpen] = useState(false);
-  const [viewCandidate, setViewCandidate] = useState<Candidate | null>(null);
 
   const handleReview = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
-    setIsReviewOpen(true);
-  };
-
-  const handleView = (candidate: Candidate) => {
-    setViewCandidate(candidate);
   };
 
   if (isLoading) {
@@ -152,17 +92,10 @@ export default function PendingResumesPage() {
                     </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleView(candidate)}
-                        className="cursor-pointer"
-                      >
-                        {t("common.view", "View")}
-                      </Button>
-                      <Button
                         variant="default"
                         size="sm"
                         onClick={() => handleReview(candidate)}
+                        className="cursor-pointer"
                       >
                         {t("recruitment.candidates.review", "Review")}
                       </Button>
@@ -183,18 +116,14 @@ export default function PendingResumesPage() {
       </Card>
 
       {selectedCandidate && (
-        <ReviewCandidateDialog
+        <CandidateReviewDialog
           candidate={selectedCandidate}
-          open={isReviewOpen}
-          onOpenChange={setIsReviewOpen}
-        />
-      )}
-
-      {viewCandidate && (
-        <CandidateViewDialog
-          candidate={viewCandidate}
-          open={!!viewCandidate}
-          onOpenChange={(open) => !open && setViewCandidate(null)}
+          open={!!selectedCandidate}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setSelectedCandidate(null);
+            }
+          }}
         />
       )}
     </div>

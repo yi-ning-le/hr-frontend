@@ -13,6 +13,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { ResumePreviewModal } from "@/components/candidates/ResumePreviewModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ export function InterviewDetailPage() {
 
   const [notes, setNotes] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const lastInterviewIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -168,13 +170,28 @@ export function InterviewDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <div className="text-sm font-medium text-muted-foreground mb-1">
-                  {t("common.name")}
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground mb-1">
+                    {t("common.name")}
+                  </div>
+                  <div className="text-lg font-semibold">
+                    {candidate?.name || t("common.unknown")}
+                  </div>
                 </div>
-                <div className="text-lg font-semibold">
-                  {candidate?.name || t("common.unknown")}
-                </div>
+                {candidate?.resumeUrl && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsPreviewOpen(true)}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    {t(
+                      "recruitment.candidates.detail.viewResume",
+                      "View Resume",
+                    )}
+                  </Button>
+                )}
               </div>
               <Separator />
               <div>
@@ -233,6 +250,12 @@ export function InterviewDetailPage() {
           </Card>
         </div>
       </div>
+
+      <ResumePreviewModal
+        candidate={candidate || null}
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+      />
     </div>
   );
 }

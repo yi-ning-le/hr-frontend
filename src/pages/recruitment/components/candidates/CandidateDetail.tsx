@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CandidateResumeSection } from "@/components/candidates/CandidateResumeSection";
+import { ResumePreviewModal } from "@/components/candidates/ResumePreviewModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,8 +27,6 @@ import type { Candidate } from "@/types/candidate";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { CandidateDetailHeader } from "./detail/CandidateDetailHeader";
 import { CandidateInfoSection } from "./detail/CandidateInfoSection";
-import { CandidateResumeSection } from "./detail/CandidateResumeSection";
-import { ResumePreviewModal } from "./ResumePreviewModal";
 
 interface CandidateDetailProps {
   candidateId: string;

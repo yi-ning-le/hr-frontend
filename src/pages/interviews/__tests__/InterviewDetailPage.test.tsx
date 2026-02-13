@@ -8,6 +8,9 @@ import { InterviewDetailPage } from "../InterviewDetailPage";
 // Mock hooks
 vi.mock("@/hooks/queries/useInterviews");
 vi.mock("@/hooks/queries/useCandidates");
+vi.mock("@/components/candidates/ResumePreviewModal", () => ({
+  ResumePreviewModal: () => null,
+}));
 let currentInterviewId = "1";
 
 vi.mock("@tanstack/react-router", () => ({

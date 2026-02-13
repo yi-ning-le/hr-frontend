@@ -48,7 +48,7 @@ vi.mock("../components/overview/RecentApplications", () => ({
   ),
 }));
 
-vi.mock("../components/candidates/PdfPreview", () => ({
+vi.mock("@/components/candidates/PdfPreview", () => ({
   PdfPreview: () => <div data-testid="pdf-preview">PDF Preview Component</div>,
 }));
 

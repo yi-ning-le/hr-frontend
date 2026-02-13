@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { Briefcase, Calendar, Clock, User } from "lucide-react";
-import { useMemo } from "react";
+import { Briefcase, Calendar, Clock, FileText, User } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ResumePreviewModal } from "@/components/candidates/ResumePreviewModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCandidates } from "@/hooks/queries/useCandidates";
 import { useMyInterviews } from "@/hooks/queries/useInterviews";
+import type { Candidate } from "@/types/candidate";
 
 export function MyInterviewsPage() {
   const { t } = useTranslation();
@@ -27,6 +29,16 @@ export function MyInterviewsPage() {
     () => new Map(candidates.map((candidate) => [candidate.id, candidate])),
     [candidates],
   );
+
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
+    null,
+  );
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const handlePreviewResume = (candidate: Candidate) => {
+    setSelectedCandidate(candidate);
+    setIsPreviewOpen(true);
+  };
 
   if (isLoadingInterviews || isLoadingCandidates) {
     return (
@@ -104,21 +116,41 @@ export function MyInterviewsPage() {
                       )}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex gap-2">
                   <Link
                     to="/interviews/$interviewId"
                     params={{ interviewId: interview.id }}
+                    className="flex-1"
                   >
                     <Button className="w-full">
                       {t("recruitment.interviews.viewDetails")}
                     </Button>
                   </Link>
+                  {candidate?.resumeUrl && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handlePreviewResume(candidate)}
+                      title={t(
+                        "recruitment.candidates.detail.viewResume",
+                        "View Resume",
+                      )}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             );
           })}
         </div>
       )}
+
+      <ResumePreviewModal
+        candidate={selectedCandidate}
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+      />
     </div>
   );
 }

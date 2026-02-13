@@ -7,6 +7,9 @@ import { MyInterviewsPage } from "../MyInterviewsPage";
 // Mock the hooks
 vi.mock("@/hooks/queries/useInterviews");
 vi.mock("@/hooks/queries/useCandidates");
+vi.mock("@/components/candidates/ResumePreviewModal", () => ({
+  ResumePreviewModal: () => null,
+}));
 
 // Mock Link from tanstack router
 vi.mock("@tanstack/react-router", () => ({
