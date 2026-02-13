@@ -73,9 +73,6 @@ describe("AssignInterviewerDialog", () => {
     expect(
       screen.getByText("recruitment.interviews.scheduledTime"),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("recruitment.interviews.initialNotes"),
-    ).toBeInTheDocument();
     expect(screen.getByText("common.assign")).toBeInTheDocument();
   });
 });

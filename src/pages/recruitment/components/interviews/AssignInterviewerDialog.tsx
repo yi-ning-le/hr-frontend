@@ -36,7 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 
 import { useEmployees } from "@/hooks/queries/useEmployees";
 import { useCreateInterview } from "@/hooks/queries/useInterviews";
@@ -63,7 +62,6 @@ export function AssignInterviewerDialog({
     scheduledTime: z.date({
       message: t("recruitment.interviews.validation.scheduledTimeRequired"),
     }),
-    notes: z.string().optional(),
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -77,7 +75,6 @@ export function AssignInterviewerDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       interviewerId: "",
-      notes: "",
     },
   });
 
@@ -89,8 +86,10 @@ export function AssignInterviewerDialog({
         jobId: candidate.appliedJobId,
         interviewerId: values.interviewerId,
         scheduledTime: values.scheduledTime,
-        notes: values.notes,
+        // Don't save notes to interview object, save as comment instead
+        notes: "",
       });
+
       toast.success(t("recruitment.interviews.assignSuccess"));
       onOpenChange(false);
       form.reset();
@@ -189,28 +188,6 @@ export function AssignInterviewerDialog({
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("recruitment.interviews.initialNotes")}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t(
-                        "recruitment.interviews.initialNotesPlaceholder",
-                      )}
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

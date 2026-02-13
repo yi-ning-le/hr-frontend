@@ -7,12 +7,11 @@ import {
   Clock,
   FileText,
   MapPin,
-  Save,
   User,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { CandidateCommentsSection } from "@/components/candidates/comments/CandidateCommentsSection";
 import { ResumePreviewModal } from "@/components/candidates/ResumePreviewModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,12 +24,8 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
 import { useCandidate } from "@/hooks/queries/useCandidates";
-import {
-  useInterview,
-  useUpdateInterviewNotes,
-} from "@/hooks/queries/useInterviews";
+import { useInterview } from "@/hooks/queries/useInterviews";
 
 export function InterviewDetailPage() {
   const { interviewId } = useParams({
@@ -43,30 +38,7 @@ export function InterviewDetailPage() {
   const { data: candidate, isLoading: isLoadingCandidate } =
     useCandidate(candidateId);
 
-  const { mutateAsync: updateNotes, isPending: isUpdating } =
-    useUpdateInterviewNotes();
-
-  const [notes, setNotes] = useState("");
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const lastInterviewIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!interview) {
-      return;
-    }
-
-    if (lastInterviewIdRef.current !== interview.id) {
-      lastInterviewIdRef.current = interview.id;
-      setNotes(interview.notes ?? "");
-      setHasUnsavedChanges(false);
-      return;
-    }
-
-    if (!hasUnsavedChanges) {
-      setNotes(interview.notes ?? "");
-    }
-  }, [interview, hasUnsavedChanges]);
 
   if (isLoadingInterview || (!!candidateId && isLoadingCandidate)) {
     return (
@@ -80,17 +52,6 @@ export function InterviewDetailPage() {
   if (!interview) {
     return <div>{t("common.notFound")}</div>;
   }
-
-  const handleSaveNotes = async () => {
-    try {
-      await updateNotes({ id: interviewId, notes });
-      toast.success(t("common.saved"));
-      setHasUnsavedChanges(false);
-    } catch (error) {
-      console.error(error);
-      toast.error(t("common.error"));
-    }
-  };
 
   return (
     <div className="container mx-auto py-8 max-w-4xl">
@@ -123,8 +84,8 @@ export function InterviewDetailPage() {
 
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
+          <Card className="flex flex-col overflow-hidden">
+            <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
                 {t("recruitment.interviews.interviewNotes")}
@@ -133,29 +94,11 @@ export function InterviewDetailPage() {
                 {t("recruitment.interviews.notesDescription")}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Textarea
-                value={notes}
-                onChange={(e) => {
-                  setNotes(e.target.value);
-                  setHasUnsavedChanges(true);
-                }}
-                className="min-h-75 mb-4 font-mono text-sm leading-relaxed"
-                placeholder={t("recruitment.interviews.notesPlaceholder")}
+            <CardContent className="p-0 flex-1 flex flex-col min-h-0">
+              <CandidateCommentsSection
+                candidateId={candidateId}
+                className="flex-1 border-t-0"
               />
-              <div className="flex justify-end">
-                <Button
-                  onClick={handleSaveNotes}
-                  disabled={!hasUnsavedChanges || isUpdating}
-                >
-                  {isUpdating ? (
-                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                  ) : (
-                    <Save className="h-4 w-4 mr-2" />
-                  )}
-                  {t("common.save")}
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>
