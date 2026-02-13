@@ -1,11 +1,9 @@
 import { isAxiosError } from "axios";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { AuthAPI, setAuthToken } from "@/lib/api";
 import i18n from "@/lib/i18n";
 import { queryClient } from "@/lib/queryClient";
 
-// User type definition
 export interface User {
   id: string;
   username: string;
@@ -14,15 +12,14 @@ export interface User {
   createdAt: string;
 }
 
-// Auth state interface
 interface AuthState {
   user: User | null;
   token: string | null;
+  sessionId: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
 
-// Auth actions interface
 interface AuthActions {
   login: (
     username: string,
@@ -35,7 +32,6 @@ interface AuthActions {
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<{ success: boolean; error?: string }>;
   reset: () => void;
-  // Reserved for future third-party login
   loginWithProvider: (
     provider: "wechat" | "dingtalk" | "feishu",
   ) => Promise<{ success: boolean; error?: string }>;
@@ -43,145 +39,223 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 
-// Simulate async delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const getTabId = (): string => {
+  let tabId = sessionStorage.getItem("tabId");
+  if (!tabId) {
+    tabId = crypto.randomUUID();
+    sessionStorage.setItem("tabId", tabId);
+  }
+  return tabId;
+};
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set, get) => ({
-      // Initial state
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      isLoading: false,
+const getStorageKey = (): string => {
+  return `auth-tab-${getTabId()}`;
+};
 
-      // Reset action (client-side logout)
-      reset: () => {
-        queryClient.clear();
-        setAuthToken(null);
-        set({
-          user: null,
-          token: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
-      },
+const loadFromStorage = (): Partial<AuthState> => {
+  try {
+    const stored = sessionStorage.getItem(getStorageKey());
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        user: parsed.user,
+        token: parsed.token,
+        sessionId: parsed.sessionId,
+        isAuthenticated: parsed.isAuthenticated,
+      };
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return {};
+};
 
-      // Login action
-      login: async (username: string, password: string) => {
-        set({ isLoading: true });
-        try {
-          const data = await AuthAPI.login({ username, password });
-
-          // Set token in api module
-          setAuthToken(data.token);
-
-          // Map backend user to frontend User type if needed
-          // Assuming backend returns a compatible user object or we map it
-          const user: User = {
-            id: data.user.id,
-            username: data.user.username,
-            createdAt: new Date().toISOString(), // or data.user.createdAt
-          };
-
-          set({
-            user,
-            token: data.token,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-          return { success: true };
-        } catch (error) {
-          set({ isLoading: false });
-          let errorMessage = i18n.t("auth.login.failed");
-          if (isAxiosError(error) && error.response?.data?.message) {
-            errorMessage = error.response.data.message;
-          } else if (error instanceof Error) {
-            errorMessage = error.message;
-          }
-          return {
-            success: false,
-            error: errorMessage,
-          };
-        }
-      },
-
-      // Register action
-      register: async (username: string, password: string, email: string) => {
-        set({ isLoading: true });
-        try {
-          await AuthAPI.register({ username, password, email });
-
-          // Registration successful - user needs to login separately
-          set({ isLoading: false });
-          return { success: true };
-        } catch (error) {
-          set({ isLoading: false });
-          let errorMessage = i18n.t("auth.register.failed");
-          if (isAxiosError(error) && error.response?.data?.message) {
-            errorMessage = error.response.data.message;
-          } else if (error instanceof Error) {
-            errorMessage = error.message;
-          }
-          return {
-            success: false,
-            error: errorMessage,
-          };
-        }
-      },
-
-      // Logout action
-      logout: async () => {
-        set({ isLoading: true });
-        try {
-          await AuthAPI.logout();
-          // Clear state
-          get().reset();
-          return { success: true };
-        } catch (error) {
-          // Even if API fails, we should clear local session to prevent stuck state
-          get().reset();
-          console.error("Logout API call failed:", error);
-
-          let errorMessage = i18n.t("header.logoutFailed");
-          if (isAxiosError(error)) {
-            errorMessage =
-              error.response?.data?.message ||
-              `${i18n.t("header.logoutFailed")}: ${error.response?.status || "Unknown error"}`;
-          } else if (error instanceof Error) {
-            errorMessage = error.message;
-          }
-
-          return {
-            success: false,
-            error: errorMessage,
-          };
-        }
-      },
-
-      // Third-party login placeholder
-      loginWithProvider: async (provider) => {
-        set({ isLoading: true });
-        await delay(500);
-        set({ isLoading: false });
-
-        // TODO: Implement third-party OAuth flow
-        console.log(`Third-party login with ${provider} - not implemented yet`);
-        return { success: false, error: i18n.t("auth.social.comingSoon") };
-      },
-    }),
-    {
-      name: "auth-storage",
-      partialize: (state) => ({
+const saveToStorage = (state: Partial<AuthState>): void => {
+  try {
+    sessionStorage.setItem(
+      getStorageKey(),
+      JSON.stringify({
         user: state.user,
         token: state.token,
+        sessionId: state.sessionId,
         isAuthenticated: state.isAuthenticated,
       }),
-      onRehydrateStorage: () => (state) => {
-        if (state?.token) {
-          setAuthToken(state.token);
-        }
-      },
+    );
+  } catch {
+    // Ignore storage errors
+  }
+};
+
+const authChannel = new BroadcastChannel("auth-sync");
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const useAuthStore = create<AuthStore>()((set, get) => {
+  const initialState = loadFromStorage();
+
+  if (initialState.token) {
+    setAuthToken(initialState.token);
+  }
+
+  authChannel.onmessage = (event) => {
+    const { type, tabId: senderTabId } = event.data;
+    const currentTabId = getTabId();
+
+    if (senderTabId === currentTabId) {
+      return;
+    }
+
+    if (type === "LOGIN") {
+      const stored = loadFromStorage();
+      if (stored.token && stored.token !== initialState.token) {
+        setAuthToken(stored.token);
+        set({
+          user: stored.user || null,
+          token: stored.token,
+          sessionId: stored.sessionId || null,
+          isAuthenticated: stored.isAuthenticated || false,
+        });
+      }
+    } else if (type === "LOGOUT") {
+      queryClient.clear();
+      setAuthToken(null);
+      sessionStorage.removeItem(getStorageKey());
+      set({
+        user: null,
+        token: null,
+        sessionId: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
+    }
+  };
+
+  return {
+    user: initialState.user || null,
+    token: initialState.token || null,
+    sessionId: initialState.sessionId || null,
+    isAuthenticated: initialState.isAuthenticated || false,
+    isLoading: false,
+
+    reset: () => {
+      queryClient.clear();
+      setAuthToken(null);
+      sessionStorage.removeItem(getStorageKey());
+      set({
+        user: null,
+        token: null,
+        sessionId: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
     },
-  ),
-);
+
+    login: async (username: string, password: string) => {
+      set({ isLoading: true });
+      try {
+        const data = await AuthAPI.login({ username, password });
+
+        setAuthToken(data.token);
+
+        const user: User = {
+          id: data.user.id,
+          username: data.user.username,
+          createdAt: new Date().toISOString(),
+        };
+
+        const newState = {
+          user,
+          token: data.token,
+          sessionId: data.sessionId,
+          isAuthenticated: true,
+          isLoading: false,
+        };
+
+        set(newState);
+        saveToStorage(newState);
+
+        authChannel.postMessage({
+          type: "LOGIN",
+          tabId: getTabId(),
+        });
+
+        return { success: true };
+      } catch (error) {
+        set({ isLoading: false });
+        let errorMessage = i18n.t("auth.login.failed");
+        if (isAxiosError(error) && error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      }
+    },
+
+    register: async (username: string, password: string, email: string) => {
+      set({ isLoading: true });
+      try {
+        await AuthAPI.register({ username, password, email });
+
+        set({ isLoading: false });
+        return { success: true };
+      } catch (error) {
+        set({ isLoading: false });
+        let errorMessage = i18n.t("auth.register.failed");
+        if (isAxiosError(error) && error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      }
+    },
+
+    logout: async () => {
+      set({ isLoading: true });
+      try {
+        await AuthAPI.logout();
+        get().reset();
+
+        authChannel.postMessage({
+          type: "LOGOUT",
+          tabId: getTabId(),
+        });
+
+        return { success: true };
+      } catch (error) {
+        get().reset();
+        console.error("Logout API call failed:", error);
+
+        let errorMessage = i18n.t("header.logoutFailed");
+        if (isAxiosError(error)) {
+          errorMessage =
+            error.response?.data?.message ||
+            `${i18n.t("header.logoutFailed")}: ${error.response?.status || "Unknown error"}`;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      }
+    },
+
+    loginWithProvider: async (provider) => {
+      set({ isLoading: true });
+      await delay(500);
+      set({ isLoading: false });
+
+      console.log(`Third-party login with ${provider} - not implemented yet`);
+      return { success: false, error: i18n.t("auth.social.comingSoon") };
+    },
+  };
+});

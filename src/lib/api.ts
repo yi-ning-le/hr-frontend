@@ -72,9 +72,14 @@ api.interceptors.response.use(
 export const AuthAPI = {
   login: async (
     data: unknown,
-  ): Promise<{ token: string; user: { id: string; username: string } }> => {
+  ): Promise<{
+    token: string;
+    sessionId: string;
+    user: { id: string; username: string };
+  }> => {
     const response = await api.post<{
       token: string;
+      sessionId: string;
       user: { id: string; username: string };
     }>("/auth/login", data);
     return response.data;
@@ -93,6 +98,37 @@ export const AuthAPI = {
 
   logout: async (): Promise<void> => {
     await api.post("/auth/logout");
+  },
+
+  getSessions: async (): Promise<{
+    sessions: Array<{
+      id: string;
+      userId: string;
+      deviceInfo: object;
+      ipAddress: string;
+      userAgent: string;
+      createdAt: string;
+      expiresAt: string;
+      isActive: boolean;
+    }>;
+  }> => {
+    const response = await api.get<{
+      sessions: Array<{
+        id: string;
+        userId: string;
+        deviceInfo: object;
+        ipAddress: string;
+        userAgent: string;
+        createdAt: string;
+        expiresAt: string;
+        isActive: boolean;
+      }>;
+    }>("/auth/sessions");
+    return response.data;
+  },
+
+  deleteSession: async (sessionId: string): Promise<void> => {
+    await api.delete(`/auth/sessions/${sessionId}`);
   },
 };
 

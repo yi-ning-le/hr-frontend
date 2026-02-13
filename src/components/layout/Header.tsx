@@ -88,14 +88,16 @@ export function Header() {
             <HeaderLink to="/employees">
               {t("nav.employees", "Employees")}
             </HeaderLink>
-            {user &&
-              (roles?.isInterviewer ||
-                roles?.isRecruiter ||
-                roles?.isAdmin) && (
+            {user && roles?.isInterviewer && (
+              <>
                 <HeaderLink to="/pending-resumes">
                   {t("nav.pendingResumes", "Pending Resumes")}
                 </HeaderLink>
-              )}
+                <HeaderLink to="/my-interviews">
+                  {t("nav.myInterviews", "My Interviews")}
+                </HeaderLink>
+              </>
+            )}
           </nav>
         </div>
 

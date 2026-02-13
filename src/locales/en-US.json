@@ -51,7 +51,8 @@
     "overview": "Overview",
     "recruitment": "Recruitment",
     "employees": "Employees",
-    "pendingResumes": "Pending Resumes"
+    "pendingResumes": "Pending Resumes",
+    "myInterviews": "My Interviews"
   },
   "header": {
     "profile": "Profile",
@@ -472,6 +473,14 @@
       "myInterviews": "My Interviews",
       "noInterviews": "No Interviews Scheduled",
       "noInterviewsDesc": "You don't have any upcoming interviews at the moment.",
+      "tabs": {
+        "upcoming": "Upcoming",
+        "history": "History"
+      },
+      "noUpcomingInterviews": "No Upcoming Interviews",
+      "noUpcomingInterviewsDesc": "You have no interviews scheduled for the future.",
+      "noHistoryInterviews": "No Past Interviews",
+      "noHistoryInterviewsDesc": "You haven't completed any interviews yet.",
       "viewDetails": "View Details",
       "validation": {
         "interviewerRequired": "Interviewer is required",

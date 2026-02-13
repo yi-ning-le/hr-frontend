@@ -51,7 +51,8 @@
     "overview": "概览",
     "recruitment": "招聘管理",
     "employees": "员工档案",
-    "pendingResumes": "待处理简历"
+    "pendingResumes": "待处理简历",
+    "myInterviews": "我的面试"
   },
   "header": {
     "profile": "个人资料",
@@ -472,6 +473,14 @@
       "myInterviews": "我的面试",
       "noInterviews": "暂无面试安排",
       "noInterviewsDesc": "您目前没有即将进行的面试。",
+      "tabs": {
+        "upcoming": "待开始",
+        "history": "历史记录"
+      },
+      "noUpcomingInterviews": "暂无待开始面试",
+      "noUpcomingInterviewsDesc": "您目前没有计划中的面试。",
+      "noHistoryInterviews": "暂无历史面试",
+      "noHistoryInterviewsDesc": "您还没有完成过任何面试。",
       "viewDetails": "查看详情",
       "validation": {
         "interviewerRequired": "请选择面试官",

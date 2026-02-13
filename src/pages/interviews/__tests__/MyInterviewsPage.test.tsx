@@ -74,7 +74,7 @@ describe("MyInterviewsPage", () => {
       screen.getByText("recruitment.interviews.myInterviews"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("recruitment.interviews.noInterviews"),
+      screen.getByText("recruitment.interviews.noUpcomingInterviews"),
     ).toBeInTheDocument();
   });
 
