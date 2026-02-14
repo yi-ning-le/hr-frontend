@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AuthAPI, setAuthToken } from "@/lib/api";
+import { AuthAPI, setAuthToken, setSessionId } from "@/lib/api";
 import { useAuthStore } from "../useAuthStore";
 
 // Mock API
@@ -10,6 +10,9 @@ vi.mock("@/lib/api", () => ({
     logout: vi.fn(),
   },
   setAuthToken: vi.fn(),
+  setSessionId: vi.fn(),
+  setUnauthorizedCallback: vi.fn(),
+  onAuthChange: vi.fn(),
 }));
 
 describe("useAuthStore", () => {
@@ -18,11 +21,12 @@ describe("useAuthStore", () => {
     useAuthStore.setState({
       user: null,
       token: null,
+      sessionId: null,
       isAuthenticated: false,
       isLoading: false,
     });
-    // Clear localStorage
-    localStorage.clear();
+    // Clear sessionStorage
+    sessionStorage.clear();
     // Clear mocks
     vi.clearAllMocks();
   });
@@ -60,6 +64,7 @@ describe("useAuthStore", () => {
         }),
       );
       expect(setAuthToken).toHaveBeenCalledWith("fake-token");
+      expect(setSessionId).toHaveBeenCalledWith("test-session-id");
     });
 
     it("should handle login failure", async () => {
@@ -74,7 +79,9 @@ describe("useAuthStore", () => {
       expect(result.error).toBe(errorMessage);
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
       expect(useAuthStore.getState().token).toBeNull();
+      expect(useAuthStore.getState().sessionId).toBeNull();
       expect(setAuthToken).not.toHaveBeenCalled();
+      expect(setSessionId).not.toHaveBeenCalled();
     });
   });
 
@@ -84,6 +91,7 @@ describe("useAuthStore", () => {
       useAuthStore.setState({
         user: { id: "1", username: "test", createdAt: "" },
         token: "token",
+        sessionId: "session-id",
         isAuthenticated: true,
         isLoading: true,
       });
@@ -92,9 +100,11 @@ describe("useAuthStore", () => {
 
       expect(useAuthStore.getState().user).toBeNull();
       expect(useAuthStore.getState().token).toBeNull();
+      expect(useAuthStore.getState().sessionId).toBeNull();
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
       expect(useAuthStore.getState().isLoading).toBe(false);
       expect(setAuthToken).toHaveBeenCalledWith(null);
+      expect(setSessionId).toHaveBeenCalledWith(null);
     });
   });
 
@@ -104,6 +114,7 @@ describe("useAuthStore", () => {
       useAuthStore.setState({
         user: { id: "1", username: "test", createdAt: "" },
         token: "token",
+        sessionId: "session-id",
         isAuthenticated: true,
       });
 
@@ -115,7 +126,9 @@ describe("useAuthStore", () => {
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
       expect(useAuthStore.getState().user).toBeNull();
       expect(useAuthStore.getState().token).toBeNull();
+      expect(useAuthStore.getState().sessionId).toBeNull();
       expect(setAuthToken).toHaveBeenCalledWith(null);
+      expect(setSessionId).toHaveBeenCalledWith(null);
     });
 
     it("should clear local state even when API call fails", async () => {
@@ -123,6 +136,7 @@ describe("useAuthStore", () => {
       useAuthStore.setState({
         user: { id: "1", username: "test", createdAt: "" },
         token: "token",
+        sessionId: "session-id",
         isAuthenticated: true,
       });
 
@@ -136,7 +150,9 @@ describe("useAuthStore", () => {
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
       expect(useAuthStore.getState().user).toBeNull();
       expect(useAuthStore.getState().token).toBeNull();
+      expect(useAuthStore.getState().sessionId).toBeNull();
       expect(setAuthToken).toHaveBeenCalledWith(null);
+      expect(setSessionId).toHaveBeenCalledWith(null);
     });
   });
 

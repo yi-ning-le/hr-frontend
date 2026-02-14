@@ -1,3 +1,4 @@
+import type { InternalAxiosRequestConfig } from "axios";
 import axios from "axios";
 import { z } from "zod";
 import type {
@@ -12,7 +13,7 @@ import type { JobPosition } from "@/types/job";
 import type { CreateInterviewInput, Interview } from "@/types/recruitment.d";
 
 // Create Axios instance with default config
-const api = axios.create({
+export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   timeout: 10000,
   headers: {
@@ -20,13 +21,51 @@ const api = axios.create({
   },
 });
 
-// Token management
-let authToken: string | null = null;
+// Token and Session storage keys
+const AUTH_TOKEN_KEY = "hr_auth_token";
+const SESSION_ID_KEY = "hr_session_id";
+
+// Subscription mechanism for in-memory state synchronization
+type AuthChangeSubscriber = (auth: {
+  token: string | null;
+  sessionId: string | null;
+}) => void;
+let authChangeSubscriber: AuthChangeSubscriber | null = null;
+
+export const onAuthChange = (subscriber: AuthChangeSubscriber) => {
+  authChangeSubscriber = subscriber;
+};
+
+// Helper functions for storage
+const getStoredToken = () => sessionStorage.getItem(AUTH_TOKEN_KEY);
+const getStoredSessionId = () => sessionStorage.getItem(SESSION_ID_KEY);
+
+const setStoredAuth = (token: string | null, sessionId: string | null) => {
+  if (token) sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+  else sessionStorage.removeItem(AUTH_TOKEN_KEY);
+
+  if (sessionId) sessionStorage.setItem(SESSION_ID_KEY, sessionId);
+  else sessionStorage.removeItem(SESSION_ID_KEY);
+
+  // Notify subscribers (like useAuthStore) to update in-memory state
+  if (authChangeSubscriber) {
+    authChangeSubscriber({ token, sessionId });
+  }
+};
+
 let unauthorizedCallback: () => void = () => {};
 
 export const setAuthToken = (token: string | null) => {
-  authToken = token;
+  if (token) sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+  else sessionStorage.removeItem(AUTH_TOKEN_KEY);
 };
+
+export const setSessionId = (sid: string | null) => {
+  if (sid) sessionStorage.setItem(SESSION_ID_KEY, sid);
+  else sessionStorage.removeItem(SESSION_ID_KEY);
+};
+
+export const getSessionId = () => getStoredSessionId();
 
 export const setUnauthorizedCallback = (callback: () => void) => {
   unauthorizedCallback = callback;
@@ -36,36 +75,96 @@ export const setUnauthorizedCallback = (callback: () => void) => {
 api.interceptors.request.use(
   (config) => {
     // Exclude public auth endpoints from token attachment
-    if (
+    const isPublic =
       config.url?.includes("/auth/login") ||
-      config.url?.includes("/auth/register")
-    ) {
-      return config;
-    }
+      config.url?.includes("/auth/register") ||
+      config.url?.includes("/auth/refresh-token");
 
-    if (authToken) {
-      config.headers.Authorization = `Bearer ${authToken}`;
+    if (isPublic) return config;
+
+    const token = getStoredToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
-// Response interceptor to handle dates or errors if needed
+// Concurrency management for token refresh
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: unknown) => void;
+}> = [];
+
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else if (token) prom.resolve(token);
+  });
+  failedQueue = [];
+};
+
+// Response interceptor
 api.interceptors.response.use(
-  (response) => {
-    // Optionally transform date strings to Date objects here if needed globally
-    // For now, we'll handle it in specific API methods or rely on string dates until mapped
-    return response;
-  },
-  (error) => {
-    // Handle 401 Unauthorized globally
-    if (error.response?.status === 401) {
-      unauthorizedCallback();
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config as
+      | (InternalAxiosRequestConfig & { _retry?: boolean })
+      | undefined;
+
+    const status = error.response?.status;
+    const isRefreshUrl = originalRequest?.url?.includes("/auth/refresh-token");
+    const sessionId = getStoredSessionId();
+
+    // Early return: not a 401, or already retried, or no session, or it's the refresh request itself failing
+    if (
+      status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry ||
+      isRefreshUrl ||
+      !sessionId
+    ) {
+      if (status === 401) unauthorizedCallback();
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+
+    // Handle concurrent refresh requests
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      }).then((token) => {
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return api(originalRequest);
+      });
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      const response = await AuthAPI.refreshToken(sessionId);
+      const { token, sessionId: newSessionId } = response;
+
+      setStoredAuth(token, newSessionId);
+      processQueue(null, token);
+
+      originalRequest.headers.Authorization = `Bearer ${token}`;
+      return api(originalRequest);
+    } catch (refreshError) {
+      processQueue(refreshError, null);
+      const refreshStatus = (refreshError as { response?: { status?: number } })
+        ?.response?.status;
+
+      if (refreshStatus === 401 || refreshStatus === 403) {
+        setStoredAuth(null, null);
+        unauthorizedCallback();
+      }
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
   },
 );
 
@@ -82,6 +181,21 @@ export const AuthAPI = {
       sessionId: string;
       user: { id: string; username: string };
     }>("/auth/login", data);
+    return response.data;
+  },
+
+  refreshToken: async (
+    sessionId: string,
+  ): Promise<{
+    token: string;
+    sessionId: string;
+    user: { id: string; username: string };
+  }> => {
+    const response = await api.post<{
+      token: string;
+      sessionId: string;
+      user: { id: string; username: string };
+    }>("/auth/refresh-token", { sessionId });
     return response.data;
   },
 

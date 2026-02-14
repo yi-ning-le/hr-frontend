@@ -1,6 +1,12 @@
 import { isAxiosError } from "axios";
 import { create } from "zustand";
-import { AuthAPI, setAuthToken } from "@/lib/api";
+import {
+  AuthAPI,
+  onAuthChange,
+  setAuthToken,
+  setSessionId,
+  setUnauthorizedCallback,
+} from "@/lib/api";
 import i18n from "@/lib/i18n";
 import { queryClient } from "@/lib/queryClient";
 
@@ -39,30 +45,27 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 
-const getTabId = (): string => {
-  let tabId = sessionStorage.getItem("tabId");
-  if (!tabId) {
-    tabId = crypto.randomUUID();
-    sessionStorage.setItem("tabId", tabId);
-  }
-  return tabId;
-};
-
-const getStorageKey = (): string => {
-  return `auth-tab-${getTabId()}`;
-};
+const STORAGE_KEY = "hr_auth_state";
 
 const loadFromStorage = (): Partial<AuthState> => {
   try {
-    const stored = sessionStorage.getItem(getStorageKey());
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    // Prioritize individual keys which are updated by the API interceptor
+    const token = sessionStorage.getItem("hr_auth_token");
+    const sessionId = sessionStorage.getItem("hr_session_id");
+
     if (stored) {
       const parsed = JSON.parse(stored);
       return {
         user: parsed.user,
-        token: parsed.token,
-        sessionId: parsed.sessionId,
-        isAuthenticated: parsed.isAuthenticated,
+        token: token || parsed.token,
+        sessionId: sessionId || parsed.sessionId,
+        isAuthenticated: !!(token || parsed.token),
       };
+    }
+
+    if (token) {
+      return { token, sessionId, isAuthenticated: true };
     }
   } catch {
     // Ignore parse errors
@@ -73,7 +76,7 @@ const loadFromStorage = (): Partial<AuthState> => {
 const saveToStorage = (state: Partial<AuthState>): void => {
   try {
     sessionStorage.setItem(
-      getStorageKey(),
+      STORAGE_KEY,
       JSON.stringify({
         user: state.user,
         token: state.token,
@@ -86,49 +89,28 @@ const saveToStorage = (state: Partial<AuthState>): void => {
   }
 };
 
-const authChannel = new BroadcastChannel("auth-sync");
-
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const useAuthStore = create<AuthStore>()((set, get) => {
   const initialState = loadFromStorage();
 
-  if (initialState.token) {
-    setAuthToken(initialState.token);
-  }
+  // Register callback so api.ts can trigger a UI-level logout
+  setUnauthorizedCallback(() => get().reset());
 
-  authChannel.onmessage = (event) => {
-    const { type, tabId: senderTabId } = event.data;
-    const currentTabId = getTabId();
-
-    if (senderTabId === currentTabId) {
-      return;
-    }
-
-    if (type === "LOGIN") {
-      const stored = loadFromStorage();
-      if (stored.token && stored.token !== initialState.token) {
-        setAuthToken(stored.token);
-        set({
-          user: stored.user || null,
-          token: stored.token,
-          sessionId: stored.sessionId || null,
-          isAuthenticated: stored.isAuthenticated || false,
-        });
-      }
-    } else if (type === "LOGOUT") {
-      queryClient.clear();
-      setAuthToken(null);
-      sessionStorage.removeItem(getStorageKey());
-      set({
-        user: null,
-        token: null,
-        sessionId: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-    }
-  };
+  // Subscribe to auth changes (e.g., from token refresh in api.ts)
+  // to keep in-memory state synchronized and prevent "split-brain" issues.
+  onAuthChange(({ token, sessionId }) => {
+    const currentState = get();
+    set({
+      ...currentState,
+      token,
+      sessionId,
+      isAuthenticated: !!token,
+    });
+    // saveToStorage is handled naturally if any other action calls set(),
+    // but here we force it to ensure consistency.
+    saveToStorage(get());
+  });
 
   return {
     user: initialState.user || null,
@@ -140,7 +122,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => {
     reset: () => {
       queryClient.clear();
       setAuthToken(null);
-      sessionStorage.removeItem(getStorageKey());
+      setSessionId(null);
+      sessionStorage.removeItem(STORAGE_KEY);
       set({
         user: null,
         token: null,
@@ -156,6 +139,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => {
         const data = await AuthAPI.login({ username, password });
 
         setAuthToken(data.token);
+        setSessionId(data.sessionId);
 
         const user: User = {
           id: data.user.id,
@@ -174,10 +158,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => {
         set(newState);
         saveToStorage(newState);
 
-        authChannel.postMessage({
-          type: "LOGIN",
-          tabId: getTabId(),
-        });
+        // No LOGIN broadcast to maintain tab isolation
 
         return { success: true };
       } catch (error) {
@@ -219,18 +200,12 @@ export const useAuthStore = create<AuthStore>()((set, get) => {
 
     logout: async () => {
       set({ isLoading: true });
+
       try {
         await AuthAPI.logout();
         get().reset();
-
-        authChannel.postMessage({
-          type: "LOGOUT",
-          tabId: getTabId(),
-        });
-
         return { success: true };
       } catch (error) {
-        get().reset();
         console.error("Logout API call failed:", error);
 
         let errorMessage = i18n.t("header.logoutFailed");
@@ -242,6 +217,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => {
           errorMessage = error.message;
         }
 
+        get().reset();
         return {
           success: false,
           error: errorMessage,

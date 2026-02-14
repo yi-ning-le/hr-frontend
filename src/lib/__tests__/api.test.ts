@@ -6,12 +6,14 @@ import {
   JobsAPI,
   RecruitmentAPI,
   setAuthToken,
+  setSessionId,
   setUnauthorizedCallback,
 } from "../api";
 
 // Mock axios
 vi.mock("axios", () => {
-  const mockAxiosInstance = {
+  const mockAxiosInstance = vi.fn();
+  Object.assign(mockAxiosInstance, {
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
@@ -21,7 +23,7 @@ vi.mock("axios", () => {
       request: { use: vi.fn() },
       response: { use: vi.fn() },
     },
-  };
+  });
   return {
     default: {
       create: vi.fn(() => mockAxiosInstance),
@@ -30,13 +32,20 @@ vi.mock("axios", () => {
 });
 
 // Get the mocked axios instance
-const mockAxios = axios.create() as unknown as {
+const mockAxios = axios.create() as unknown as ReturnType<typeof vi.fn> & {
   get: ReturnType<typeof vi.fn>;
   post: ReturnType<typeof vi.fn>;
   put: ReturnType<typeof vi.fn>;
   patch: ReturnType<typeof vi.fn>;
   delete: ReturnType<typeof vi.fn>;
+  interceptors: {
+    request: { use: ReturnType<typeof vi.fn> };
+    response: { use: ReturnType<typeof vi.fn> };
+  };
 };
+
+const responseErrorHandler = mockAxios.interceptors.response.use.mock
+  .calls[0]?.[1] as ((error: unknown) => Promise<unknown>) | undefined;
 
 describe("lib/api", () => {
   beforeEach(() => {
@@ -61,6 +70,120 @@ describe("lib/api", () => {
 
     it("should accept an empty function", () => {
       expect(() => setUnauthorizedCallback(() => {})).not.toThrow();
+    });
+  });
+
+  describe("response interceptor", () => {
+    it("should not logout on non-401 errors", async () => {
+      const callback = vi.fn();
+      setUnauthorizedCallback(callback);
+      setSessionId("session-1");
+
+      expect(responseErrorHandler).toBeTypeOf("function");
+      const error = {
+        response: { status: 500 },
+        config: { url: "/jobs", headers: {} },
+      };
+
+      await expect(responseErrorHandler!(error)).rejects.toBe(error);
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it("should not retry refresh endpoint on 401", async () => {
+      const callback = vi.fn();
+      setUnauthorizedCallback(callback);
+      setSessionId("session-1");
+
+      expect(responseErrorHandler).toBeTypeOf("function");
+      const error = {
+        response: { status: 401 },
+        config: { url: "/auth/refresh-token", headers: {} },
+      };
+
+      await expect(responseErrorHandler!(error)).rejects.toBe(error);
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not logout when refresh fails with transient error", async () => {
+      const callback = vi.fn();
+      setUnauthorizedCallback(callback);
+      setSessionId("session-1");
+
+      const refreshError = {
+        response: { status: 500 },
+        config: { url: "/auth/refresh-token", headers: {} },
+      };
+      mockAxios.post.mockRejectedValueOnce(refreshError);
+
+      const original401 = {
+        response: { status: 401 },
+        config: { url: "/jobs", headers: {} },
+      };
+
+      await expect(responseErrorHandler!(original401)).rejects.toBe(
+        refreshError,
+      );
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it("should logout when refresh fails with terminal auth error", async () => {
+      const callback = vi.fn();
+      setUnauthorizedCallback(callback);
+      setSessionId("session-1");
+
+      const refreshError = {
+        response: { status: 403 },
+        config: { url: "/auth/refresh-token", headers: {} },
+      };
+      mockAxios.post.mockRejectedValueOnce(refreshError);
+
+      const original401 = {
+        response: { status: 401 },
+        config: { url: "/jobs", headers: {} },
+      };
+
+      await expect(responseErrorHandler!(original401)).rejects.toBe(
+        refreshError,
+      );
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it("should refresh only once for concurrent 401 requests", async () => {
+      const callback = vi.fn();
+      setUnauthorizedCallback(callback);
+      setSessionId("session-1");
+      setAuthToken("old-token");
+
+      mockAxios.post.mockResolvedValueOnce({
+        data: {
+          token: "new-token",
+          sessionId: "session-1",
+          user: { id: "1", username: "testuser" },
+        },
+      });
+      mockAxios.mockResolvedValue({ data: { ok: true } });
+
+      const first401 = {
+        response: { status: 401 },
+        config: { url: "/jobs", headers: {} },
+      };
+      const second401 = {
+        response: { status: 401 },
+        config: { url: "/candidates", headers: {} },
+      };
+
+      const [firstResult, secondResult] = await Promise.all([
+        responseErrorHandler!(first401),
+        responseErrorHandler!(second401),
+      ]);
+
+      expect(firstResult).toEqual({ data: { ok: true } });
+      expect(secondResult).toEqual({ data: { ok: true } });
+      expect(mockAxios.post).toHaveBeenCalledTimes(1);
+      expect(mockAxios.post).toHaveBeenCalledWith("/auth/refresh-token", {
+        sessionId: "session-1",
+      });
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 

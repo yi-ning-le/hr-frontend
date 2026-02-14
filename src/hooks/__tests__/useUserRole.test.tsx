@@ -17,6 +17,15 @@ vi.mock("@/lib/api", () => ({
   },
 }));
 
+vi.mock("@/stores/useAuthStore", () => ({
+  useAuthStore: vi.fn(() => ({
+    user: null,
+    token: null,
+    sessionId: null,
+    isAuthenticated: false,
+  })),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
