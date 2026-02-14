@@ -467,6 +467,9 @@
       "noEventsInRange": "No interviews in this range"
     },
     "interviews": {
+      "title": "Interviews",
+      "editTitle": "Edit Interview",
+      "editDescription": "Update interview schedule and interviewer.",
       "assignTitle": "Assign Interviewer",
       "assignDescription": "Set up an interview for {{candidateName}}.",
       "assignSuccess": "Interview assigned successfully",

@@ -10,7 +10,11 @@ import type {
   CandidateStatusDefinition,
 } from "@/types/candidate"; // CandidateStatus is string, Definition is object
 import type { JobPosition } from "@/types/job";
-import type { CreateInterviewInput, Interview } from "@/types/recruitment.d";
+import type {
+  CreateInterviewInput,
+  Interview,
+  InterviewListResult,
+} from "@/types/recruitment.d";
 
 // Create Axios instance with default config
 export const api = axios.create({
@@ -615,8 +619,12 @@ export const RecruitmentAPI = {
 const interviewSchema = z.object({
   id: z.string().min(1),
   candidateId: z.string().min(1),
+  candidateName: z.string().optional(),
+  candidateResumeUrl: z.string().optional(),
   interviewerId: z.string().min(1),
+  interviewerName: z.string().optional(),
   jobId: z.string().min(1),
+  jobTitle: z.string().optional(),
   scheduledTime: z.string().min(1),
   scheduledEndTime: z.string().min(1),
   status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]),
@@ -630,6 +638,13 @@ const interviewSchema = z.object({
 });
 
 const interviewsSchema = z.array(interviewSchema);
+
+const interviewListResultSchema = z.object({
+  interviews: z.array(interviewSchema),
+  total: z.number(),
+  page: z.number(),
+  limit: z.number(),
+});
 
 const normalizeInterviewInput = (data: CreateInterviewInput) => ({
   ...data,
@@ -651,8 +666,42 @@ export const InterviewsAPI = {
     return interviewsSchema.parse(response.data);
   },
 
+  getAll: async (params?: {
+    page?: number;
+    pageSize?: number;
+    start?: string;
+    end?: string;
+    status?: string[];
+  }): Promise<InterviewListResult> => {
+    const queryParams: Record<string, string | number | undefined> = {
+      ...params,
+      status: params?.status ? params.status.join(",") : undefined,
+    };
+
+    const response = await api.get<unknown>("/recruitment/interviews", {
+      params: queryParams,
+    });
+    return interviewListResultSchema.parse(response.data);
+  },
+
   get: async (id: string): Promise<Interview> => {
     const response = await api.get<unknown>(`/recruitment/interviews/${id}`);
+    return interviewSchema.parse(response.data);
+  },
+
+  update: async (
+    id: string,
+    data: {
+      interviewerId: string;
+      scheduledTime: Date;
+      scheduledEndTime: Date;
+    },
+  ): Promise<Interview> => {
+    const response = await api.put<unknown>(`/recruitment/interviews/${id}`, {
+      ...data,
+      scheduledTime: data.scheduledTime.toISOString(),
+      scheduledEndTime: data.scheduledEndTime.toISOString(),
+    });
     return interviewSchema.parse(response.data);
   },
 

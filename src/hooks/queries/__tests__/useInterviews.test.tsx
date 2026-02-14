@@ -7,7 +7,10 @@ import { InterviewsAPI } from "@/lib/api";
 import {
   useCreateInterview,
   useInterview,
+  useInterviews,
   useMyInterviews,
+  useUpdateInterview,
+  useUpdateInterviewStatus,
 } from "../useInterviews";
 
 // Mock the API
@@ -16,6 +19,9 @@ vi.mock("@/lib/api", () => ({
     create: vi.fn(),
     getMyInterviews: vi.fn(),
     get: vi.fn(),
+    updateStatus: vi.fn(),
+    getAll: vi.fn(),
+    update: vi.fn(),
   },
 }));
 
@@ -47,47 +53,118 @@ describe("useInterviews Hooks", () => {
     queryClient.clear();
   });
 
-  it("useMyInterviews calls InterviewsAPI.getMyInterviews", async () => {
-    const mockInterviews = [{ id: "1", candidateName: "John Doe" }];
-    (InterviewsAPI.getMyInterviews as any).mockResolvedValue(mockInterviews);
+  describe("useMyInterviews", () => {
+    it("calls InterviewsAPI.getMyInterviews", async () => {
+      const mockInterviews = [{ id: "1", candidateName: "John Doe" }];
+      (InterviewsAPI.getMyInterviews as any).mockResolvedValue(mockInterviews);
 
-    const { result } = renderHook(() => useMyInterviews(), { wrapper });
+      const { result } = renderHook(() => useMyInterviews(), { wrapper });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(InterviewsAPI.getMyInterviews).toHaveBeenCalled();
-    expect(result.current.data).toEqual(mockInterviews);
+      expect(InterviewsAPI.getMyInterviews).toHaveBeenCalled();
+      expect(result.current.data).toEqual(mockInterviews);
+    });
   });
 
-  it("useInterview calls InterviewsAPI.get", async () => {
-    const mockInterview = { id: "1", candidateName: "John Doe" };
-    (InterviewsAPI.get as any).mockResolvedValue(mockInterview);
+  describe("useInterview", () => {
+    it("calls InterviewsAPI.get", async () => {
+      const mockInterview = { id: "1", candidateName: "John Doe" };
+      (InterviewsAPI.get as any).mockResolvedValue(mockInterview);
 
-    const { result } = renderHook(() => useInterview("1"), { wrapper });
+      const { result } = renderHook(() => useInterview("1"), { wrapper });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(InterviewsAPI.get).toHaveBeenCalledWith("1");
-    expect(result.current.data).toEqual(mockInterview);
-  });
-
-  it("useCreateInterview calls InterviewsAPI.create", async () => {
-    const newInterview = {
-      candidateId: "c1",
-      jobId: "j1",
-      scheduledTime: "2023-01-01",
-    };
-    (InterviewsAPI.create as any).mockResolvedValue({
-      id: "1",
-      ...newInterview,
+      expect(InterviewsAPI.get).toHaveBeenCalledWith("1");
+      expect(result.current.data).toEqual(mockInterview);
     });
 
-    const { result } = renderHook(() => useCreateInterview(), { wrapper });
+    it("does not call API if id is falsy", () => {
+      renderHook(() => useInterview(""), { wrapper });
+      expect(InterviewsAPI.get).not.toHaveBeenCalled();
+    });
+  });
 
-    result.current.mutate(newInterview as any);
+  describe("useCreateInterview", () => {
+    it("calls InterviewsAPI.create and invalidates queries", async () => {
+      const newInterview = {
+        candidateId: "c1",
+        jobId: "j1",
+        scheduledTime: "2023-01-01",
+      };
+      (InterviewsAPI.create as any).mockResolvedValue({
+        id: "1",
+        ...newInterview,
+      });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      const { result } = renderHook(() => useCreateInterview(), { wrapper });
 
-    expect(InterviewsAPI.create).toHaveBeenCalledWith(newInterview);
+      result.current.mutate(newInterview as any);
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(InterviewsAPI.create).toHaveBeenCalledWith(newInterview);
+    });
+  });
+
+  describe("useUpdateInterviewStatus", () => {
+    it("calls InterviewsAPI.updateStatus and invalidates queries", async () => {
+      const updateData = { id: "1", status: "COMPLETED" as const };
+      (InterviewsAPI.updateStatus as any).mockResolvedValue({});
+
+      const { result } = renderHook(() => useUpdateInterviewStatus(), {
+        wrapper,
+      });
+
+      result.current.mutate(updateData);
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(InterviewsAPI.updateStatus).toHaveBeenCalledWith(
+        updateData.id,
+        updateData.status,
+      );
+    });
+  });
+
+  describe("useInterviews (list)", () => {
+    it("calls InterviewsAPI.getAll with params", async () => {
+      const mockData = { interviews: [], total: 0 };
+      const params = { page: 1, pageSize: 10 };
+      (InterviewsAPI.getAll as any).mockResolvedValue(mockData);
+
+      const { result } = renderHook(() => useInterviews(params), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockData);
+      expect(InterviewsAPI.getAll).toHaveBeenCalledWith(params);
+    });
+  });
+
+  describe("useUpdateInterview", () => {
+    it("calls InterviewsAPI.update and invalidates queries", async () => {
+      const updateData = {
+        id: "1",
+        data: {
+          interviewerId: "i2",
+          scheduledTime: new Date("2023-01-02"),
+          scheduledEndTime: new Date("2023-01-02"),
+        },
+      };
+      (InterviewsAPI.update as any).mockResolvedValue({});
+
+      const { result } = renderHook(() => useUpdateInterview(), { wrapper });
+
+      result.current.mutate(updateData);
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(InterviewsAPI.update).toHaveBeenCalledWith(
+        updateData.id,
+        updateData.data,
+      );
+    });
   });
 });

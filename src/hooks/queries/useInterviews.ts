@@ -61,3 +61,45 @@ export function useUpdateInterviewStatus() {
     },
   });
 }
+
+export function useInterviews(params?: {
+  page?: number;
+  pageSize?: number;
+  start?: string;
+  end?: string;
+  status?: string[];
+}) {
+  const sessionScope = useInterviewSessionScope();
+
+  return useQuery({
+    queryKey: ["interviews", sessionScope, "all", params],
+    queryFn: () => InterviewsAPI.getAll(params),
+  });
+}
+
+export function useUpdateInterview() {
+  const queryClient = useQueryClient();
+  const sessionScope = useInterviewSessionScope();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: {
+        interviewerId: string;
+        scheduledTime: Date;
+        scheduledEndTime: Date;
+      };
+    }) => InterviewsAPI.update(id, data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", sessionScope],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", sessionScope, variables.id],
+      });
+    },
+  });
+}

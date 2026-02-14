@@ -467,6 +467,9 @@
       "noEventsInRange": "该时间段无面试"
     },
     "interviews": {
+      "title": "面试管理",
+      "editTitle": "编辑面试",
+      "editDescription": "更新面试时间安排和面试官。",
       "assignTitle": "安排面试",
       "assignDescription": "为 {{candidateName}} 设定面试安排。",
       "assignSuccess": "面试安排成功",
