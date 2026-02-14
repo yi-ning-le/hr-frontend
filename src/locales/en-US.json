@@ -33,6 +33,8 @@
     "assign": "Assign",
     "view": "View",
     "pickDate": "Pick a date",
+    "startTime": "Select start time",
+    "endTime": "Select end time",
     "years": "years",
     "total": "Total",
     "refresh": "Refresh",

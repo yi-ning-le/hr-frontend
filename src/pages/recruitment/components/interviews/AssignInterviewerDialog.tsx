@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, startOfToday } from "date-fns";
+import { enUS, zhCN } from "date-fns/locale";
 import { CalendarIcon, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TimePicker } from "@/components/ui/time-picker";
 
 import { useEmployees } from "@/hooks/queries/useEmployees";
 import { useCreateInterview } from "@/hooks/queries/useInterviews";
@@ -60,7 +62,8 @@ export function AssignInterviewerDialog({
   open,
   onOpenChange,
 }: AssignInterviewerDialogProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const formSchema = z
     .object({
@@ -114,13 +117,6 @@ export function AssignInterviewerDialog({
   const { data: employeeData } = useEmployees({ limit: 100, status: "Active" }); // Simple fetch, maybe need search later
   const employees = employeeData?.employees || [];
 
-  // Generate time slots (every 30 minutes)
-  const timeSlots = Array.from({ length: 48 }, (_, i) => {
-    const hour = Math.floor(i / 2);
-    const minute = i % 2 === 0 ? "00" : "30";
-    return `${hour.toString().padStart(2, "0")}:${minute}`;
-  });
-
   const { mutateAsync: createInterview } = useCreateInterview();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -133,6 +129,11 @@ export function AssignInterviewerDialog({
   });
   const selectedDate = form.watch("date");
   const selectedStartTime = form.watch("startTime");
+
+  const isTodayOrNull =
+    !selectedDate ||
+    format(selectedDate, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
+  const currentTimeString = format(new Date(), "HH:mm");
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -215,7 +216,10 @@ export function AssignInterviewerDialog({
                   <FormLabel>
                     {t("recruitment.interviews.date", "Date")}
                   </FormLabel>
-                  <Popover>
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                  >
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -226,7 +230,9 @@ export function AssignInterviewerDialog({
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "PPP", {
+                              locale: i18n.language === "zh-CN" ? zhCN : enUS,
+                            })
                           ) : (
                             <span>{t("common.pickDate", "Pick a date")}</span>
                           )}
@@ -238,7 +244,10 @@ export function AssignInterviewerDialog({
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
+                        onSelect={(date) => {
+                          field.onChange(date);
+                          setIsCalendarOpen(false);
+                        }}
                         disabled={(date) =>
                           date < startOfToday() || date < new Date("1900-01-01")
                         }
@@ -260,39 +269,14 @@ export function AssignInterviewerDialog({
                     <FormLabel>
                       {t("recruitment.interviews.startTime", "Start Time")}
                     </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={t(
-                              "common.startTime",
-                              "Select start time",
-                            )}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="max-h-[200px]">
-                        {timeSlots.map((time) => {
-                          const isDisabled = selectedDate
-                            ? combineDateAndTime(selectedDate, time) <=
-                              new Date()
-                            : false;
-
-                          return (
-                            <SelectItem
-                              key={`start-${time}`}
-                              value={time}
-                              disabled={isDisabled}
-                            >
-                              {time}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <TimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        minTime={isTodayOrNull ? currentTimeString : undefined}
+                        placeholder={t("common.startTime", "Select start time")}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -306,44 +290,17 @@ export function AssignInterviewerDialog({
                     <FormLabel>
                       {t("recruitment.interviews.endTime", "End Time")}
                     </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("common.endTime", "Select end time")}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="max-h-[200px]">
-                        {timeSlots.map((time) => {
-                          const isInPast = selectedDate
-                            ? combineDateAndTime(selectedDate, time) <=
-                              new Date()
-                            : false;
-                          const isBeforeOrEqualStart =
-                            selectedDate && selectedStartTime
-                              ? combineDateAndTime(selectedDate, time) <=
-                                combineDateAndTime(
-                                  selectedDate,
-                                  selectedStartTime,
-                                )
-                              : false;
-
-                          return (
-                            <SelectItem
-                              key={`end-${time}`}
-                              value={time}
-                              disabled={isInPast || isBeforeOrEqualStart}
-                            >
-                              {time}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <TimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        minTime={
+                          selectedStartTime ||
+                          (isTodayOrNull ? currentTimeString : undefined)
+                        }
+                        placeholder={t("common.endTime", "Select end time")}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
