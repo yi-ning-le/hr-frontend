@@ -502,6 +502,10 @@
       "noHistoryInterviews": "No Past Interviews",
       "noHistoryInterviewsDesc": "You haven't completed any interviews yet.",
       "viewDetails": "View Details",
+      "complete": "Complete Interview",
+      "completeConfirmation": "This will mark the interview as completed.",
+      "cancel": "Cancel Interview",
+      "cancelConfirmation": "This will mark the interview as cancelled.",
       "validation": {
         "interviewerRequired": "Interviewer is required",
         "scheduledTimeRequired": "Scheduled time is required",

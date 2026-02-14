@@ -38,3 +38,26 @@ export function useInterview(id: string) {
     enabled: !!id,
   });
 }
+
+export function useUpdateInterviewStatus() {
+  const queryClient = useQueryClient();
+  const sessionScope = useInterviewSessionScope();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: "COMPLETED" | "CANCELLED";
+    }) => InterviewsAPI.updateStatus(id, status),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", sessionScope],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", sessionScope, variables.id],
+      });
+    },
+  });
+}

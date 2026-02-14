@@ -13,6 +13,18 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+// Mock useCandidateStatuses
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [],
+    statusMap: {},
+    isLoading: false,
+  }),
+  useResolveCandidateStatus: () => ({
+    resolveStatus: vi.fn(),
+  }),
+}));
+
 // Mock useNavigate
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),

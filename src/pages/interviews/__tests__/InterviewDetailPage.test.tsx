@@ -5,8 +5,24 @@ import * as useInterviews from "@/hooks/queries/useInterviews";
 import { InterviewDetailPage } from "../InterviewDetailPage";
 
 // Mock hooks
-vi.mock("@/hooks/queries/useInterviews");
+vi.mock("@/hooks/queries/useInterviews", () => ({
+  useInterview: vi.fn(),
+  useUpdateInterviewStatus: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+}));
 vi.mock("@/hooks/queries/useCandidates");
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [],
+    statusMap: {},
+    isLoading: false,
+  }),
+  useResolveCandidateStatus: () => ({
+    resolveStatus: vi.fn(),
+  }),
+}));
 vi.mock("@/components/candidates/ResumePreviewModal", () => ({
   ResumePreviewModal: () => null,
 }));

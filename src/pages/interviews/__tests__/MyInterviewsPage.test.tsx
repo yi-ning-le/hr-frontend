@@ -7,6 +7,16 @@ import { MyInterviewsPage } from "../MyInterviewsPage";
 // Mock the hooks
 vi.mock("@/hooks/queries/useInterviews");
 vi.mock("@/hooks/queries/useCandidates");
+vi.mock("@/hooks/useCandidateStatuses", () => ({
+  useCandidateStatuses: () => ({
+    statuses: [],
+    statusMap: {},
+    isLoading: false,
+  }),
+  useResolveCandidateStatus: () => ({
+    resolveStatus: vi.fn(),
+  }),
+}));
 vi.mock("@/components/candidates/ResumePreviewModal", () => ({
   ResumePreviewModal: () => null,
 }));

@@ -7,6 +7,10 @@ export interface Interview {
   scheduledEndTime: string; // ISO date string
   status: "PENDING" | "COMPLETED" | "CANCELLED";
   createdAt: string;
+  snapshotStatus?: {
+    key: string;
+    label: string;
+  };
 }
 
 export interface CreateInterviewInput {

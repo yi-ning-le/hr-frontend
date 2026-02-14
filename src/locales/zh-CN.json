@@ -502,6 +502,10 @@
       "noHistoryInterviews": "暂无历史面试",
       "noHistoryInterviewsDesc": "您还没有完成过任何面试。",
       "viewDetails": "查看详情",
+      "complete": "完成面试",
+      "completeConfirmation": "这将标记面试为已完成。",
+      "cancel": "取消面试",
+      "cancelConfirmation": "这将标记面试为已取消。",
       "validation": {
         "interviewerRequired": "请选择面试官",
         "scheduledTimeRequired": "请选择面试时间",

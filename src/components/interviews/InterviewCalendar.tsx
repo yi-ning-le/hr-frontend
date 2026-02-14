@@ -19,6 +19,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { useResolveCandidateStatus } from "@/hooks/useCandidateStatuses";
 import type { Candidate } from "@/types/candidate";
 import type { Interview } from "@/types/recruitment.d";
 
@@ -59,6 +60,7 @@ export function InterviewCalendar({
 }: InterviewCalendarProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { resolveStatus } = useResolveCandidateStatus();
   const [view, setView] = useState<View>(Views.MONTH);
   const [date, setDate] = useState(new Date());
 
@@ -123,6 +125,12 @@ export function InterviewCalendar({
   };
 
   const CustomEvent = ({ event }: { event: CalendarEvent }) => {
+    // Prefer snapshot status, fallback to current candidate status
+    const statusDef = resolveStatus(
+      event.resource.interview,
+      event.resource.candidate,
+    );
+
     return (
       <HoverCard>
         <HoverCardTrigger asChild>
@@ -140,17 +148,31 @@ export function InterviewCalendar({
                 <User className="h-4 w-4" />
                 {event.resource.candidate?.name || "Unknown"}
               </h4>
-              <Badge
-                variant={
-                  event.resource.interview.status === "PENDING"
-                    ? "default"
-                    : event.resource.interview.status === "COMPLETED"
-                      ? "secondary"
-                      : "destructive"
-                }
-              >
-                {event.resource.interview.status}
-              </Badge>
+              <div className="flex flex-col gap-1 items-end">
+                <Badge
+                  variant={
+                    event.resource.interview.status === "PENDING"
+                      ? "default"
+                      : event.resource.interview.status === "COMPLETED"
+                        ? "secondary"
+                        : "destructive"
+                  }
+                >
+                  {event.resource.interview.status}
+                </Badge>
+                {statusDef && (
+                  <Badge
+                    variant="outline"
+                    style={{
+                      borderColor: statusDef.color,
+                      color: statusDef.color,
+                    }}
+                    className="text-[10px] px-1.5 h-5"
+                  >
+                    {statusDef.name}
+                  </Badge>
+                )}
+              </div>
             </div>
 
             <div className="text-sm text-muted-foreground flex items-center gap-2">

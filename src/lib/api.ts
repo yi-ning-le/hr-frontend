@@ -621,6 +621,12 @@ const interviewSchema = z.object({
   scheduledEndTime: z.string().min(1),
   status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]),
   createdAt: z.string().min(1),
+  snapshotStatus: z
+    .object({
+      key: z.string(),
+      label: z.string(),
+    })
+    .optional(),
 });
 
 const interviewsSchema = z.array(interviewSchema);
@@ -647,6 +653,17 @@ export const InterviewsAPI = {
 
   get: async (id: string): Promise<Interview> => {
     const response = await api.get<unknown>(`/recruitment/interviews/${id}`);
+    return interviewSchema.parse(response.data);
+  },
+
+  updateStatus: async (
+    id: string,
+    status: "COMPLETED" | "CANCELLED",
+  ): Promise<Interview> => {
+    const response = await api.patch<unknown>(
+      `/recruitment/interviews/${id}/status`,
+      { status },
+    );
     return interviewSchema.parse(response.data);
   },
 };

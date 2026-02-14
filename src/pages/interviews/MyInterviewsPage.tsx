@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCandidates } from "@/hooks/queries/useCandidates";
 import { useMyInterviews } from "@/hooks/queries/useInterviews";
+import { useResolveCandidateStatus } from "@/hooks/useCandidateStatuses";
 import { Route } from "@/routes/_protected/my-interviews";
 import type { Candidate } from "@/types/candidate";
 import type { Interview } from "@/types/recruitment.d";
@@ -31,6 +32,7 @@ export function MyInterviewsPage() {
     useMyInterviews();
   const { data: candidateData, isLoading: isLoadingCandidates } =
     useCandidates();
+  const { resolveStatus } = useResolveCandidateStatus();
   const candidates = candidateData?.data || [];
   const candidatesById = useMemo(
     () => new Map(candidates.map((candidate) => [candidate.id, candidate])),
@@ -104,6 +106,8 @@ export function MyInterviewsPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {items.map((interview) => {
           const candidate = candidatesById.get(interview.candidateId);
+          // Prefer snapshot status, fallback to current candidate status
+          const statusDef = resolveStatus(interview, candidate);
           return (
             <Card
               key={interview.id}
@@ -121,10 +125,10 @@ export function MyInterviewsPage() {
                           )}
                       </span>
                     </CardTitle>
-                    <CardDescription className="flex items-center gap-1.5 truncate">
+                    <CardDescription className="flex items-center gap-1.5 flex-wrap">
                       <Briefcase className="h-3.5 w-3.5 shrink-0" />
                       <span
-                        className="truncate"
+                        className="truncate max-w-[150px]"
                         title={candidate?.appliedJobTitle}
                       >
                         {candidate?.appliedJobTitle ||
@@ -133,20 +137,20 @@ export function MyInterviewsPage() {
                             "Unknown Position",
                           )}
                       </span>
+                      {statusDef && (
+                        <Badge
+                          variant="outline"
+                          style={{
+                            borderColor: statusDef.color,
+                            color: statusDef.color,
+                          }}
+                          className="h-5 text-[10px] px-1.5 ml-1"
+                        >
+                          {statusDef.name}
+                        </Badge>
+                      )}
                     </CardDescription>
                   </div>
-                  {interview.status !== "PENDING" && (
-                    <Badge
-                      variant={
-                        interview.status === "COMPLETED"
-                          ? "secondary"
-                          : "destructive"
-                      }
-                      className="shrink-0"
-                    >
-                      {t(`recruitment.interviews.status.${interview.status}`)}
-                    </Badge>
-                  )}
                 </div>
               </CardHeader>
               <CardContent className="flex-1 pb-4">

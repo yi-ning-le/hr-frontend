@@ -13,19 +13,35 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CandidateCommentsSection } from "@/components/candidates/comments/CandidateCommentsSection";
 import { ResumePreviewModal } from "@/components/candidates/ResumePreviewModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCandidate } from "@/hooks/queries/useCandidates";
-import { useInterview } from "@/hooks/queries/useInterviews";
+import {
+  useInterview,
+  useUpdateInterviewStatus,
+} from "@/hooks/queries/useInterviews";
+import { useResolveCandidateStatus } from "@/hooks/useCandidateStatuses";
 
 export function InterviewDetailPage() {
   const { interviewId } = useParams({
@@ -37,8 +53,15 @@ export function InterviewDetailPage() {
   const candidateId = interview?.candidateId ?? "";
   const { data: candidate, isLoading: isLoadingCandidate } =
     useCandidate(candidateId);
+  const { resolveStatus } = useResolveCandidateStatus();
+
+  // Prefer snapshot status from interview, fallback to current candidate status
+  const statusDef = interview ? resolveStatus(interview, candidate) : null;
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const { mutate: updateStatus, isPending: isUpdating } =
+    useUpdateInterviewStatus();
 
   if (isLoadingInterview || (!!candidateId && isLoadingCandidate)) {
     return (
@@ -80,6 +103,75 @@ export function InterviewDetailPage() {
               {t(`recruitment.interviews.status.${interview.status}`)}
             </Badge>
           </h1>
+          {interview.status === "PENDING" && (
+            <div className="flex gap-2">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="default" disabled={isUpdating}>
+                    {t("recruitment.interviews.complete", "Complete Interview")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t("common.areYouSure", "Are you sure?")}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t(
+                        "recruitment.interviews.completeConfirmation",
+                        "This will mark the interview as completed.",
+                      )}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {t("common.cancel", "Cancel")}
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() =>
+                        updateStatus({ id: interviewId, status: "COMPLETED" })
+                      }
+                    >
+                      {t("common.confirm", "Confirm")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" disabled={isUpdating}>
+                    {t("recruitment.interviews.cancel", "Cancel Interview")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t("common.areYouSure", "Are you sure?")}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t(
+                        "recruitment.interviews.cancelConfirmation",
+                        "This will mark the interview as cancelled.",
+                      )}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {t("common.cancel", "Cancel")}
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() =>
+                        updateStatus({ id: interviewId, status: "CANCELLED" })
+                      }
+                    >
+                      {t("common.confirm", "Confirm")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
         </div>
       </div>
 
@@ -114,28 +206,25 @@ export function InterviewDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-1">
-                    {t("common.name")}
-                  </div>
-                  <div className="text-lg font-semibold">
-                    {candidate?.name || t("common.unknown")}
-                  </div>
+              <div>
+                <div className="text-sm font-medium text-muted-foreground mb-1">
+                  {t("common.name")}
                 </div>
-                {candidate?.resumeUrl && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsPreviewOpen(true)}
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    {t(
-                      "recruitment.candidates.detail.viewResume",
-                      "View Resume",
-                    )}
-                  </Button>
-                )}
+                <div className="text-lg font-semibold flex items-center gap-2">
+                  {candidate?.name || t("common.unknown")}
+                  {statusDef && (
+                    <Badge
+                      variant="outline"
+                      style={{
+                        borderColor: statusDef.color,
+                        color: statusDef.color,
+                      }}
+                      className="text-xs px-2 py-0.5"
+                    >
+                      {statusDef.name}
+                    </Badge>
+                  )}
+                </div>
               </div>
               <Separator />
               <div>
@@ -154,6 +243,18 @@ export function InterviewDetailPage() {
                 <div className="text-sm">{candidate?.phone}</div>
               </div>
             </CardContent>
+            {candidate?.resumeUrl && (
+              <CardFooter>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setIsPreviewOpen(true)}
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  {t("recruitment.candidates.detail.viewResume", "View Resume")}
+                </Button>
+              </CardFooter>
+            )}
           </Card>
 
           {/* Schedule Info Card */}
