@@ -222,12 +222,18 @@ describe("lib/api", () => {
           username: "newuser",
           email: "test@example.com",
           password: "password",
+          firstName: "New",
+          lastName: "User",
+          phone: "1234567890",
         });
 
         expect(mockAxios.post).toHaveBeenCalledWith("/auth/register", {
           username: "newuser",
           email: "test@example.com",
           password: "password",
+          firstName: "New",
+          lastName: "User",
+          phone: "1234567890",
         });
         expect(result).toEqual(mockResponse.data);
       });

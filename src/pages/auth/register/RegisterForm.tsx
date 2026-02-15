@@ -34,6 +34,9 @@ const createRegisterSchema = (t: (key: string) => string) =>
       confirmPassword: z
         .string()
         .min(1, t("auth.register.confirmPasswordRequired")),
+      firstName: z.string().min(1, t("auth.register.firstNameRequired")),
+      lastName: z.string().min(1, t("auth.register.lastNameRequired")),
+      phone: z.string().min(1, t("auth.register.phoneRequired")),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: t("auth.register.passwordMismatch"),
@@ -62,11 +65,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       email: "",
       password: "",
       confirmPassword: "",
+      firstName: "",
+      lastName: "",
+      phone: "",
     },
   });
 
   async function onSubmit(data: RegisterFormValues) {
-    const result = await register(data.username, data.password, data.email);
+    const result = await register(data);
 
     if (result.success) {
       toast.success(t("auth.register.success"), {
@@ -114,6 +120,64 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
                   type="email"
                   placeholder={t("auth.register.emailPlaceholder")}
                   autoComplete="email"
+                  disabled={isLoading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("auth.register.firstName")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("auth.register.firstNamePlaceholder")}
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("auth.register.lastName")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("auth.register.lastNamePlaceholder")}
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("auth.register.phone")}</FormLabel>
+              <FormControl>
+                <Input
+                  type="tel"
+                  placeholder={t("auth.register.phonePlaceholder")}
+                  autoComplete="tel"
                   disabled={isLoading}
                   {...field}
                 />

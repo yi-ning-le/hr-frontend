@@ -164,9 +164,14 @@ describe("useAuthStore", () => {
         email: "email@test.com",
       });
 
-      const result = await useAuthStore
-        .getState()
-        .register("newuser", "pass", "email@test.com");
+      const result = await useAuthStore.getState().register({
+        username: "newuser",
+        password: "pass",
+        email: "email@test.com",
+        firstName: "New",
+        lastName: "User",
+        phone: "1234567890",
+      });
 
       expect(result.success).toBe(true);
       expect(useAuthStore.getState().isLoading).toBe(false);

@@ -1,6 +1,7 @@
 import type { InternalAxiosRequestConfig } from "axios";
 import axios from "axios";
 import { z } from "zod";
+import type { RegisterInput } from "@/types/auth";
 import type {
   Candidate,
   CandidateComment,
@@ -204,7 +205,7 @@ export const AuthAPI = {
   },
 
   register: async (
-    data: unknown,
+    data: RegisterInput,
   ): Promise<{ id: string; username: string; email: string }> => {
     const response = await api.post<{
       id: string;

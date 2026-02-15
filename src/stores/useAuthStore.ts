@@ -9,6 +9,7 @@ import {
 } from "@/lib/api";
 import i18n from "@/lib/i18n";
 import { queryClient } from "@/lib/queryClient";
+import type { RegisterInput } from "@/types/auth";
 
 export interface User {
   id: string;
@@ -32,9 +33,7 @@ interface AuthActions {
     password: string,
   ) => Promise<{ success: boolean; error?: string }>;
   register: (
-    username: string,
-    password: string,
-    email: string,
+    input: RegisterInput,
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<{ success: boolean; error?: string }>;
   reset: () => void;
@@ -176,10 +175,10 @@ export const useAuthStore = create<AuthStore>()((set, get) => {
       }
     },
 
-    register: async (username: string, password: string, email: string) => {
+    register: async (input: RegisterInput) => {
       set({ isLoading: true });
       try {
-        await AuthAPI.register({ username, password, email });
+        await AuthAPI.register(input);
 
         set({ isLoading: false });
         return { success: true };
