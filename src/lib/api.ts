@@ -435,6 +435,7 @@ export interface EmployeeAPIResponse {
   joinDate: string;
   managerId?: string;
   userId?: string;
+  temporaryPassword?: string;
 }
 
 export interface EmployeeListAPIResponse {

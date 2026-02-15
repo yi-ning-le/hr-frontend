@@ -15,6 +15,7 @@ export interface Employee {
   joinDate: Date;
   managerId?: string;
   userId?: string;
+  temporaryPassword?: string;
 }
 
 export interface EmployeeInput {

@@ -5,6 +5,8 @@
     "loading": "加载中...",
     "save": "保存",
     "cancel": "取消",
+    "done": "完成",
+    "copied": "已复制到剪贴板",
     "confirm": "确认",
     "delete": "删除",
     "edit": "编辑",
@@ -574,6 +576,9 @@
     "noEmployees": "暂无员工",
     "noEmployeesDescription": "添加第一位团队成员开始管理。",
     "details": "详细信息",
+    "createSuccess": "员工创建成功",
+    "passwordNotice": "请复制下方的临时密码并分享给该员工。此密码将不会再次显示。",
+    "temporaryPassword": "临时密码",
     "columns": {
       "name": "姓名",
       "department": "部门",

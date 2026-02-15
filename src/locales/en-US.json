@@ -5,6 +5,8 @@
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
+    "done": "Done",
+    "copied": "Copied to clipboard",
     "confirm": "Confirm",
     "delete": "Delete",
     "edit": "Edit",
@@ -574,6 +576,9 @@
     "noEmployees": "No employees found",
     "noEmployeesDescription": "Add your first team member to get started.",
     "details": "Details",
+    "createSuccess": "Employee Created Successfully",
+    "passwordNotice": "Please copy the temporary password below and share it with the employee. This password will not be shown again.",
+    "temporaryPassword": "Temporary Password",
     "columns": {
       "name": "Name",
       "department": "Department",
