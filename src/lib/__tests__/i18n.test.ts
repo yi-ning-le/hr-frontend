@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Track if i18n has been initialized
+const i18nState = { initialized: false };
+
 // We need to mock the import.meta.env before importing i18n
 vi.mock("i18next-browser-languagedetector", () => ({
   default: {
@@ -12,11 +15,20 @@ vi.mock("i18next-browser-languagedetector", () => ({
 describe("i18n", () => {
   beforeEach(() => {
     vi.resetModules();
+    // Suppress i18next console warnings after first init
+    if (i18nState.initialized) {
+      vi.spyOn(console, "warn").mockImplementation(() => {});
+    }
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("should export i18n instance", async () => {
     const { default: i18n } = await import("../i18n");
     expect(i18n).toBeDefined();
+    i18nState.initialized = true;
   });
 
   it("should have zh-CN and en-US languages configured", async () => {

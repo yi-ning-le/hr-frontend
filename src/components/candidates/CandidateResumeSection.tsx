@@ -1,9 +1,8 @@
-import { FileText, Loader2, UploadCloud } from "lucide-react";
-import { useState } from "react";
+import { FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { PdfPreview } from "@/components/candidates/PdfPreview";
+import { ResumePreview } from "@/components/candidates/resume/ResumePreview";
+import { ResumeUploader } from "@/components/candidates/resume/ResumeUploader";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { Candidate } from "@/types/candidate";
 
 interface CandidateResumeSectionProps {
@@ -20,32 +19,7 @@ export function CandidateResumeSection({
   onPreviewClick,
 }: CandidateResumeSectionProps) {
   const { t } = useTranslation();
-  const [isDragging, setIsDragging] = useState(false);
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      onResumeUpload(file);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onResumeUpload(file);
-    }
-  };
+  const hasResume = candidate.resumeUrl && candidate.resumeUrl !== "#";
 
   return (
     <section>
@@ -55,7 +29,7 @@ export function CandidateResumeSection({
           {t("recruitment.candidates.detail.resumePreview")}
         </h4>
         <div className="flex gap-2">
-          {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
+          {hasResume ? (
             <Button
               variant="outline"
               size="sm"
@@ -67,70 +41,14 @@ export function CandidateResumeSection({
           ) : null}
         </div>
       </div>
-      {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
-        <button
-          onClick={onPreviewClick}
-          className="cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 w-full text-left"
-          type="button"
-        >
-          <PdfPreview
-            key={candidate.resumeUrl}
-            pdfUrl={candidate.resumeUrl}
-            maxHeight="300px"
-            showToolbar={false}
-            initialScale={0.8}
-          />
-        </button>
+
+      {hasResume ? (
+        <ResumePreview onClick={onPreviewClick} />
       ) : (
-        <section
-          aria-label={t("recruitment.candidates.detail.noResume")}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={cn(
-            "rounded-xl border p-8 text-center text-sm text-muted-foreground min-h-[200px] flex flex-col items-center justify-center border-dashed relative transition-all duration-200",
-            isDragging
-              ? "border-primary bg-primary/5 ring-4 ring-primary/10"
-              : "bg-slate-50/50 dark:bg-slate-900/50 border-muted-foreground/20 hover:bg-muted/50",
-          )}
-        >
-          {isUploadingResume ? (
-            <div className="flex flex-col items-center gap-2">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p>{t("recruitment.candidates.detail.uploadingResume")}</p>
-            </div>
-          ) : (
-            <>
-              <UploadCloud
-                className={cn(
-                  "h-10 w-10 mb-3 transition-colors",
-                  isDragging ? "text-primary opacity-100" : "opacity-20",
-                )}
-              />
-              <p className="font-medium mb-1">
-                {isDragging
-                  ? t("recruitment.candidates.detail.dropToUpload")
-                  : t("recruitment.candidates.detail.noResume")}
-              </p>
-              <p className="text-xs text-muted-foreground mb-4">
-                {t("recruitment.candidates.detail.uploadHint")}
-              </p>
-              <Button
-                variant={isDragging ? "default" : "outline"}
-                size="sm"
-                className="relative"
-              >
-                {t("recruitment.candidates.detail.uploadResume")}
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={handleFileChange}
-                />
-              </Button>
-            </>
-          )}
-        </section>
+        <ResumeUploader
+          isUploading={isUploadingResume}
+          onUpload={onResumeUpload}
+        />
       )}
     </section>
   );

@@ -335,6 +335,7 @@
         "education": "教育背景",
         "appliedAt": "申请时间",
         "viewResume": "查看简历",
+        "clickToPreview": "点击预览完整简历",
         "resumePreview": "简历预览",
         "downloadResume": "下载简历",
         "noResume": "暂无简历文件",
@@ -597,6 +598,8 @@
     "deleteTitle": "删除员工",
     "deleteConfirmation": "您确定要删除 {{name}} 吗？此操作无法撤销。",
     "viewDetails": "员工详情",
+    "viewDetailsDesc": "查看员工详细信息",
+    "contact": "联系信息",
     "validation": {
       "firstNameRequired": "请输入名字",
       "lastNameRequired": "请输入姓氏",

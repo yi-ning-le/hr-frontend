@@ -335,6 +335,7 @@
         "education": "Education",
         "appliedAt": "Applied At",
         "viewResume": "View Resume",
+        "clickToPreview": "Click to preview full resume",
         "resumePreview": "Resume Preview",
         "downloadResume": "Download Resume",
         "noResume": "No resume file",
@@ -597,6 +598,8 @@
     "deleteTitle": "Delete Employee",
     "deleteConfirmation": "Are you sure you want to delete {{name}}? This action cannot be undone.",
     "viewDetails": "Employee Details",
+    "viewDetailsDesc": "View employee details",
+    "contact": "Contact Information",
     "validation": {
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required",

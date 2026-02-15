@@ -12,6 +12,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Route } from "@/routes/_protected/employees";
 import type { Employee } from "@/types/employee";
 import { DeleteEmployeeDialog } from "./components/DeleteEmployeeDialog";
+import { EmployeeDetailsDialog } from "./components/EmployeeDetailsDialog";
 import { EmployeeFormDialog } from "./components/EmployeeFormDialog";
 import { EmployeeList } from "./components/EmployeeList";
 import { EmployeesActionToolbar } from "./components/EmployeesActionToolbar";
@@ -159,15 +160,21 @@ export function EmployeesPage() {
         </div>
       )}
 
-      <EmployeeFormDialog
-        open={dialogState.mode !== "closed"}
+      <EmployeeDetailsDialog
+        open={dialogState.mode === "view"}
         onOpenChange={(open) => !open && setDialogState({ mode: "closed" })}
         employee={
-          dialogState.mode === "edit" || dialogState.mode === "view"
-            ? dialogState.employee
-            : undefined
+          dialogState.mode === "view" ? dialogState.employee : undefined
         }
-        readOnly={dialogState.mode === "view"}
+      />
+
+      <EmployeeFormDialog
+        key={dialogState.mode === "edit" ? dialogState.employee.id : "new"}
+        open={dialogState.mode === "create" || dialogState.mode === "edit"}
+        onOpenChange={(open) => !open && setDialogState({ mode: "closed" })}
+        employee={
+          dialogState.mode === "edit" ? dialogState.employee : undefined
+        }
       />
 
       <DeleteEmployeeDialog

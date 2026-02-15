@@ -1,10 +1,17 @@
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { FileText, Info, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { CandidateResumeSection } from "@/components/candidates/CandidateResumeSection";
 import { PdfPreview } from "@/components/candidates/PdfPreview";
 import { CandidateReviewPanel } from "@/components/candidates/reviews/CandidateReviewPanel";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { Candidate } from "@/types/candidate";
 
 interface CandidateResumeViewerDialogProps {
@@ -27,11 +34,24 @@ export function CandidateResumeViewerDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[95vw] w-full h-[95vh] flex flex-col p-0 overflow-hidden gap-0 border-none bg-transparent shadow-none sm:max-w-[95vw]"
+        className="w-[95vw] h-[95vh] max-w-none p-0 gap-0 border-none shadow-2xl bg-background flex flex-col"
         showCloseButton={false}
       >
-        {/* Header Bar - Floating or Integrated */}
-        <div className="bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border rounded-t-lg shadow-sm shrink-0 mx-auto w-full max-w-[1600px] flex items-center justify-between p-3 px-6">
+        <VisuallyHidden.Root>
+          <DialogTitle>
+            {t("candidate.resumeViewerTitle", "Candidate Resume")}:{" "}
+            {candidate.name}
+          </DialogTitle>
+          <DialogDescription>
+            {t(
+              "candidate.resumeViewerDesc",
+              "View and review candidate resume",
+            )}
+          </DialogDescription>
+        </VisuallyHidden.Root>
+
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b shrink-0 bg-muted/10">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <FileText className="h-4 w-4" />
@@ -71,45 +91,45 @@ export function CandidateResumeViewerDialog({
           </div>
         </div>
 
-        {/* E-Book Container */}
-        <div className="flex-1 min-h-0 mx-auto w-full max-w-400 bg-background border-x border-b rounded-b-lg shadow-2xl overflow-hidden flex flex-row">
+        {/* Content Area */}
+        <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
           {/* Left Page: Resume */}
-          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-r relative min-w-0">
+          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 relative min-w-0 flex flex-col">
             {candidate.resumeUrl && candidate.resumeUrl !== "#" ? (
               <PdfPreview
                 pdfUrl={candidate.resumeUrl}
-                className="h-full border-0 rounded-none bg-transparent"
+                className="flex-1 w-full border-0 rounded-none bg-transparent"
                 showToolbar={true}
               />
             ) : (
-              <div className="h-full flex items-center justify-center p-8">
-                <CandidateResumeSection
-                  candidate={candidate}
-                  isUploadingResume={false}
-                  onResumeUpload={() => {}}
-                  onPreviewClick={() => {}}
-                />
+              <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
+                <div className="w-full max-w-md">
+                  <CandidateResumeSection
+                    candidate={candidate}
+                    isUploadingResume={false}
+                    onResumeUpload={() => {}}
+                    onPreviewClick={() => {}}
+                  />
+                </div>
               </div>
             )}
           </div>
 
           {/* Right Page: Review Form */}
-          <div className="w-[400px] xl:w-[450px] bg-background flex flex-col shrink-0 z-10 shadow-[-5px_0_15px_-5px_rgba(0,0,0,0.05)]">
-            <div className="h-full flex flex-col">
-              <div className="px-6 py-4 border-b">
-                <h3 className="font-semibold">
-                  {t("candidate.review", "Review Assessment")}
-                </h3>
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <CandidateReviewPanel
-                  candidate={candidate}
-                  onReviewSubmit={() => {
-                    onReviewSubmit?.();
-                    onOpenChange(false);
-                  }}
-                />
-              </div>
+          <div className="w-full md:w-[400px] bg-background border-t md:border-t-0 md:border-l flex flex-col shrink-0 z-10 shadow-[-5px_0_15px_-5px_rgba(0,0,0,0.05)]">
+            <div className="px-6 py-4 border-b shrink-0">
+              <h3 className="font-semibold">
+                {t("candidate.review", "Review Assessment")}
+              </h3>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <CandidateReviewPanel
+                candidate={candidate}
+                onReviewSubmit={() => {
+                  onReviewSubmit?.();
+                  onOpenChange(false);
+                }}
+              />
             </div>
           </div>
         </div>

@@ -80,10 +80,12 @@ describe("CandidateResumeSection", () => {
   });
 
   describe("With resume", () => {
-    it("renders PDF document component", () => {
+    it("renders resume preview button", () => {
       render(<CandidateResumeSection {...defaultProps} />);
 
-      expect(screen.getByTestId("pdf-document")).toBeInTheDocument();
+      expect(
+        screen.getByText("recruitment.candidates.detail.viewResume"),
+      ).toBeInTheDocument();
     });
 
     it("renders download button", () => {
@@ -94,7 +96,7 @@ describe("CandidateResumeSection", () => {
       ).toBeInTheDocument();
     });
 
-    it("calls onPreviewClick when preview area is clicked", () => {
+    it("calls onPreviewClick when preview button is clicked", () => {
       const onPreviewClick = vi.fn();
       render(
         <CandidateResumeSection
@@ -103,11 +105,12 @@ describe("CandidateResumeSection", () => {
         />,
       );
 
-      // Find the clickable wrapper around the PdfPreview
-      const pdfDoc = screen.getByTestId("pdf-document");
-      const clickableWrapper = pdfDoc.closest(".cursor-pointer");
-      if (clickableWrapper) {
-        fireEvent.click(clickableWrapper);
+      // Find the clickable button containing viewResume text
+      const previewButton = screen
+        .getByText("recruitment.candidates.detail.viewResume")
+        .closest("button");
+      if (previewButton) {
+        fireEvent.click(previewButton);
       }
 
       expect(onPreviewClick).toHaveBeenCalled();

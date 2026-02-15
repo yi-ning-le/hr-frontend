@@ -1,5 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Mock i18n to prevent re-initialization warnings
+vi.mock("@/lib/i18n", () => ({
+  default: {
+    language: "zh-CN",
+    changeLanguage: vi.fn(),
+  },
+}));
+
 const apiMocks = vi.hoisted(() => {
   let unauthorizedCallback: (() => void) | null = null;
   let authChangeCallback:

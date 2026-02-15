@@ -1,7 +1,13 @@
 import type { Control } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { ExpandableTextarea } from "./ExpandableTextarea";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import type { JobFormValues } from "./JobPositionForm";
 
 interface JobDescriptionFieldsProps {
@@ -18,13 +24,14 @@ export function JobDescriptionFields({ control }: JobDescriptionFieldsProps) {
         name="jobDescription"
         render={({ field }) => (
           <FormItem>
-            <ExpandableTextarea
-              value={field.value || ""}
-              onChange={field.onChange}
-              title={t("recruitment.jobs.form.jdLabel")}
-              placeholder={t("recruitment.jobs.form.jdPlaceholder")}
-              className="h-[200px]"
-            />
+            <FormLabel>{t("recruitment.jobs.form.jdLabel")}</FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder={t("recruitment.jobs.form.jdPlaceholder")}
+                className="min-h-[200px] resize-y"
+                {...field}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
@@ -35,13 +42,14 @@ export function JobDescriptionFields({ control }: JobDescriptionFieldsProps) {
         name="note"
         render={({ field }) => (
           <FormItem>
-            <ExpandableTextarea
-              value={field.value || ""}
-              onChange={field.onChange}
-              title={t("recruitment.jobs.form.noteLabel")}
-              placeholder={t("recruitment.jobs.form.notePlaceholder")}
-              className="h-[80px]"
-            />
+            <FormLabel>{t("recruitment.jobs.form.noteLabel")}</FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder={t("recruitment.jobs.form.notePlaceholder")}
+                className="min-h-[80px] resize-y"
+                {...field}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}

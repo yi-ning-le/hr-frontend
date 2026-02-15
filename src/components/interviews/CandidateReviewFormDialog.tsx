@@ -1,8 +1,10 @@
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { useTranslation } from "react-i18next";
 import { CandidateReviewPanel } from "@/components/candidates/reviews/CandidateReviewPanel";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -33,6 +35,14 @@ export function CandidateReviewFormDialog({
           <DialogTitle>
             {t("candidate.reviewTitle", "Review Candidate")}: {candidate.name}
           </DialogTitle>
+          <VisuallyHidden.Root asChild>
+            <DialogDescription>
+              {t(
+                "candidate.reviewDesc",
+                "Review and assess candidate qualifications",
+              )}
+            </DialogDescription>
+          </VisuallyHidden.Root>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto">
           <CandidateReviewPanel

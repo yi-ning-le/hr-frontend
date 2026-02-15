@@ -1,5 +1,11 @@
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Users } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CandidateInfoSection } from "@/pages/recruitment/components/candidates/detail/CandidateInfoSection";
 import type { Candidate } from "@/types/candidate";
 
@@ -25,6 +31,12 @@ export function CandidateInfoDialog({
           <DialogTitle className="text-xl font-bold">
             {candidate.name}
           </DialogTitle>
+          <VisuallyHidden.Root asChild>
+            <DialogDescription>
+              Candidate information for {candidate.name} -{" "}
+              {candidate.appliedJobTitle}
+            </DialogDescription>
+          </VisuallyHidden.Root>
           <p className="text-sm text-muted-foreground font-medium mt-1">
             {candidate.appliedJobTitle}
           </p>

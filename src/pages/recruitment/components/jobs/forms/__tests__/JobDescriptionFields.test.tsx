@@ -12,22 +12,6 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-// Mock ExpandableTextarea to simplify testing
-vi.mock("../ExpandableTextarea", () => ({
-  ExpandableTextarea: ({
-    title,
-    placeholder,
-  }: {
-    title: string;
-    placeholder: string;
-  }) => (
-    <div data-testid="expandable-textarea">
-      <label>{title}</label>
-      <textarea placeholder={placeholder}></textarea>
-    </div>
-  ),
-}));
-
 // Render helper that uses the wrapper's control
 function RenderableJobDescriptionFields() {
   const form = useForm<JobFormValues>({
@@ -66,10 +50,10 @@ describe("JobDescriptionFields", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders both expandable textareas", () => {
+  it("renders both textareas", () => {
     render(<RenderableJobDescriptionFields />);
 
-    const textareas = screen.getAllByTestId("expandable-textarea");
+    const textareas = screen.getAllByRole("textbox");
     expect(textareas).toHaveLength(2);
   });
 });

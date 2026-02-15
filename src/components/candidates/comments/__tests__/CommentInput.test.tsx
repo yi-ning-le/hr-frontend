@@ -83,6 +83,8 @@ describe("CommentInput", () => {
   });
 
   it("does not clear textarea on submission error", async () => {
+    // Suppress expected error log
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     mockOnSubmit.mockRejectedValueOnce(new Error("Network error"));
     const user = userEvent.setup();
     render(<CommentInput onSubmit={mockOnSubmit} />);
@@ -102,6 +104,8 @@ describe("CommentInput", () => {
     await waitFor(() => {
       expect(textarea).toHaveValue("Will fail");
     });
+
+    consoleSpy.mockRestore();
   });
 
   it("shows loading state during submission", async () => {

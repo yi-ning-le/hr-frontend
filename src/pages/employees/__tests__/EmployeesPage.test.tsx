@@ -117,23 +117,30 @@ vi.mock("../components/EmployeeList", () => ({
   ),
 }));
 
+vi.mock("../components/EmployeeDetailsDialog", () => ({
+  EmployeeDetailsDialog: ({
+    open,
+    employee,
+  }: {
+    open: boolean;
+    employee?: Employee;
+  }) =>
+    open && employee ? (
+      <div data-testid="employee-details-dialog">View {employee.firstName}</div>
+    ) : null,
+}));
+
 vi.mock("../components/EmployeeFormDialog", () => ({
   EmployeeFormDialog: ({
     open,
     employee,
-    readOnly,
   }: {
     open: boolean;
     employee?: Employee;
-    readOnly?: boolean;
   }) =>
     open ? (
       <div data-testid="employee-form-dialog">
-        {readOnly
-          ? "View Employee"
-          : employee
-            ? `Edit ${employee.firstName}`
-            : "Add Employee"}
+        {employee ? `Edit ${employee.firstName}` : "Add Employee"}
       </div>
     ) : null,
 }));
@@ -220,8 +227,8 @@ describe("EmployeesPage", () => {
     render(<EmployeesPage />);
     await user.click(screen.getByText("John Doe"));
     // Expect read-only view
-    expect(screen.getByTestId("employee-form-dialog")).toHaveTextContent(
-      "View Employee",
+    expect(screen.getByTestId("employee-details-dialog")).toHaveTextContent(
+      "View John",
     );
   });
 
