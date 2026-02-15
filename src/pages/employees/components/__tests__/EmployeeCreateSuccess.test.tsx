@@ -23,7 +23,7 @@ class ResizeObserver {
   unobserve() {}
   disconnect() {}
 }
-global.ResizeObserver = ResizeObserver;
+(window as Window & typeof globalThis).ResizeObserver = ResizeObserver;
 
 describe("EmployeeCreateSuccess", () => {
   const mockOnClose = vi.fn();

@@ -20,17 +20,16 @@ const settingsSearchSchema = z.object({
   tab: z
     .enum(validSettingsSearchTabs as unknown as [string, ...string[]])
     .catch(SettingsTabId.CandidateStatuses)
-    .default(SettingsTabId.CandidateStatuses),
+    .optional(),
 });
 
 export const Route = createRoute({
   getParentRoute: () => ProtectedRoute,
   path: "/settings",
-  validateSearch: (search) => settingsSearchSchema.parse(search),
+  validateSearch: (search) => settingsSearchSchema.parse(search ?? {}),
   beforeLoad: async ({ search }) => {
-    const isAdminTab = (Object.values(AdminTabId) as string[]).includes(
-      search.tab,
-    );
+    const tab = search.tab || SettingsTabId.CandidateStatuses;
+    const isAdminTab = (Object.values(AdminTabId) as string[]).includes(tab);
 
     if (isAdminTab) {
       throw redirect({
@@ -39,7 +38,7 @@ export const Route = createRoute({
       });
     }
 
-    const targetTab = SETTINGS_TABS.find((t) => t.id === search.tab);
+    const targetTab = SETTINGS_TABS.find((t) => t.id === tab);
     if (targetTab?.isVisible) {
       const roleData = await queryClient.ensureQueryData(
         userRoleQueryOptions(),
@@ -71,8 +70,9 @@ function SettingsRouteComponent() {
   const isSettingsTab = (t: string): t is SettingsTabIdType =>
     Object.values(SettingsTabId).includes(t as SettingsTabIdType);
 
-  const normalizedTab: SettingsTabIdType | undefined = isSettingsTab(tab)
-    ? tab
+  const currentTab = tab || SettingsTabId.CandidateStatuses;
+  const normalizedTab: SettingsTabIdType | undefined = isSettingsTab(currentTab)
+    ? currentTab
     : undefined;
 
   return (
