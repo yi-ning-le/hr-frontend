@@ -41,6 +41,7 @@ describe("SettingsPage", () => {
     vi.clearAllMocks();
     mockUseUserRole.mockReturnValue({
       isAdmin: false,
+      isRecruiter: true,
       isLoading: false,
     });
   });
@@ -72,7 +73,9 @@ describe("SettingsPage", () => {
     const generalTab = screen.getByRole("tab", { name: "General" });
     await user.click(generalTab);
 
-    expect(screen.getByTestId("general-settings")).toBeInTheDocument();
+    // Wait for the content to appear after tab switch
+    const generalSettings = await screen.findByTestId("general-settings");
+    expect(generalSettings).toBeInTheDocument();
   });
 
   it("respects activeTab prop (controlled)", () => {

@@ -58,7 +58,7 @@ describe("Settings Route Validation", () => {
     mockGetState.mockReturnValue({
       isAuthenticated: true,
     });
-    // Stage the query data for role (required by ProtectedRoute)
+    // Default: Non-recruiter
     queryClient.setQueryData(userRoleQueryOptions().queryKey, {
       isAdmin: false,
       isInterviewer: false,
@@ -90,7 +90,7 @@ describe("Settings Route Validation", () => {
     });
   };
 
-  it("accepts valid tab parameter", async () => {
+  it("accepts valid tab parameter (General)", async () => {
     const router = createTestRouter(`/settings?tab=${SettingsTabId.General}`);
     render(<RouterProvider router={router} />);
 
@@ -101,20 +101,58 @@ describe("Settings Route Validation", () => {
     });
   });
 
-  it("handles missing tab parameter (optional)", async () => {
+  it("redirects non-recruiter from candidate-statuses to general", async () => {
+    const router = createTestRouter(
+      `/settings?tab=${SettingsTabId.CandidateStatuses}`,
+    );
+    render(<RouterProvider router={router} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("settings-page")).toHaveTextContent(
+        `Settings Page: ${SettingsTabId.General}`,
+      );
+      expect(router.state.location.search).toEqual({
+        tab: SettingsTabId.General,
+      });
+    });
+  });
+
+  it("handles missing tab parameter by redirecting non-recruiter to general", async () => {
     const router = createTestRouter("/settings");
     render(<RouterProvider router={router} />);
 
     await waitFor(() => {
-      // Missing tab is allowed and handled by SettingsPage default tab behavior.
+      // Missing tab defaults to CandidateStatuses in schema, then redirects to General
       expect(screen.getByTestId("settings-page")).toHaveTextContent(
-        "Settings Page:",
+        `Settings Page: ${SettingsTabId.General}`,
       );
     });
   });
 
-  it("replaces invalid tab parameter with default via catch", async () => {
+  it("replaces invalid tab parameter with default via catch, then redirects to general for non-recruiter", async () => {
     const router = createTestRouter("/settings?tab=invalid-tab-name");
+    render(<RouterProvider router={router} />);
+
+    await waitFor(() => {
+      // Invalid -> CandidateStatuses (catch) -> General (redirect)
+      expect(screen.getByTestId("settings-page")).toHaveTextContent(
+        `Settings Page: ${SettingsTabId.General}`,
+      );
+    });
+  });
+
+  it("allows recruiter to access candidate-statuses", async () => {
+    queryClient.setQueryData(userRoleQueryOptions().queryKey, {
+      isAdmin: false,
+      isInterviewer: false,
+      isRecruiter: true, // Recruiter
+      isHR: false,
+      canReviewResumes: false,
+    });
+
+    const router = createTestRouter(
+      `/settings?tab=${SettingsTabId.CandidateStatuses}`,
+    );
     render(<RouterProvider router={router} />);
 
     await waitFor(() => {

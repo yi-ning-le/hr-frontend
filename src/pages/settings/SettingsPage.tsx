@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUserRole } from "@/hooks/useUserRole";
 import { CandidateStatusSettings } from "@/pages/settings/components/CandidateStatusSettings";
 import { GeneralSettings } from "@/pages/settings/components/GeneralSettings";
 import {
@@ -15,8 +16,13 @@ export interface SettingsPageProps {
 
 export function SettingsPage({ activeTab, onTabChange }: SettingsPageProps) {
   const { t } = useTranslation();
+  const userRole = useUserRole();
 
-  const TABS = SETTINGS_TABS.map((tab) => ({
+  const visibleTabs = SETTINGS_TABS.filter((tab) =>
+    tab.isVisible ? tab.isVisible(userRole) : true,
+  );
+
+  const TABS = visibleTabs.map((tab) => ({
     ...tab,
     label: t(tab.labelKey, tab.defaultLabel),
     component: {
@@ -25,7 +31,7 @@ export function SettingsPage({ activeTab, onTabChange }: SettingsPageProps) {
     }[tab.id],
   }));
 
-  const defaultTab = SettingsTabId.CandidateStatuses;
+  const defaultTab = visibleTabs[0]?.id ?? SettingsTabId.General;
 
   return (
     <div className="space-y-6">

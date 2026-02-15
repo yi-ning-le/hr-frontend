@@ -1,7 +1,10 @@
 import { createRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
+import { userRoleQueryOptions } from "@/hooks/useUserRole";
+import { queryClient } from "@/lib/queryClient";
 import { AdminTabId } from "@/pages/admin/constants";
 import {
+  SETTINGS_TABS,
   SettingsTabId,
   type SettingsTabIdType,
 } from "@/pages/settings/constants";
@@ -9,32 +12,53 @@ import { SettingsPage } from "@/pages/settings/SettingsPage";
 import { Route as ProtectedRoute } from "../_protected";
 
 const validSettingsSearchTabs = [
-  SettingsTabId.CandidateStatuses,
-  SettingsTabId.General,
-  AdminTabId.Recruiters,
-  AdminTabId.HRManagement,
+  ...Object.values(SettingsTabId),
+  ...Object.values(AdminTabId),
 ] as const;
 
 const settingsSearchSchema = z.object({
   tab: z
-    .enum(validSettingsSearchTabs)
-    .optional()
-    .catch(SettingsTabId.CandidateStatuses),
+    .enum(validSettingsSearchTabs as unknown as [string, ...string[]])
+    .catch(SettingsTabId.CandidateStatuses)
+    .default(SettingsTabId.CandidateStatuses),
 });
 
 export const Route = createRoute({
   getParentRoute: () => ProtectedRoute,
   path: "/settings",
   validateSearch: (search) => settingsSearchSchema.parse(search),
-  beforeLoad: ({ search }) => {
-    if (
-      search.tab === AdminTabId.Recruiters ||
-      search.tab === AdminTabId.HRManagement
-    ) {
+  beforeLoad: async ({ search }) => {
+    const isAdminTab = (Object.values(AdminTabId) as string[]).includes(
+      search.tab,
+    );
+
+    if (isAdminTab) {
       throw redirect({
         to: "/admin",
         replace: true,
       });
+    }
+
+    const targetTab = SETTINGS_TABS.find((t) => t.id === search.tab);
+    if (targetTab?.isVisible) {
+      const roleData = await queryClient.ensureQueryData(
+        userRoleQueryOptions(),
+      );
+      const context = {
+        isAdmin: roleData?.isAdmin ?? false,
+        isRecruiter: roleData?.isRecruiter ?? false,
+        isInterviewer: roleData?.isInterviewer ?? false,
+        isHR: roleData?.isHR ?? false,
+        canReviewResumes: roleData?.canReviewResumes ?? false,
+      };
+
+      if (!targetTab.isVisible(context)) {
+        throw redirect({
+          to: "/settings",
+          search: { tab: SettingsTabId.General },
+          replace: true,
+        });
+      }
     }
   },
   component: SettingsRouteComponent,
@@ -43,10 +67,13 @@ export const Route = createRoute({
 function SettingsRouteComponent() {
   const { tab } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const normalizedTab: SettingsTabIdType | undefined =
-    tab === SettingsTabId.CandidateStatuses || tab === SettingsTabId.General
-      ? tab
-      : undefined;
+
+  const isSettingsTab = (t: string): t is SettingsTabIdType =>
+    Object.values(SettingsTabId).includes(t as SettingsTabIdType);
+
+  const normalizedTab: SettingsTabIdType | undefined = isSettingsTab(tab)
+    ? tab
+    : undefined;
 
   return (
     <SettingsPage
