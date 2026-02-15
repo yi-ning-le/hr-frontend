@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { PdfPreview } from "../PdfPreview";
 
@@ -42,8 +42,22 @@ vi.mock("react-pdf", async () => {
         </div>
       );
     },
-    Page: ({ pageNumber }: { pageNumber: number }) => {
-      return <div data-testid="pdf-page">Page {pageNumber}</div>;
+    Page: (props: any) => {
+      useEffect(() => {
+        if (props.onRenderSuccess) {
+          // Simulate async render success
+          setTimeout(() => props.onRenderSuccess(), 10);
+        }
+      }, [props.onRenderSuccess]);
+
+      return (
+        <div
+          data-testid="pdf-page"
+          data-render-text-layer={String(props.renderTextLayer)}
+        >
+          Page {props.pageNumber}
+        </div>
+      );
     },
   };
 });
@@ -147,5 +161,20 @@ describe("PdfPreview", () => {
     // Wait for the new document to load
     await screen.findByText("1 / 5");
     expect(screen.getByText("1 / 5")).toBeInTheDocument();
+  });
+
+  it("lazy loads text layer rendering for performance", async () => {
+    render(<PdfPreview {...defaultProps} />);
+    // Wait for the simulated load
+    await screen.findByTestId("pdf-document");
+    const page = await screen.findByTestId("pdf-page");
+
+    // Initially disabled (lazy load)
+    expect(page).toHaveAttribute("data-render-text-layer", "false");
+
+    // Wait for onRenderSuccess to trigger text layer
+    await waitFor(() => {
+      expect(page).toHaveAttribute("data-render-text-layer", "true");
+    });
   });
 });

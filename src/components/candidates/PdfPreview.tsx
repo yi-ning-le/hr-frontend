@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useResizeObserver } from "@/hooks/use-resize-observer";
@@ -57,6 +57,35 @@ export function PdfPreview({
   const [error, setError] = useState<Error | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth } = useResizeObserver(containerRef);
+  const [debouncedWidth, setDebouncedWidth] = useState<number | undefined>(
+    undefined,
+  );
+  const [isTextLayerRendered, setIsTextLayerRendered] = useState(false);
+
+  useEffect(() => {
+    // If it's the first time we get a width, set it immediately
+    if (debouncedWidth === undefined && containerWidth !== undefined) {
+      setDebouncedWidth(containerWidth);
+      return;
+    }
+
+    // Only update debouncedWidth if the new width is LARGER than the current rendered width.
+    // This prevents re-rendering (and flickering) when shrinking (e.g. opening sidebars).
+    // We just keep the high-res canvas and let CSS scale it down.
+    if (
+      containerWidth !== undefined &&
+      debouncedWidth !== undefined &&
+      containerWidth > debouncedWidth
+    ) {
+      const timer = setTimeout(() => {
+        setDebouncedWidth(containerWidth);
+      }, 200);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [containerWidth, debouncedWidth]);
 
   const onDocumentLoadSuccess = useCallback(
     ({ numPages }: { numPages: number }) => {
@@ -66,6 +95,14 @@ export function PdfPreview({
     },
     [],
   );
+
+  useEffect(() => {
+    setIsTextLayerRendered(false);
+  }, []);
+
+  const onRenderSuccess = useCallback(() => {
+    setIsTextLayerRendered(true);
+  }, []);
 
   const onDocumentLoadError = useCallback((error: Error) => {
     console.error("PDF Load Error:", error);
@@ -86,9 +123,39 @@ export function PdfPreview({
     setScale((prev) => Math.min(Math.max(0.5, prev + delta), 3));
   }, []);
 
-  const pageWidth = containerWidth
+  const pageWidth = debouncedWidth
+    ? Math.min(debouncedWidth - 48, 800) * scale
+    : undefined;
+
+  // Calculate the target width based on current container width, not debounced
+  // This allows CSS scaling to animate smoothly to the new size
+  const currentTargetWidth = containerWidth
     ? Math.min(containerWidth - 48, 800) * scale
     : undefined;
+
+  const isResizing =
+    containerWidth !== undefined &&
+    debouncedWidth !== undefined &&
+    containerWidth !== debouncedWidth;
+
+  const pageStyle = useMemo(() => {
+    if (!currentTargetWidth || !pageWidth) return {};
+
+    // When resizing (debouncing), use CSS transform to scale the existing canvas
+    // from its rendered width (pageWidth) to the new target width
+    if (isResizing) {
+      const scaleRatio = currentTargetWidth / pageWidth;
+      return {
+        transform: `scale(${scaleRatio})`,
+        transformOrigin: "top center",
+        width: pageWidth, // Keep the original rendered width
+      };
+    }
+
+    return {
+      width: pageWidth,
+    };
+  }, [currentTargetWidth, pageWidth, isResizing]);
 
   return (
     <div
@@ -213,14 +280,19 @@ export function PdfPreview({
             className="flex justify-center"
           >
             {!loading && numPages && (
-              <Page
-                pageNumber={pageNumber}
-                width={pageWidth}
-                loading={<Loader2 className="h-6 w-6 animate-spin" />}
-                className="shadow-lg rounded-sm overflow-hidden"
-                renderAnnotationLayer={false}
-                renderTextLayer={false}
-              />
+              <div
+                className="shadow-lg rounded-sm overflow-hidden origin-top-left"
+                style={pageStyle as React.CSSProperties}
+              >
+                <Page
+                  pageNumber={pageNumber}
+                  width={pageWidth}
+                  loading={<Loader2 className="h-6 w-6 animate-spin" />}
+                  renderAnnotationLayer={false}
+                  renderTextLayer={isTextLayerRendered}
+                  onRenderSuccess={onRenderSuccess}
+                />
+              </div>
             )}
           </Document>
         )}

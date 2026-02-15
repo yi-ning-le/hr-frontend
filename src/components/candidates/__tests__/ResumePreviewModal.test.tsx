@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
 import { ResumePreviewModal } from "../ResumePreviewModal";
 
@@ -45,6 +45,7 @@ vi.mock("@/hooks/queries/useCandidateComments", () => ({
   useCandidateComments: () => ({
     data: [],
     isLoading: false,
+    isError: false,
   }),
 }));
 
@@ -100,14 +101,24 @@ describe("ResumePreviewModal", () => {
     vi.clearAllMocks();
   });
 
-  it("renders correctly when open", () => {
+  it("renders correctly when open", async () => {
     render(<ResumePreviewModal {...defaultProps} />);
 
     expect(
       screen.getByRole("heading", { name: "resumeModal.resumeOf John Doe" }),
     ).toBeInTheDocument();
-    expect(screen.getByTestId("pdf-preview")).toHaveTextContent(
-      "http://example.com/resume.pdf",
+
+    // Should show loader initially (isReady=false)
+    expect(screen.queryByTestId("pdf-preview")).not.toBeInTheDocument();
+
+    // Wait for the suspended component to resolve
+    await waitFor(
+      () => {
+        expect(screen.getByTestId("pdf-preview")).toHaveTextContent(
+          "http://example.com/resume.pdf",
+        );
+      },
+      { timeout: 4000 },
     );
   });
 
@@ -128,6 +139,9 @@ describe("ResumePreviewModal", () => {
 
     expect(screen.getByText("resumeModal.noResume")).toBeInTheDocument();
     expect(screen.queryByTestId("pdf-preview")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("resumeModal.download"),
+    ).not.toBeInTheDocument();
   });
 
   it("opens resume in new tab when download clicked", () => {
@@ -137,7 +151,23 @@ describe("ResumePreviewModal", () => {
     expect(mockOpen).toHaveBeenCalledWith(
       "http://example.com/resume.pdf",
       "_blank",
+      "noopener,noreferrer",
     );
+  });
+
+  it("resets jd sidebar state when modal closes and reopens", () => {
+    const { rerender } = render(<ResumePreviewModal {...defaultProps} />);
+
+    fireEvent.click(screen.getByText("resumeModal.viewJD"));
+    expect(screen.getByText("resumeModal.jobDescription")).toBeInTheDocument();
+
+    rerender(<ResumePreviewModal {...defaultProps} open={false} />);
+    rerender(<ResumePreviewModal {...defaultProps} open={true} />);
+
+    expect(
+      screen.queryByText("resumeModal.jobDescription"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("resumeModal.viewJD")).toBeInTheDocument();
   });
 
   it("shows View JD button when job exists", () => {
