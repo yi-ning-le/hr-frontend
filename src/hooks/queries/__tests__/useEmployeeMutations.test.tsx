@@ -3,8 +3,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type EmployeeAPIResponse, EmployeesAPI } from "@/lib/api";
-import type { EmployeeInput } from "@/types/employee";
+import { EmployeesAPI } from "@/lib/api";
+import type { Employee, EmployeeInput } from "@/types/employee";
 import {
   useCreateEmployee,
   useDeleteEmployee,
@@ -19,6 +19,12 @@ vi.mock("@/lib/api", () => ({
     update: vi.fn(),
     delete: vi.fn(),
   },
+}));
+
+vi.mock("@/stores/useAuthStore", () => ({
+  useAuthStore: vi.fn(() => ({
+    user: { id: "user-1" },
+  })),
 }));
 
 const createWrapper = () => {
@@ -45,7 +51,7 @@ describe("Employee Mutations", () => {
   it("creates an employee and invalidates queries", async () => {
     const mockEmployee = { id: "1", firstName: "New" };
     vi.mocked(EmployeesAPI.create).mockResolvedValue(
-      mockEmployee as unknown as EmployeeAPIResponse,
+      mockEmployee as unknown as Employee,
     );
 
     const wrapper = createWrapper();
@@ -69,7 +75,7 @@ describe("Employee Mutations", () => {
   it("updates an employee", async () => {
     const mockEmployee = { id: "1", firstName: "Updated" };
     vi.mocked(EmployeesAPI.update).mockResolvedValue(
-      mockEmployee as unknown as EmployeeAPIResponse,
+      mockEmployee as unknown as Employee,
     );
 
     const wrapper = createWrapper();

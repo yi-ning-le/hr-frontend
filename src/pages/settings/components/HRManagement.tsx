@@ -11,8 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useUserRole } from "@/hooks/useUserRole";
-import type { EmployeeAPIResponse, HREmployee } from "@/lib/api";
+import type { HREmployee } from "@/lib/api";
 import { EmployeesAPI, RecruitmentAPI } from "@/lib/api";
+import type { Employee } from "@/types/employee";
 import { AddHRDialog } from "./AddHRDialog";
 import { HRTable } from "./HRTable";
 
@@ -78,9 +79,7 @@ export function HRManagement() {
   // Filter out existing HRs from employee list
   const hrIds = new Set(hrs.map((hr: HREmployee) => hr.employeeId));
   const availableEmployees =
-    employeesData?.employees?.filter(
-      (e: EmployeeAPIResponse) => !hrIds.has(e.id),
-    ) ?? [];
+    employeesData?.employees?.filter((e: Employee) => !hrIds.has(e.id)) ?? [];
 
   if (roleLoading) {
     return (

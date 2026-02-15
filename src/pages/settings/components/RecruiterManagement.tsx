@@ -11,8 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useUserRole } from "@/hooks/useUserRole";
-import type { EmployeeAPIResponse, Recruiter } from "@/lib/api";
+import type { Recruiter } from "@/lib/api";
 import { EmployeesAPI, RecruitmentAPI } from "@/lib/api";
+import type { Employee } from "@/types/employee";
 import { AddRecruiterDialog } from "./AddRecruiterDialog";
 import { RecruiterTable } from "./RecruiterTable";
 
@@ -89,7 +90,7 @@ export function RecruiterManagement() {
   const recruiterIds = new Set(recruiters.map((r: Recruiter) => r.employeeId));
   const availableEmployees =
     employeesData?.employees?.filter(
-      (e: EmployeeAPIResponse) => !recruiterIds.has(e.id),
+      (e: Employee) => !recruiterIds.has(e.id),
     ) ?? [];
 
   if (roleLoading) {

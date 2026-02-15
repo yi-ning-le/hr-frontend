@@ -18,14 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { EmployeeAPIResponse } from "@/lib/api";
+import type { Employee } from "@/types/employee";
 
 interface AddHRDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAssign: (employeeId: string) => void;
   isAssigning: boolean;
-  availableEmployees: EmployeeAPIResponse[];
+  availableEmployees: Employee[];
 }
 
 export function AddHRDialog({

@@ -1,46 +1,14 @@
-export type EmployeeStatus = "Active" | "OnLeave" | "Resigned" | "Terminated";
-
-export type EmploymentType = "FullTime" | "PartTime" | "Contract" | "Intern";
-
-export interface Employee {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  department: string;
-  position: string;
-  status: EmployeeStatus;
-  employmentType: EmploymentType;
-  joinDate: Date;
-  managerId?: string;
-  userId?: string;
-  temporaryPassword?: string;
-}
-
-export interface EmployeeInput {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  department: string;
-  position: string;
-  status?: EmployeeStatus;
-  employmentType?: EmploymentType;
-  joinDate: Date;
-  managerId?: string;
-  userId?: string;
-}
-
-export interface EmployeeListResult {
-  employees: Employee[];
-  total: number;
-  page: number;
-  limit: number;
-}
+// Re-export types derived from Zod schemas (single source of truth)
+export type {
+  Employee,
+  EmployeeInput,
+  EmployeeListResult,
+  EmployeeStatus,
+  EmploymentType,
+} from "@/lib/schemas/employee";
 
 export interface EmployeeFilters {
-  status?: EmployeeStatus | "";
+  status?: import("@/lib/schemas/employee").EmployeeStatus | "";
   department?: string;
   search?: string;
 }

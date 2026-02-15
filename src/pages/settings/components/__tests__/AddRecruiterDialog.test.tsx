@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
-import type { EmployeeAPIResponse } from "@/lib/api";
+import type { Employee } from "@/types/employee";
 import { AddRecruiterDialog } from "../AddRecruiterDialog";
 
 // Mock translation
@@ -95,7 +95,7 @@ vi.mock("@/components/ui/select", () => ({
   ),
 }));
 
-const mockEmployees: EmployeeAPIResponse[] = [
+const mockEmployees: Employee[] = [
   {
     id: "emp1",
     firstName: "John",
@@ -103,7 +103,7 @@ const mockEmployees: EmployeeAPIResponse[] = [
     department: "HR",
     email: "john@example.com",
     position: "Manager",
-  } as unknown as EmployeeAPIResponse,
+  } as unknown as Employee,
   {
     id: "emp2",
     firstName: "Jane",
@@ -111,7 +111,7 @@ const mockEmployees: EmployeeAPIResponse[] = [
     department: "Engineering",
     email: "jane@example.com",
     position: "Developer",
-  } as unknown as EmployeeAPIResponse,
+  } as unknown as Employee,
 ];
 
 describe("AddRecruiterDialog", () => {

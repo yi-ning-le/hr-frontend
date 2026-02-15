@@ -137,9 +137,11 @@ export function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <UserIcon className="mr-2 size-4" />
-                <span>{t("header.profile")}</span>
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="flex items-center">
+                  <UserIcon className="mr-2 size-4" />
+                  <span>{t("header.profile")}</span>
+                </Link>
               </DropdownMenuItem>
               <Link to="/settings">
                 <DropdownMenuItem>

@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getEmployeeStatusKey, getStatusVariant } from "@/lib/employee";
 import type { Employee } from "@/types/employee";
 
 interface EmployeeListProps {
@@ -40,35 +41,6 @@ export function EmployeeList({
   isHR = false,
 }: EmployeeListProps) {
   const { t } = useTranslation();
-
-  const getStatusVariant = (status: Employee["status"]) => {
-    switch (status) {
-      case "Active":
-        return "default";
-      case "OnLeave":
-        return "secondary";
-      case "Resigned":
-      case "Terminated":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
-
-  const getStatusLabel = (status: Employee["status"]) => {
-    switch (status) {
-      case "Active":
-        return t("employees.status.active", "Active");
-      case "OnLeave":
-        return t("employees.status.onLeave", "On Leave");
-      case "Resigned":
-        return t("employees.status.resigned", "Resigned");
-      case "Terminated":
-        return t("employees.status.terminated", "Terminated");
-      default:
-        return status;
-    }
-  };
 
   if (isLoading) {
     return (
@@ -140,7 +112,7 @@ export function EmployeeList({
             <TableCell>{employee.position}</TableCell>
             <TableCell>
               <Badge variant={getStatusVariant(employee.status)}>
-                {getStatusLabel(employee.status)}
+                {t(getEmployeeStatusKey(employee.status))}
               </Badge>
             </TableCell>
             <TableCell>

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { EmployeesAPI } from "@/lib/api";
-import { useMyEmployeeProfile } from "../useMyEmployeeProfile";
+import { useMyEmployeeProfile } from "../useEmployees";
 
 vi.mock("@/lib/api", () => ({
   EmployeesAPI: {

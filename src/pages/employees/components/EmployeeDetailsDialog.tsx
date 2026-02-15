@@ -22,6 +22,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import {
+  getEmployeeStatusKey,
+  getEmploymentTypeKey,
+  getStatusVariant,
+} from "@/lib/employee";
 import type { Employee } from "@/types/employee";
 
 interface EmployeeDetailsDialogProps {
@@ -38,43 +43,6 @@ export function EmployeeDetailsDialog({
   const { t } = useTranslation();
 
   if (!employee) return null;
-
-  const getStatusLabel = (status: string) => {
-    const keyMap: Record<string, string> = {
-      Active: "active",
-      OnLeave: "onLeave",
-      Resigned: "resigned",
-      Terminated: "terminated",
-    };
-    return t(
-      `employees.status.${keyMap[status] || status.toLowerCase()}`,
-      status,
-    );
-  };
-
-  const getStatusVariant = (status: string) => {
-    switch (status) {
-      case "Active":
-        return "default";
-      case "OnLeave":
-        return "secondary";
-      case "Resigned":
-      case "Terminated":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
-
-  const getTypeLabel = (type: string) => {
-    const keyMap: Record<string, string> = {
-      FullTime: "fullTime",
-      PartTime: "partTime",
-      Contract: "contract",
-      Intern: "intern",
-    };
-    return t(`employees.type.${keyMap[type] || type.toLowerCase()}`, type);
-  };
 
   const fullName = `${employee.firstName} ${employee.lastName}`;
   const initials = `${employee.firstName[0]}${employee.lastName[0]}`;
@@ -110,7 +78,7 @@ export function EmployeeDetailsDialog({
               <span>{employee.position}</span>
             </div>
             <Badge variant={getStatusVariant(employee.status)} className="mt-2">
-              {getStatusLabel(employee.status)}
+              {t(getEmployeeStatusKey(employee.status))}
             </Badge>
           </div>
         </div>
@@ -127,7 +95,7 @@ export function EmployeeDetailsDialog({
             <DetailItem
               icon={<User className="h-4 w-4" />}
               label={t("employees.form.employmentType", "Type")}
-              value={getTypeLabel(employee.employmentType)}
+              value={t(getEmploymentTypeKey(employee.employmentType))}
             />
             <DetailItem
               icon={<Calendar className="h-4 w-4" />}

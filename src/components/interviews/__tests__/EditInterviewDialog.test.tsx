@@ -29,6 +29,7 @@ vi.mock("react-i18next", () => ({
     t: (key: string, defaultVal: string) => defaultVal || key,
     i18n: { language: "en" },
   }),
+  initReactI18next: { type: "3rdParty", init: vi.fn() },
 }));
 
 const queryClient = new QueryClient({

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { CandidatesAPI } from "@/lib/api";
-import { useMyEmployeeProfile } from "./useMyEmployeeProfile";
+import { useMyEmployeeProfile } from "./useEmployees";
 
 export function usePendingResumes() {
   const { data: employee } = useMyEmployeeProfile();

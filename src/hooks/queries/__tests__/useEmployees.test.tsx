@@ -3,7 +3,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type EmployeeAPIResponse, EmployeesAPI } from "@/lib/api";
+import { EmployeesAPI } from "@/lib/api";
+import type { Employee } from "@/types/employee";
 import { useEmployee, useEmployees } from "../useEmployees";
 
 // Mock EmployeesAPI
@@ -15,6 +16,12 @@ vi.mock("@/lib/api", () => ({
     update: vi.fn(),
     delete: vi.fn(),
   },
+}));
+
+vi.mock("@/stores/useAuthStore", () => ({
+  useAuthStore: vi.fn(() => ({
+    user: { id: "user-1" },
+  })),
 }));
 
 const createWrapper = () => {
@@ -41,14 +48,14 @@ describe("useEmployees", () => {
         id: "1",
         firstName: "John",
         lastName: "Doe",
-        joinDate: "2023-01-01T00:00:00Z",
+        joinDate: new Date("2023-01-01T00:00:00Z"),
         status: "Active",
         employmentType: "FullTime",
       },
     ];
 
     vi.mocked(EmployeesAPI.list).mockResolvedValue({
-      employees: mockEmployees as unknown as EmployeeAPIResponse[],
+      employees: mockEmployees as unknown as Employee[],
       total: 1,
       page: 1,
       limit: 10,
@@ -83,13 +90,13 @@ describe("useEmployees", () => {
       id: "1",
       firstName: "John",
       lastName: "Doe",
-      joinDate: "2023-01-01T00:00:00Z",
+      joinDate: new Date("2023-01-01T00:00:00Z"),
       status: "Active",
       employmentType: "FullTime",
     };
 
     vi.mocked(EmployeesAPI.get).mockResolvedValue(
-      mockEmployee as unknown as EmployeeAPIResponse,
+      mockEmployee as unknown as Employee,
     );
 
     const { result } = renderHook(() => useEmployee("1"), {

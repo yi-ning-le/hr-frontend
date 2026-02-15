@@ -1,6 +1,11 @@
 import type { InternalAxiosRequestConfig } from "axios";
 import axios from "axios";
 import { z } from "zod";
+import type { EmployeeAPIInput } from "@/lib/schemas/employee";
+import {
+  employeeListResultSchema,
+  employeeSchema,
+} from "@/lib/schemas/employee";
 import type { RegisterInput } from "@/types/auth";
 import type {
   Candidate,
@@ -10,6 +15,7 @@ import type {
   CandidateStatus,
   CandidateStatusDefinition,
 } from "@/types/candidate"; // CandidateStatus is string, Definition is object
+import type { Employee } from "@/types/employee";
 import type { JobPosition } from "@/types/job";
 import type {
   CreateInterviewInput,
@@ -438,17 +444,10 @@ export interface EmployeeAPIResponse {
   temporaryPassword?: string;
 }
 
-export interface EmployeeListAPIResponse {
-  employees: EmployeeAPIResponse[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
 export const EmployeesAPI = {
-  getMe: async (): Promise<EmployeeAPIResponse> => {
-    const response = await api.get<EmployeeAPIResponse>("/employees/me");
-    return response.data;
+  getMe: async (): Promise<Employee> => {
+    const response = await api.get<unknown>("/employees/me");
+    return employeeSchema.parse(response.data);
   },
 
   list: async (
@@ -459,40 +458,31 @@ export const EmployeesAPI = {
       page?: number;
       limit?: number;
     } = {},
-  ): Promise<EmployeeListAPIResponse> => {
-    const response = await api.get<EmployeeListAPIResponse>("/employees", {
+  ): Promise<{
+    employees: Employee[];
+    total: number;
+    page: number;
+    limit: number;
+  }> => {
+    const response = await api.get<unknown>("/employees", {
       params,
     });
-    return {
-      ...response.data,
-      employees: response.data.employees.map((e) => ({
-        ...e,
-        joinDate: e.joinDate,
-      })),
-    };
+    return employeeListResultSchema.parse(response.data);
   },
 
-  get: async (id: string): Promise<EmployeeAPIResponse> => {
-    const response = await api.get<EmployeeAPIResponse>(`/employees/${id}`);
-    return response.data;
+  get: async (id: string): Promise<Employee> => {
+    const response = await api.get<unknown>(`/employees/${id}`);
+    return employeeSchema.parse(response.data);
   },
 
-  create: async (
-    data: Omit<EmployeeAPIResponse, "id">,
-  ): Promise<EmployeeAPIResponse> => {
-    const response = await api.post<EmployeeAPIResponse>("/employees", data);
-    return response.data;
+  create: async (data: EmployeeAPIInput): Promise<Employee> => {
+    const response = await api.post<unknown>("/employees", data);
+    return employeeSchema.parse(response.data);
   },
 
-  update: async (
-    id: string,
-    data: Omit<EmployeeAPIResponse, "id">,
-  ): Promise<EmployeeAPIResponse> => {
-    const response = await api.put<EmployeeAPIResponse>(
-      `/employees/${id}`,
-      data,
-    );
-    return response.data;
+  update: async (id: string, data: EmployeeAPIInput): Promise<Employee> => {
+    const response = await api.put<unknown>(`/employees/${id}`, data);
+    return employeeSchema.parse(response.data);
   },
 
   delete: async (id: string): Promise<void> => {

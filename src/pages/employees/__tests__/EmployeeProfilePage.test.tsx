@@ -91,7 +91,7 @@ describe("EmployeeProfilePage", () => {
   it("renders employee status badge", () => {
     render(<EmployeeProfilePage />);
 
-    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("employees.status.active")).toBeInTheDocument();
   });
 
   it("renders employee avatar with initials", () => {
@@ -107,7 +107,7 @@ describe("EmployeeProfilePage", () => {
     expect(screen.getByText("john.doe@example.com")).toBeInTheDocument();
     expect(screen.getByText("1234567890")).toBeInTheDocument();
     expect(screen.getByText("Engineering")).toBeInTheDocument();
-    expect(screen.getByText("FullTime")).toBeInTheDocument();
+    expect(screen.getByText("employees.type.fullTime")).toBeInTheDocument();
   });
 
   it("renders detail labels with translation keys", () => {

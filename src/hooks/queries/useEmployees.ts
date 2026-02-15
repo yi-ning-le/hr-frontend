@@ -1,11 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EmployeesAPI } from "@/lib/api";
-import type {
-  Employee,
-  EmployeeInput,
-  EmployeeStatus,
-  EmploymentType,
-} from "@/types/employee";
+import { useAuthStore } from "@/stores/useAuthStore";
+import type { EmployeeInput } from "@/types/employee";
 
 export const EMPLOYEE_QUERY_KEY = ["employees"] as const;
 
@@ -20,41 +16,29 @@ interface UseEmployeesOptions {
 export const useEmployees = (options: UseEmployeesOptions = {}) => {
   return useQuery({
     queryKey: [...EMPLOYEE_QUERY_KEY, options],
-    queryFn: async () => {
-      const result = await EmployeesAPI.list(options);
-
-      const employees: Employee[] = result.employees.map((e) => ({
-        ...e,
-        status: e.status as EmployeeStatus,
-        employmentType: e.employmentType as EmploymentType,
-        joinDate: new Date(e.joinDate),
-      }));
-
-      return {
-        employees,
-        total: result.total,
-        page: result.page,
-        limit: result.limit,
-      };
-    },
+    queryFn: () => EmployeesAPI.list(options),
   });
 };
 
 export const useEmployee = (id: string) => {
   return useQuery({
     queryKey: [...EMPLOYEE_QUERY_KEY, id],
-    queryFn: async () => {
-      const result = await EmployeesAPI.get(id);
-      return {
-        ...result,
-        status: result.status as EmployeeStatus,
-        employmentType: result.employmentType as EmploymentType,
-        joinDate: new Date(result.joinDate),
-      } as Employee;
-    },
+    queryFn: () => EmployeesAPI.get(id),
     enabled: !!id,
   });
 };
+
+export function useMyEmployeeProfile() {
+  const { user } = useAuthStore();
+
+  return useQuery({
+    queryKey: [...EMPLOYEE_QUERY_KEY, "me"],
+    queryFn: () => EmployeesAPI.getMe(),
+    enabled: !!user?.id,
+    retry: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
 
 export const useCreateEmployee = () => {
   const queryClient = useQueryClient();

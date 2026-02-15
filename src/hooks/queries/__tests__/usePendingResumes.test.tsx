@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useMyEmployeeProfile } from "@/hooks/queries/useMyEmployeeProfile";
+import { useMyEmployeeProfile } from "@/hooks/queries/useEmployees";
 import { usePendingResumes } from "@/hooks/queries/usePendingResumes";
 import { CandidatesAPI } from "@/lib/api";
 
@@ -13,7 +13,7 @@ vi.mock("@/lib/api", () => ({
 }));
 
 // Mock useMyEmployeeProfile
-vi.mock("@/hooks/queries/useMyEmployeeProfile", () => ({
+vi.mock("@/hooks/queries/useEmployees", () => ({
   useMyEmployeeProfile: vi.fn(),
 }));
 
