@@ -38,7 +38,7 @@ export const CandidateReviewPanel: React.FC<CandidateReviewPanelProps> = ({
     setIsReviewing(true);
     try {
       // We pass empty string for reviewNote as it's no longer collected separately
-      await CandidatesAPI.review(candidate.id, status, "");
+      await CandidatesAPI.review(candidate.id, status);
       toast.success(
         t("candidate.reviewSuccess", "Review submitted successfully"),
       );

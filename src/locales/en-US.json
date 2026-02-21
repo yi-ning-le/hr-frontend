@@ -90,8 +90,7 @@
     "selectDecision": "Select decision",
     "suitable": "Suitable",
     "unsuitable": "Unsuitable",
-    "reviewNote": "Comments",
-    "reviewNotePlaceholder": "Add any comments here...",
+
     "reviewSuccess": "Review submitted successfully",
     "reviewFailed": "Failed to submit review",
     "viewInfo": "Info Card",

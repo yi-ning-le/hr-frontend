@@ -392,14 +392,9 @@ export const CandidatesAPI = {
     };
   },
 
-  review: async (
-    id: string,
-    reviewStatus: string,
-    reviewNote?: string,
-  ): Promise<Candidate> => {
+  review: async (id: string, reviewStatus: string): Promise<Candidate> => {
     const response = await api.post<Candidate>(`/candidates/${id}/review`, {
       reviewStatus,
-      reviewNote,
     });
     return {
       ...response.data,
