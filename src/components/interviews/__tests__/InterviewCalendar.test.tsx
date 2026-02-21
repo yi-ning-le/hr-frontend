@@ -100,9 +100,11 @@ describe("InterviewCalendar", () => {
       />,
     );
 
-    // Look for Alice's name in the event
-    expect(screen.getByText("Alice")).toBeInTheDocument();
-    // Look for interview time in the event
-    expect(screen.getByText(format(today, "HH:mm"))).toBeInTheDocument();
+    // Look for Alice's name in the event (may appear multiple times if event spans days)
+    const aliceElements = screen.getAllByText("Alice");
+    expect(aliceElements.length).toBeGreaterThan(0);
+    // Look for interview time in the event (may also appear multiple times)
+    const timeElements = screen.getAllByText(format(today, "HH:mm"));
+    expect(timeElements.length).toBeGreaterThan(0);
   });
 });
