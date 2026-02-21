@@ -1,9 +1,9 @@
 import type { DropResult } from "@hello-pangea/dnd";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { LayoutGrid, List as ListIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Pagination,
   PaginationContent,
@@ -229,6 +229,11 @@ export function CandidateManagement() {
         onOpenChange={(open: boolean) => !open && selectCandidate(null)}
       >
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
+          <VisuallyHidden.Root>
+            <DialogTitle>
+              {t("recruitment.candidates.detailTitle", "Candidate Details")}
+            </DialogTitle>
+          </VisuallyHidden.Root>
           {selectedCandidateId && (
             <CandidateDetail
               candidateId={selectedCandidateId}

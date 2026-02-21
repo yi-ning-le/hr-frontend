@@ -33,7 +33,16 @@ vi.mock("@/hooks/useUserRole", () => ({
   useUserRole: vi.fn(),
 }));
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
+
+const queryClient = new QueryClient();
+
+const renderWithProviders = (ui: React.ReactElement) => {
+  return render(
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
+  );
+};
 
 describe("Header Navigation", () => {
   it("shows Pending Resumes link for interviewers", async () => {
@@ -58,7 +67,7 @@ describe("Header Navigation", () => {
       isHR: false,
     } as any);
 
-    render(<Header />);
+    renderWithProviders(<Header />);
     const link = screen.getByRole("link", { name: /pending resumes/i });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/pending-resumes");
@@ -82,7 +91,7 @@ describe("Header Navigation", () => {
       isHR: false,
     } as any);
 
-    render(<Header />);
+    renderWithProviders(<Header />);
     const link = screen.queryByRole("link", { name: /pending resumes/i });
     expect(link).not.toBeInTheDocument();
   });
@@ -106,7 +115,7 @@ describe("Header Navigation", () => {
       isHR: false,
     } as any);
 
-    render(<Header />);
+    renderWithProviders(<Header />);
 
     // Open the dropdown by clicking the avatar/button
     const avatarButton = screen.getByRole("button", { name: /admin/i });

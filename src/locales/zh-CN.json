@@ -41,6 +41,8 @@
     "total": "总计",
     "refresh": "刷新",
     "unknown": "未知",
+    "updateSuccess": "更新成功",
+    "updateFailed": "更新失败",
     "pageOf": "第 {{page}} 页，共 {{total}} 页",
     "saving": "正在保存...",
     "submitting": "正在提交...",
@@ -74,6 +76,7 @@
     "management": "系统管理"
   },
   "candidate": {
+    "resumeViewerTitle": "候选人简历",
     "assignReviewer": "分配评审人",
     "assignReviewerTitle": "分配评审人",
     "assignDescription": "选择一位评审人来处理该候选人简历。",
@@ -568,8 +571,10 @@
   "employees": {
     "title": "员工档案",
     "subtitle": "管理您的团队成员",
+    "notFound": "未找到员工",
     "addEmployee": "添加员工",
     "editEmployee": "编辑员工",
+    "editEmployeeDesc": "编辑员工信息",
     "searchPlaceholder": "搜索姓名或邮箱...",
     "filterStatus": "状态",
     "allStatuses": "所有状态",
@@ -625,6 +630,12 @@
       "deleteSuccess": "员工删除成功",
       "deleteError": "删除员工失败"
     }
+  },
+  "notifications": {
+    "title": "通知",
+    "empty": "暂无通知",
+    "markAllAsRead": "全部标记为已读",
+    "viewDetails": "查看详情"
   },
   "footer": {
     "copyright": "© 2026 HR System. 保留所有权利。"

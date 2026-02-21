@@ -1,11 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  Bell,
-  Building2,
-  LogOut,
-  Settings,
-  User as UserIcon,
-} from "lucide-react";
+import { Building2, LogOut, Settings, User as UserIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,6 +15,7 @@ import {
 import { useUserRole } from "@/hooks/useUserRole";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { NotificationBell } from "./NotificationBell";
 
 function HeaderLink({
   className,
@@ -102,13 +97,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="size-5 text-slate-600 dark:text-slate-400" />
-            {/* TODO: Remove magic number when notifications are implemented */}
-            <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
-              3
-            </span>
-          </Button>
+          <NotificationBell />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

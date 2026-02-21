@@ -41,6 +41,8 @@
     "total": "Total",
     "refresh": "Refresh",
     "unknown": "Unknown",
+    "updateSuccess": "Update Successful",
+    "updateFailed": "Update Failed",
     "pageOf": "Page {{page}} of {{total}}",
     "saving": "Saving...",
     "submitting": "Submitting...",
@@ -74,6 +76,7 @@
     "management": "System Management"
   },
   "candidate": {
+    "resumeViewerTitle": "Candidate Resume",
     "assignReviewer": "Assign Reviewer",
     "assignReviewerTitle": "Assign Reviewer",
     "assignDescription": "Select a reviewer to evaluate this candidate's resume.",
@@ -568,8 +571,10 @@
   "employees": {
     "title": "Employees",
     "subtitle": "Manage your team members",
+    "notFound": "Employee not found",
     "addEmployee": "Add Employee",
     "editEmployee": "Edit Employee",
+    "editEmployeeDesc": "Edit employee information",
     "searchPlaceholder": "Search by name or email...",
     "filterStatus": "Status",
     "allStatuses": "All Statuses",
@@ -625,6 +630,12 @@
       "deleteSuccess": "Employee deleted successfully",
       "deleteError": "Failed to delete employee"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAllAsRead": "Mark all as read",
+    "viewDetails": "View details"
   },
   "footer": {
     "copyright": "© 2026 HR System. All rights reserved."

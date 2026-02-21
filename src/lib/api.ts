@@ -18,6 +18,10 @@ import type {
 import type { Employee } from "@/types/employee";
 import type { JobPosition } from "@/types/job";
 import type {
+  Notification,
+  NotificationUnreadCount,
+} from "@/types/notification";
+import type {
   CreateInterviewInput,
   Interview,
   InterviewListResult,
@@ -732,5 +736,29 @@ export const CommentsAPI = {
 
   delete: async (commentId: string): Promise<void> => {
     await api.delete(`/comments/${commentId}`);
+  },
+};
+
+export const NotificationsAPI = {
+  getNotifications: async (limit = 50, offset = 0): Promise<Notification[]> => {
+    const response = await api.get<Notification[]>("/notifications", {
+      params: { limit, offset },
+    });
+    return response.data;
+  },
+
+  getUnreadCount: async (): Promise<number> => {
+    const response = await api.get<NotificationUnreadCount>(
+      "/notifications/unread-count",
+    );
+    return response.data.count;
+  },
+
+  markAsRead: async (id: string): Promise<void> => {
+    await api.put(`/notifications/${id}/read`);
+  },
+
+  markAllAsRead: async (): Promise<void> => {
+    await api.put("/notifications/read-all");
   },
 };
