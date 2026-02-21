@@ -16,6 +16,12 @@ vi.mock("@/pages/settings/components/RecruiterManagement", () => ({
   ),
 }));
 
+vi.mock("@/pages/settings/components/InterviewerManagement", () => ({
+  InterviewerManagement: () => (
+    <div data-testid="interviewer-management">Interviewer Management</div>
+  ),
+}));
+
 vi.mock("@/pages/settings/components/HRManagement", () => ({
   HRManagement: () => <div data-testid="hr-management">HR Management</div>,
 }));
@@ -30,6 +36,9 @@ describe("AdminPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Recruiters" })).toBeInTheDocument();
     expect(
+      screen.getByRole("tab", { name: "Interviewers" }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("tab", { name: "HR Management" }),
     ).toBeInTheDocument();
   });
@@ -40,8 +49,8 @@ describe("AdminPage", () => {
   });
 
   it("respects activeTab prop in controlled mode", () => {
-    render(<AdminPage activeTab="hr-management" />);
-    expect(screen.getByTestId("hr-management")).toBeInTheDocument();
+    render(<AdminPage activeTab="interviewers" />);
+    expect(screen.getByTestId("interviewer-management")).toBeInTheDocument();
     expect(
       screen.queryByTestId("recruiter-management"),
     ).not.toBeInTheDocument();

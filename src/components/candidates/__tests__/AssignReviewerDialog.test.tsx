@@ -14,27 +14,22 @@ vi.mock("@/lib/api", () => ({
   },
 }));
 
-vi.mock("@/hooks/queries/useEmployees", () => ({
-  useEmployees: () => ({
-    data: {
-      employees: [
-        {
-          id: "e1",
-          userId: "u1",
-          firstName: "Alice",
-          lastName: "Smith",
-          email: "alice@example.com",
-        },
-        {
-          id: "e2",
-          userId: "u2",
-          firstName: "Bob",
-          lastName: "Jones",
-          email: "bob@example.com",
-        },
-      ],
-      total: 2,
-    },
+vi.mock("@/hooks/queries/useReviewers", () => ({
+  useReviewers: () => ({
+    data: [
+      {
+        employeeId: "e1",
+        firstName: "Alice",
+        lastName: "Smith",
+        department: "Engineering",
+      },
+      {
+        employeeId: "e2",
+        firstName: "Bob",
+        lastName: "Jones",
+        department: "HR",
+      },
+    ],
     isLoading: false,
   }),
 }));

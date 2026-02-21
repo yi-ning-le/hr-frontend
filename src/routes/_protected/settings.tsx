@@ -48,7 +48,6 @@ export const Route = createRoute({
         isRecruiter: roleData?.isRecruiter ?? false,
         isInterviewer: roleData?.isInterviewer ?? false,
         isHR: roleData?.isHR ?? false,
-        canReviewResumes: roleData?.canReviewResumes ?? false,
       };
 
       if (!targetTab.isVisible(context)) {

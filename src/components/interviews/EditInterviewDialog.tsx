@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 import { TimePicker } from "@/components/ui/time-picker";
 
-import { useEmployees } from "@/hooks/queries/useEmployees";
+import { useInterviewers } from "@/hooks/queries/useInterviewers";
 import { useUpdateInterview } from "@/hooks/queries/useInterviews";
 import { cn } from "@/lib/utils";
 import type { Interview } from "@/types/recruitment.d";
@@ -100,8 +100,7 @@ export function EditInterviewDialog({
       }
     });
 
-  const { data: employeeData } = useEmployees({ limit: 100, status: "Active" });
-  const employees = employeeData?.employees || [];
+  const { data: interviewers = [] } = useInterviewers();
 
   const { mutateAsync: updateInterview, isPending: isSubmitting } =
     useUpdateInterview();
@@ -191,9 +190,12 @@ export function EditInterviewDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {employees.map((employee) => (
-                        <SelectItem key={employee.id} value={employee.id}>
-                          {employee.firstName} {employee.lastName}
+                      {interviewers.map((interviewer) => (
+                        <SelectItem
+                          key={interviewer.employeeId}
+                          value={interviewer.employeeId}
+                        >
+                          {interviewer.firstName} {interviewer.lastName}
                         </SelectItem>
                       ))}
                     </SelectContent>

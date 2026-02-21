@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -11,10 +12,11 @@ vi.mock("@/hooks/queries/useInterviews", () => ({
     mutateAsync: mockUpdateInterview,
     isPending: false,
   }),
-  useEmployees: () => ({
-    data: {
-      employees: [{ id: "e1", firstName: "Bob", lastName: "Builder" }],
-    },
+}));
+
+vi.mock("@/hooks/queries/useInterviewers", () => ({
+  useInterviewers: () => ({
+    data: [{ employeeId: "e1", firstName: "Bob", lastName: "Builder" }],
   }),
 }));
 

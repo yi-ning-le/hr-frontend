@@ -11,6 +11,7 @@ vi.mock("react-i18next", () => ({
     t: (key: string) => key,
     i18n: { language: "en-US" },
   }),
+  initReactI18next: { type: "3rdParty", init: vi.fn() },
 }));
 
 // Mock hooks
@@ -21,14 +22,14 @@ vi.mock("@/hooks/queries/useInterviews", () => ({
   }),
 }));
 
-const mockEmployees = [
-  { id: "emp1", firstName: "Alice", lastName: "Smith" },
-  { id: "emp2", firstName: "Bob", lastName: "Jones" },
+const mockInterviewers = [
+  { employeeId: "emp1", firstName: "Alice", lastName: "Smith" },
+  { employeeId: "emp2", firstName: "Bob", lastName: "Jones" },
 ];
 
-vi.mock("@/hooks/queries/useEmployees", () => ({
-  useEmployees: () => ({
-    data: { employees: mockEmployees },
+vi.mock("@/hooks/queries/useInterviewers", () => ({
+  useInterviewers: () => ({
+    data: mockInterviewers,
   }),
 }));
 

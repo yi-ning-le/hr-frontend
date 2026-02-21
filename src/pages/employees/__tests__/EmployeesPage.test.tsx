@@ -323,7 +323,6 @@ describe("EmployeesPage - HR Access Control", () => {
   it("shows Add Employee button for HR users", () => {
     vi.mocked(useUserRole).mockReturnValue({
       isAdmin: false,
-      isRecruiter: false,
       isInterviewer: false,
       isHR: true,
       canReviewResumes: false,
@@ -340,7 +339,6 @@ describe("EmployeesPage - HR Access Control", () => {
   it("hides Add Employee button for non-HR users", () => {
     vi.mocked(useUserRole).mockReturnValue({
       isAdmin: false,
-      isRecruiter: false,
       isInterviewer: false,
       isHR: false,
       canReviewResumes: false,

@@ -54,7 +54,6 @@ describe("useUserRole", () => {
       isRecruiter: false,
       isInterviewer: true,
       isHR: false,
-      canReviewResumes: true,
     });
 
     const { result } = renderHook(() => useUserRole(), {
@@ -66,7 +65,6 @@ describe("useUserRole", () => {
     expect(result.current.isAdmin).toBe(true);
     expect(result.current.isRecruiter).toBe(false);
     expect(result.current.isInterviewer).toBe(true);
-    expect(result.current.canReviewResumes).toBe(true);
     expect(result.current.isHR).toBe(false);
     expect(result.current.isError).toBe(false);
   });
@@ -84,7 +82,6 @@ describe("useUserRole", () => {
     expect(result.current.isAdmin).toBe(false);
     expect(result.current.isRecruiter).toBe(false);
     expect(result.current.isInterviewer).toBe(false);
-    expect(result.current.canReviewResumes).toBe(false);
     expect(result.current.isHR).toBe(false);
   });
 
@@ -105,7 +102,6 @@ describe("useUserRole", () => {
     expect(result.current.isAdmin).toBe(false);
     expect(result.current.isRecruiter).toBe(false);
     expect(result.current.isInterviewer).toBe(false);
-    expect(result.current.canReviewResumes).toBe(false);
     expect(result.current.isHR).toBe(false);
     expect(result.current.error).toBeInstanceOf(Error);
   });
@@ -116,7 +112,6 @@ describe("useUserRole", () => {
       isRecruiter: true,
       isInterviewer: false,
       isHR: true,
-      canReviewResumes: true,
     });
 
     const { result } = renderHook(() => useUserRole(), {

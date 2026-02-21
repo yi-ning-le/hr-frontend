@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEmployees } from "@/hooks/queries/useEmployees";
+import { useReviewers } from "@/hooks/queries/useReviewers";
 import { CandidatesAPI } from "@/lib/api";
 import type { Candidate } from "@/types/candidate";
 
@@ -51,7 +51,7 @@ export function AssignReviewerDialog({
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: employeesData } = useEmployees({ status: "Active" }); // Fetch all active employees
+  const { data: reviewers } = useReviewers();
 
   const assignSchema = useMemo(
     () =>
@@ -131,9 +131,12 @@ export function AssignReviewerDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {employeesData?.employees?.map((employee) => (
-                        <SelectItem key={employee.id} value={employee.id}>
-                          {employee.firstName} {employee.lastName}
+                      {reviewers?.map((reviewer) => (
+                        <SelectItem
+                          key={reviewer.employeeId}
+                          value={reviewer.employeeId}
+                        >
+                          {reviewer.firstName} {reviewer.lastName}
                         </SelectItem>
                       ))}
                     </SelectContent>

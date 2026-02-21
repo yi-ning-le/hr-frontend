@@ -11,7 +11,6 @@ export interface UserRoleContext {
   isRecruiter: boolean;
   isInterviewer: boolean;
   isHR: boolean;
-  canReviewResumes: boolean;
 }
 
 export interface SettingsTab {

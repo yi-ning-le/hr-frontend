@@ -71,7 +71,6 @@ describe("Admin Route", () => {
     queryClient.setQueryData(userRoleQueryOptions().queryKey, {
       isAdmin: true,
       isInterviewer: false,
-      isRecruiter: false,
       isHR: false,
       canReviewResumes: false,
     });

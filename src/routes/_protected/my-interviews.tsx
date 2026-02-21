@@ -16,10 +16,7 @@ export const Route = createRoute({
   beforeLoad: async () => {
     const roles = await queryClient.ensureQueryData(userRoleQueryOptions());
     const canAccessInterviews =
-      roles.canReviewResumes ||
-      roles.isInterviewer ||
-      roles.isRecruiter ||
-      roles.isAdmin;
+      roles.isInterviewer || roles.isRecruiter || roles.isAdmin;
 
     if (!canAccessInterviews) {
       throw redirect({ to: "/" });

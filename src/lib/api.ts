@@ -546,7 +546,6 @@ export interface RecruitmentRoleResponse {
   isRecruiter: boolean;
   isInterviewer: boolean;
   isHR: boolean;
-  canReviewResumes: boolean;
 }
 
 // Recruiter type
@@ -574,9 +573,7 @@ export const RecruitmentAPI = {
   },
 
   getRecruiters: async (): Promise<Recruiter[]> => {
-    const response = await api.get<Recruiter[]>(
-      "/recruitment/admin/recruiters",
-    );
+    const response = await api.get<Recruiter[]>("/recruitment/recruiters");
     return response.data;
   },
 
@@ -586,6 +583,21 @@ export const RecruitmentAPI = {
 
   revokeRecruiter: async (employeeId: string): Promise<void> => {
     await api.delete("/recruitment/admin/recruiters", { data: { employeeId } });
+  },
+
+  getInterviewers: async (): Promise<Recruiter[]> => {
+    const response = await api.get<Recruiter[]>("/recruitment/interviewers");
+    return response.data;
+  },
+
+  assignInterviewer: async (employeeId: string): Promise<void> => {
+    await api.post("/recruitment/admin/interviewers", { employeeId });
+  },
+
+  revokeInterviewer: async (employeeId: string): Promise<void> => {
+    await api.delete("/recruitment/admin/interviewers", {
+      data: { employeeId },
+    });
   },
 
   transferInterview: async (
@@ -599,7 +611,7 @@ export const RecruitmentAPI = {
 
   // HR Management APIs
   getHRs: async (): Promise<HREmployee[]> => {
-    const response = await api.get<HREmployee[]>("/recruitment/admin/hrs");
+    const response = await api.get<HREmployee[]>("/recruitment/hrs");
     return response.data;
   },
 

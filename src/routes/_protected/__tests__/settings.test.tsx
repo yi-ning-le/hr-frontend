@@ -64,7 +64,6 @@ describe("Settings Route Validation", () => {
       isInterviewer: false,
       isRecruiter: false,
       isHR: false,
-      canReviewResumes: false,
     });
   });
 
@@ -147,7 +146,6 @@ describe("Settings Route Validation", () => {
       isInterviewer: false,
       isRecruiter: true, // Recruiter
       isHR: false,
-      canReviewResumes: false,
     });
 
     const router = createTestRouter(
@@ -168,7 +166,6 @@ describe("Settings Route Validation", () => {
       isInterviewer: false,
       isRecruiter: false,
       isHR: false,
-      canReviewResumes: false,
     });
 
     const router = createTestRouter(`/settings?tab=${AdminTabId.Recruiters}`);

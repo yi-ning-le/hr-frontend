@@ -467,8 +467,7 @@ describe("lib/api", () => {
       it("should fetch my recruitment role", async () => {
         const mockRole = {
           isAdmin: true,
-          isRecruiter: true,
-          isInterviewer: false,
+          isInterviewer: true,
           isHR: false,
           canReviewResumes: true,
         };
@@ -495,9 +494,7 @@ describe("lib/api", () => {
 
         const result = await RecruitmentAPI.getRecruiters();
 
-        expect(mockAxios.get).toHaveBeenCalledWith(
-          "/recruitment/admin/recruiters",
-        );
+        expect(mockAxios.get).toHaveBeenCalledWith("/recruitment/recruiters");
         expect(result).toEqual(mockRecruiters);
       });
     });

@@ -9,11 +9,7 @@ export const Route = createRoute({
   path: "/pending-resumes",
   beforeLoad: async () => {
     const roles = await queryClient.ensureQueryData(userRoleQueryOptions());
-    const canAccessInterviews =
-      roles.canReviewResumes ||
-      roles.isInterviewer ||
-      roles.isRecruiter ||
-      roles.isAdmin;
+    const canAccessInterviews = roles.isInterviewer || roles.isRecruiter;
 
     if (!canAccessInterviews) {
       throw redirect({

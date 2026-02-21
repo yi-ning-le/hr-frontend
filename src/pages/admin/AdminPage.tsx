@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HRManagement } from "@/pages/settings/components/HRManagement";
+import { InterviewerManagement } from "@/pages/settings/components/InterviewerManagement";
 import { RecruiterManagement } from "@/pages/settings/components/RecruiterManagement";
 import { AdminTabId, type AdminTabIdType } from "./constants";
 
@@ -17,6 +18,11 @@ export function AdminPage({ activeTab, onTabChange }: AdminPageProps) {
       id: AdminTabId.Recruiters,
       label: t("settings.tabs.recruiters", "Recruiters"),
       component: <RecruiterManagement />,
+    },
+    {
+      id: AdminTabId.Interviewers,
+      label: t("settings.tabs.interviewers", "Interviewers"),
+      component: <InterviewerManagement />,
     },
     {
       id: AdminTabId.HRManagement,
