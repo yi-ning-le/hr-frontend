@@ -1,6 +1,6 @@
-// @vitest-environment jsdom
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { format } from "date-fns";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { usePendingResumes } from "@/hooks/queries/usePendingResumes";
 import { useReviewedCandidates } from "@/hooks/queries/useReviewedCandidates";
@@ -14,16 +14,25 @@ vi.mock("@/hooks/queries/useReviewedCandidates", () => ({
   useReviewedCandidates: vi.fn(),
 }));
 
+const mockNavigate = vi.fn();
+const mockUseSearch = vi.fn();
+
 vi.mock("@/routes/_protected/pending-resumes", () => ({
   Route: {
-    useNavigate: vi.fn(() => vi.fn()),
-    useSearch: vi.fn(() => ({ reviewCandidateId: undefined })),
+    useNavigate: vi.fn(() => mockNavigate),
+    useSearch: () => mockUseSearch(),
   },
 }));
 
 // Mock CandidateReviewDialog
 vi.mock("@/components/interviews/CandidateReviewDialog", () => ({
-  CandidateReviewDialog: ({ open, onOpenChange }: any) =>
+  CandidateReviewDialog: ({
+    open,
+    onOpenChange,
+  }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+  }) =>
     open ? (
       <div role="dialog">
         Mock Candidate Review Dialog
@@ -53,16 +62,53 @@ describe("PendingResumesPage", () => {
     },
   ];
 
+  const mockReviewedCandidates = [
+    {
+      id: "r1",
+      name: "Alice Brown",
+      appliedJobTitle: "Engineer",
+      experienceYears: 7,
+      appliedAt: "2025-01-05T00:00:00.000Z",
+      reviewStatus: "approved",
+      status: "interview",
+      reviewedAt: "2025-01-10T14:30:00.000Z",
+    },
+    {
+      id: "r2",
+      name: "Bob Wilson",
+      appliedJobTitle: "Manager",
+      experienceYears: 10,
+      appliedAt: "2025-01-06T00:00:00.000Z",
+      reviewStatus: "rejected",
+      status: "rejected",
+      reviewedAt: "2025-01-11T09:15:00.000Z",
+    },
+    {
+      id: "r3",
+      name: "Charlie Davis",
+      appliedJobTitle: "Developer",
+      experienceYears: 4,
+      appliedAt: "2025-01-07T00:00:00.000Z",
+      reviewStatus: "approved",
+      status: "interview",
+      reviewedAt: null,
+    },
+  ];
+
   beforeEach(() => {
     vi.clearAllMocks();
-    (useReviewedCandidates as any).mockReturnValue({
+    mockUseSearch.mockReturnValue({
+      reviewCandidateId: undefined,
+      tab: "pending",
+    });
+    (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
       data: [],
       isLoading: false,
     });
   });
 
   it("should render loading state when pending resumes are loading", () => {
-    (usePendingResumes as any).mockReturnValue({
+    (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
       data: undefined,
       isLoading: true,
     });
@@ -72,7 +118,7 @@ describe("PendingResumesPage", () => {
   });
 
   it("should render list of candidates", () => {
-    (usePendingResumes as any).mockReturnValue({
+    (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
       data: mockCandidates,
       isLoading: false,
     });
@@ -87,12 +133,12 @@ describe("PendingResumesPage", () => {
   });
 
   it("should not block pending list when reviewed data is loading", () => {
-    (usePendingResumes as any).mockReturnValue({
+    (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
       data: mockCandidates,
       isLoading: false,
       isError: false,
     });
-    (useReviewedCandidates as any).mockReturnValue({
+    (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
       data: undefined,
       isLoading: true,
       isError: false,
@@ -105,7 +151,7 @@ describe("PendingResumesPage", () => {
   });
 
   it("should open review dialog when Review button is clicked", async () => {
-    (usePendingResumes as any).mockReturnValue({
+    (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
       data: mockCandidates,
       isLoading: false,
     });
@@ -122,5 +168,228 @@ describe("PendingResumesPage", () => {
     expect(
       screen.getByText("Mock Candidate Review Dialog"),
     ).toBeInTheDocument();
+  });
+
+  // === Tab Persistence Tests ===
+
+  describe("tab persistence in route", () => {
+    it("should default to pending tab when tab search param is undefined", () => {
+      mockUseSearch.mockReturnValue({
+        reviewCandidateId: undefined,
+        tab: "pending",
+      });
+      (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockCandidates,
+        isLoading: false,
+      });
+
+      render(<PendingResumesPage />);
+
+      // Pending tab content should be visible
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+    });
+
+    it("should show reviewed tab when tab search param is 'reviewed'", () => {
+      mockUseSearch.mockReturnValue({
+        reviewCandidateId: undefined,
+        tab: "reviewed",
+      });
+      (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockCandidates,
+        isLoading: false,
+      });
+      (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockReviewedCandidates,
+        isLoading: false,
+      });
+
+      render(<PendingResumesPage />);
+
+      // Reviewed tab content should be visible
+      expect(screen.getByText("Alice Brown")).toBeInTheDocument();
+      expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
+    });
+
+    it("should call navigate with tab param when switching tabs", async () => {
+      (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockCandidates,
+        isLoading: false,
+      });
+      (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockReviewedCandidates,
+        isLoading: false,
+      });
+
+      render(<PendingResumesPage />);
+
+      const user = userEvent.setup();
+      const reviewedTab = screen.getByRole("tab", {
+        name: /recruitment\.candidates\.reviewedListTitle/i,
+      });
+      await user.click(reviewedTab);
+
+      expect(mockNavigate).toHaveBeenCalled();
+      const call = mockNavigate.mock.calls.find(
+        (c: unknown[]) =>
+          typeof (c[0] as Record<string, unknown>)?.search === "function",
+      );
+      expect(call).toBeDefined();
+      const searchFn = (
+        call![0] as {
+          search: (prev: Record<string, unknown>) => Record<string, unknown>;
+        }
+      ).search;
+      const result = searchFn({ reviewCandidateId: undefined, tab: "pending" });
+      expect(result).toEqual(expect.objectContaining({ tab: "reviewed" }));
+    });
+  });
+
+  // === Reviewed Tab - Review Time Column ===
+
+  describe("reviewed tab - review time column", () => {
+    beforeEach(() => {
+      mockUseSearch.mockReturnValue({
+        reviewCandidateId: undefined,
+        tab: "reviewed",
+      });
+      (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+      (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockReviewedCandidates,
+        isLoading: false,
+      });
+    });
+
+    it("should show Review Time column header without actions column", () => {
+      render(<PendingResumesPage />);
+
+      expect(screen.getByText("candidate.reviewTime")).toBeInTheDocument();
+      expect(screen.queryByText("common.actions")).not.toBeInTheDocument();
+      expect(screen.queryByText("common.viewHistory")).not.toBeInTheDocument();
+    });
+
+    it("should display formatted review time for reviewed candidates", () => {
+      render(<PendingResumesPage />);
+
+      // Use format() to match what the component does with the local timezone
+      const aliceReviewTime = format(
+        new Date("2025-01-10T14:30:00.000Z"),
+        "yyyy-MM-dd HH:mm",
+      );
+      const bobReviewTime = format(
+        new Date("2025-01-11T09:15:00.000Z"),
+        "yyyy-MM-dd HH:mm",
+      );
+      expect(screen.getByText(aliceReviewTime)).toBeInTheDocument();
+      expect(screen.getByText(bobReviewTime)).toBeInTheDocument();
+    });
+
+    it("should display dash when reviewedAt is null", () => {
+      render(<PendingResumesPage />);
+
+      // Charlie has reviewedAt: null → should show "-"
+      const charlieRow = screen.getByText("Charlie Davis").closest("tr");
+      expect(charlieRow).toBeInTheDocument();
+      expect(within(charlieRow!).getByText("-")).toBeInTheDocument();
+    });
+  });
+
+  // === Reviewed Tab - Search & Filter ===
+
+  describe("reviewed tab - search and filter", () => {
+    beforeEach(() => {
+      mockUseSearch.mockReturnValue({
+        reviewCandidateId: undefined,
+        tab: "reviewed",
+      });
+      (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+      (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockReviewedCandidates,
+        isLoading: false,
+      });
+    });
+
+    it("should have a search input on the reviewed tab", () => {
+      render(<PendingResumesPage />);
+
+      const searchInput = screen.getByPlaceholderText(
+        "recruitment.candidates.searchPlaceholder",
+      );
+      expect(searchInput).toBeInTheDocument();
+    });
+
+    it("should filter reviewed candidates by name when typing in search", async () => {
+      render(<PendingResumesPage />);
+
+      const user = userEvent.setup();
+      const searchInput = screen.getByPlaceholderText(
+        "recruitment.candidates.searchPlaceholder",
+      );
+
+      await user.type(searchInput, "Alice");
+
+      expect(screen.getByText("Alice Brown")).toBeInTheDocument();
+      expect(screen.queryByText("Bob Wilson")).not.toBeInTheDocument();
+      expect(screen.queryByText("Charlie Davis")).not.toBeInTheDocument();
+    });
+
+    it("should filter reviewed candidates by position when typing in search", async () => {
+      render(<PendingResumesPage />);
+
+      const user = userEvent.setup();
+      const searchInput = screen.getByPlaceholderText(
+        "recruitment.candidates.searchPlaceholder",
+      );
+
+      await user.type(searchInput, "Developer");
+
+      expect(screen.queryByText("Alice Brown")).not.toBeInTheDocument();
+      expect(screen.queryByText("Bob Wilson")).not.toBeInTheDocument();
+      expect(screen.getByText("Charlie Davis")).toBeInTheDocument();
+    });
+
+    it("should have a review status filter dropdown", () => {
+      render(<PendingResumesPage />);
+
+      const filterSelect = screen.getByLabelText(
+        "candidate.reviewStatusFilter",
+      );
+      expect(filterSelect).toBeInTheDocument();
+    });
+
+    it("should filter reviewed candidates by review status", async () => {
+      render(<PendingResumesPage />);
+
+      const user = userEvent.setup();
+      const filterSelect = screen.getByLabelText(
+        "candidate.reviewStatusFilter",
+      );
+
+      await user.selectOptions(filterSelect, "rejected");
+
+      expect(screen.queryByText("Alice Brown")).not.toBeInTheDocument();
+      expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
+      expect(screen.queryByText("Charlie Davis")).not.toBeInTheDocument();
+    });
+
+    it("should show empty state when search yields no results", async () => {
+      render(<PendingResumesPage />);
+
+      const user = userEvent.setup();
+      const searchInput = screen.getByPlaceholderText(
+        "recruitment.candidates.searchPlaceholder",
+      );
+
+      await user.type(searchInput, "Nonexistent");
+
+      expect(screen.queryByText("Alice Brown")).not.toBeInTheDocument();
+      expect(screen.queryByText("Bob Wilson")).not.toBeInTheDocument();
+      expect(screen.queryByText("Charlie Davis")).not.toBeInTheDocument();
+    });
   });
 });

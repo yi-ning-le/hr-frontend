@@ -28,6 +28,7 @@ export interface Candidate {
   appliedAt: Date;
   reviewerId?: string;
   reviewStatus?: string;
+  reviewedAt?: string;
 }
 
 export interface CandidateComment {

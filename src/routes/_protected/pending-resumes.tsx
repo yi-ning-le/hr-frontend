@@ -7,6 +7,7 @@ import { Route as ProtectedLayoutRoute } from "../_protected";
 
 const pendingResumesSearchSchema = z.object({
   reviewCandidateId: z.string().optional(),
+  tab: z.enum(["pending", "reviewed"]).optional(),
 });
 
 export const Route = createRoute({

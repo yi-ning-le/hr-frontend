@@ -1,18 +1,12 @@
 import { format } from "date-fns";
-import { AlertCircle, ClipboardList, FileText, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AlertCircle, FileText, Loader2, Search } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CandidateActivityTimeline } from "@/components/candidates/CandidateActivityTimeline";
 import { CandidateReviewDialog } from "@/components/interviews/CandidateReviewDialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -32,8 +26,8 @@ type CandidateTab = "pending" | "reviewed";
 export default function PendingResumesPage() {
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
-  const { reviewCandidateId } = Route.useSearch();
-  const [activeTab, setActiveTab] = useState<CandidateTab>("pending");
+  const { reviewCandidateId, tab } = Route.useSearch();
+  const activeTab: CandidateTab = tab === "reviewed" ? "reviewed" : "pending";
   const {
     data: candidates,
     isLoading,
@@ -51,12 +45,77 @@ export default function PendingResumesPage() {
     null,
   );
 
-  const [historyCandidateId, setHistoryCandidateId] = useState<string | null>(
-    null,
+  const getCandidateReviewStatus = useCallback(
+    (candidate: Candidate) => candidate.reviewStatus || candidate.status,
+    [],
   );
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "suitable":
+        return t("candidate.suitable", "Suitable");
+      case "unsuitable":
+        return t("candidate.unsuitable", "Unsuitable");
+      case "new":
+        return t("recruitment.candidates.statusOptions.new", "New");
+      case "screening":
+        return t("recruitment.candidates.statusOptions.screening", "Screening");
+      case "interview":
+        return t(
+          "recruitment.candidates.statusOptions.interview",
+          "Interviewing",
+        );
+      case "offer":
+        return t("recruitment.candidates.statusOptions.offer", "Offered");
+      case "hired":
+        return t("recruitment.candidates.statusOptions.hired", "Hired");
+      case "rejected":
+        return t("recruitment.candidates.statusOptions.rejected", "Rejected");
+      default:
+        return status;
+    }
+  };
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredReviewedCandidates = useMemo(() => {
+    if (!reviewedCandidates) return [];
+    let filtered = reviewedCandidates;
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (c) =>
+          c.name.toLowerCase().includes(query) ||
+          c.appliedJobTitle.toLowerCase().includes(query),
+      );
+    }
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(
+        (candidate) => getCandidateReviewStatus(candidate) === statusFilter,
+      );
+    }
+
+    return filtered;
+  }, [reviewedCandidates, searchQuery, statusFilter, getCandidateReviewStatus]);
+
+  const reviewStatusOptions = useMemo(() => {
+    if (!reviewedCandidates) return [];
+    const statuses = new Set(reviewedCandidates.map(getCandidateReviewStatus));
+    return Array.from(statuses).filter(Boolean);
+  }, [reviewedCandidates, getCandidateReviewStatus]);
 
   const handleReview = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
+  };
+
+  const handleTabChange = (value: string) => {
+    const nextTab: CandidateTab = value === "reviewed" ? "reviewed" : "pending";
+    navigate({
+      search: (prev) => ({ ...prev, tab: nextTab }),
+    });
   };
 
   useEffect(() => {
@@ -66,14 +125,15 @@ export default function PendingResumesPage() {
       );
       if (candidateToReview) {
         setSelectedCandidate(candidateToReview);
-        setActiveTab("pending");
+        navigate({
+          search: (prev) => ({
+            ...prev,
+            tab: "pending",
+          }),
+        });
       }
     }
-  }, [reviewCandidateId, candidates]);
-
-  const handleViewHistory = (candidateId: string) => {
-    setHistoryCandidateId(candidateId);
-  };
+  }, [reviewCandidateId, candidates, navigate]);
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -85,7 +145,7 @@ export default function PendingResumesPage() {
 
       <Tabs
         value={activeTab}
-        onValueChange={(value) => setActiveTab(value as CandidateTab)}
+        onValueChange={handleTabChange}
         className="space-y-4"
       >
         <TabsList>
@@ -213,6 +273,38 @@ export default function PendingResumesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Search & Filter Bar */}
+              <div className="flex gap-4 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t(
+                      "recruitment.candidates.searchPlaceholder",
+                      "Search by name or position...",
+                    )}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <select
+                  aria-label={t(
+                    "candidate.reviewStatusFilter",
+                    "Filter by review status",
+                  )}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="border rounded-md px-3 py-2 text-sm bg-background"
+                >
+                  <option value="all">{t("common.all", "All")}</option>
+                  {reviewStatusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {getStatusLabel(status)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {isLoadingReviewed ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="h-8 w-8 animate-spin" />
@@ -229,7 +321,7 @@ export default function PendingResumesPage() {
                       : t("header.retryLater", "Please try again later")}
                   </AlertDescription>
                 </Alert>
-              ) : reviewedCandidates && reviewedCandidates.length > 0 ? (
+              ) : filteredReviewedCandidates.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -248,33 +340,31 @@ export default function PendingResumesPage() {
                           "Applied Date",
                         )}
                       </TableHead>
-                      <TableHead className="text-right">
-                        {t("common.actions", "Actions")}
+                      <TableHead>
+                        {t("candidate.reviewTime", "Review Time")}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {reviewedCandidates.map((candidate) => (
+                    {filteredReviewedCandidates.map((candidate) => (
                       <TableRow key={candidate.id}>
                         <TableCell className="font-medium">
                           {candidate.name}
                         </TableCell>
                         <TableCell>{candidate.appliedJobTitle}</TableCell>
                         <TableCell>
-                          {candidate.reviewStatus || candidate.status}
+                          {getStatusLabel(getCandidateReviewStatus(candidate))}
                         </TableCell>
                         <TableCell>
                           {format(new Date(candidate.appliedAt), "yyyy-MM-dd")}
                         </TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewHistory(candidate.id)}
-                            className="cursor-pointer"
-                          >
-                            {t("common.viewHistory", "View History")}
-                          </Button>
+                        <TableCell>
+                          {candidate.reviewedAt
+                            ? format(
+                                new Date(candidate.reviewedAt),
+                                "yyyy-MM-dd HH:mm",
+                              )
+                            : "-"}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -283,7 +373,7 @@ export default function PendingResumesPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
                   <div className="bg-muted/30 p-4 rounded-full mb-4">
-                    <ClipboardList className="h-8 w-8 opacity-50" />
+                    <FileText className="h-8 w-8 opacity-50" />
                   </div>
                   <h3 className="text-lg font-medium text-foreground mb-1">
                     {t("recruitment.candidates.noHistory", "No history found")}
@@ -309,30 +399,13 @@ export default function PendingResumesPage() {
             if (!isOpen) {
               setSelectedCandidate(null);
               if (reviewCandidateId) {
-                navigate({ search: { reviewCandidateId: undefined } });
+                navigate({
+                  search: (prev) => ({ ...prev, reviewCandidateId: undefined }),
+                });
               }
             }
           }}
         />
-      )}
-
-      {historyCandidateId && (
-        <Dialog
-          open={!!historyCandidateId}
-          onOpenChange={(open) => !open && setHistoryCandidateId(null)}
-        >
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>
-                {t(
-                  "recruitment.candidates.history.title",
-                  "Processing History",
-                )}
-              </DialogTitle>
-            </DialogHeader>
-            <CandidateActivityTimeline candidateId={historyCandidateId} />
-          </DialogContent>
-        </Dialog>
       )}
     </div>
   );

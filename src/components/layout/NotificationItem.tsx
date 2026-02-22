@@ -72,7 +72,10 @@ export function NotificationItem({
       {formatted.action?.kind === "candidateReview" && (
         <Link
           to="/pending-resumes"
-          search={{ reviewCandidateId: formatted.action.candidateId }}
+          search={{
+            tab: "pending",
+            reviewCandidateId: formatted.action.candidateId,
+          }}
           className="mt-1 text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
           onClick={() => {
             onViewDetails(notification);

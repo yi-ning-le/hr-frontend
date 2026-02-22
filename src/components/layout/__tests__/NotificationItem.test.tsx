@@ -229,7 +229,7 @@ describe("NotificationItem", () => {
     const link = screen.getByTestId("router-link");
     expect(link).toHaveAttribute(
       "href",
-      "/pending-resumes?reviewCandidateId=11111111-1111-1111-1111-111111111111",
+      "/pending-resumes?tab=pending&reviewCandidateId=11111111-1111-1111-1111-111111111111",
     );
   });
 

@@ -40,6 +40,7 @@
     "years": "years",
     "total": "Total",
     "refresh": "Refresh",
+    "all": "All",
     "unknown": "Unknown",
     "updateSuccess": "Update Successful",
     "updateFailed": "Update Failed",
@@ -103,6 +104,8 @@
     "reviewActionsDesc": "Mark current candidate as:",
     "noResumeTitle": "No Resume Available",
     "uploadResume": "Upload Resume",
+    "reviewTime": "Review Time",
+    "reviewStatusFilter": "Filter by review status",
     "validation": {
       "reviewerRequired": "Please select a reviewer"
     }
@@ -288,9 +291,11 @@
       "noHistory": "No history found",
       "history": {
         "title": "Processing History",
-        "empty": "No history found"
+        "empty": "No history found",
+        "description": "View the candidate review history timeline."
       },
       "noPendingResumes": "No pending resumes to review.",
+      "searchPlaceholder": "Search by name or position...",
       "toolbar": {
         "searchPlaceholder": "Search by name or email...",
         "statusFilter": "Status Filter",
