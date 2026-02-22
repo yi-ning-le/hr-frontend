@@ -72,7 +72,9 @@ export function RecruiterTable({
             </TableCell>
             <TableCell>{recruiter.department}</TableCell>
             <TableCell>
-              <Badge variant="secondary">Recruiter</Badge>
+              <Badge variant="secondary">
+                {t("settings.recruiterManagement.roleBadge", "Recruiter")}
+              </Badge>
             </TableCell>
             <TableCell className="text-right">
               <Button

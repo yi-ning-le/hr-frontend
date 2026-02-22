@@ -72,7 +72,9 @@ export function InterviewerTable({
             </TableCell>
             <TableCell>{interviewer.department}</TableCell>
             <TableCell>
-              <Badge variant="secondary">Interviewer</Badge>
+              <Badge variant="secondary">
+                {t("settings.interviewerManagement.roleBadge", "Interviewer")}
+              </Badge>
             </TableCell>
             <TableCell className="text-right">
               <Button

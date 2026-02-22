@@ -65,7 +65,9 @@ export function HRTable({
             </TableCell>
             <TableCell>{hr.department}</TableCell>
             <TableCell>
-              <Badge variant="default">HR</Badge>
+              <Badge variant="default">
+                {t("settings.hrManagement.roleBadge", "HR")}
+              </Badge>
             </TableCell>
             <TableCell className="text-right">
               <Button

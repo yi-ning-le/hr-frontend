@@ -646,6 +646,7 @@
       "candidateStatuses": "候选人状态",
       "general": "常规设置",
       "recruiters": "招聘专员",
+      "interviewers": "面试官",
       "hrManagement": "人事管理"
     },
     "general": {
@@ -701,7 +702,8 @@
       "role": "角色",
       "actions": "操作",
       "addRecruiterTitle": "分配招聘专员角色",
-      "addRecruiterDescription": "选择一名员工以授予招聘权限。"
+      "addRecruiterDescription": "选择一名员工以授予招聘权限。",
+      "roleBadge": "招聘专员"
     },
     "hrManagement": {
       "title": "人事管理",
@@ -730,7 +732,38 @@
       "role": "角色",
       "actions": "操作",
       "addHRTitle": "分配HR角色",
-      "addHRDescription": "选择一名员工以授予HR权限。"
+      "addHRDescription": "选择一名员工以授予HR权限。",
+      "roleBadge": "人事"
+    },
+    "interviewerManagement": {
+      "title": "面试官管理",
+      "description": "分配或撤销员工的面试官角色。",
+      "adminOnly": "需要管理员权限才能管理面试官。",
+      "assignSuccess": "面试官角色分配成功",
+      "assignError": "分配面试官角色失败",
+      "revokeSuccess": "面试官角色已撤销",
+      "revokeError": "撤销面试官角色失败",
+      "addInterviewer": "添加面试官",
+      "selectEmployee": "选择员工",
+      "searchPlaceholder": "搜索员工...",
+      "assign": "分配角色",
+      "columns": {
+        "employee": "员工",
+        "department": "部门",
+        "assignedAt": "分配时间",
+        "actions": "操作"
+      },
+      "revokeConfirmTitle": "撤销面试官角色",
+      "revokeConfirmDesc": "确定要撤销 {{name}} 的面试官权限吗？",
+      "revoke": "撤销权限",
+      "noInterviewers": "尚未分配面试官。",
+      "name": "姓名",
+      "department": "部门",
+      "role": "角色",
+      "actions": "操作",
+      "addInterviewerTitle": "分配面试官角色",
+      "addInterviewerDescription": "选择一名员工以授予面试官权限。",
+      "roleBadge": "面试官"
     }
   }
 }

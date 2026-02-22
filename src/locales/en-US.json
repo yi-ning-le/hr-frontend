@@ -646,6 +646,7 @@
       "candidateStatuses": "Candidate Statuses",
       "general": "General",
       "recruiters": "Recruiters",
+      "interviewers": "Interviewers",
       "hrManagement": "HR Management"
     },
     "general": {
@@ -701,7 +702,8 @@
       "role": "Role",
       "actions": "Actions",
       "addRecruiterTitle": "Assign Recruiter Role",
-      "addRecruiterDescription": "Select an employee to grant recruiter privileges."
+      "addRecruiterDescription": "Select an employee to grant recruiter privileges.",
+      "roleBadge": "Recruiter"
     },
     "hrManagement": {
       "title": "HR Management",
@@ -730,7 +732,38 @@
       "role": "Role",
       "actions": "Actions",
       "addHRTitle": "Assign HR Role",
-      "addHRDescription": "Select an employee to grant HR privileges."
+      "addHRDescription": "Select an employee to grant HR privileges.",
+      "roleBadge": "HR"
+    },
+    "interviewerManagement": {
+      "title": "Interviewer Management",
+      "description": "Assign or revoke interviewer roles for employees.",
+      "adminOnly": "Admin access required to manage interviewers.",
+      "assignSuccess": "Interviewer role assigned successfully",
+      "assignError": "Failed to assign interviewer role",
+      "revokeSuccess": "Interviewer role revoked successfully",
+      "revokeError": "Failed to revoke interviewer role",
+      "addInterviewer": "Add Interviewer",
+      "selectEmployee": "Select Employee",
+      "searchPlaceholder": "Search employees...",
+      "assign": "Assign Role",
+      "columns": {
+        "employee": "Employee",
+        "department": "Department",
+        "assignedAt": "Assigned At",
+        "actions": "Actions"
+      },
+      "revokeConfirmTitle": "Revoke Interviewer Role",
+      "revokeConfirmDesc": "Are you sure you want to revoke interviewer permissions for {{name}}?",
+      "revoke": "Revoke Permissions",
+      "noInterviewers": "No interviewers assigned yet.",
+      "name": "Name",
+      "department": "Department",
+      "role": "Role",
+      "actions": "Actions",
+      "addInterviewerTitle": "Assign Interviewer Role",
+      "addInterviewerDescription": "Select an employee to grant interviewer privileges.",
+      "roleBadge": "Interviewer"
     }
   }
 }
