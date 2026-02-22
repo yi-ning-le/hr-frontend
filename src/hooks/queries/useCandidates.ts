@@ -39,6 +39,17 @@ export const useCandidate = (id: string) => {
   });
 };
 
+export const useCandidateHistory = (
+  id: string,
+  scope: "self" | "all" = "self",
+) => {
+  return useQuery({
+    queryKey: [...CANDIDATES_QUERY_KEY, id, "history", scope],
+    queryFn: () => CandidatesAPI.getHistory(id, scope),
+    enabled: !!id,
+  });
+};
+
 export const useCreateCandidate = () => {
   const queryClient = useQueryClient();
   return useMutation({

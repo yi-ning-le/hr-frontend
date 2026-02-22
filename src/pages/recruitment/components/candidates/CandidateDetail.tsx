@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CandidateActivityTimeline } from "@/components/candidates/CandidateActivityTimeline";
 import { CandidateResumeSection } from "@/components/candidates/CandidateResumeSection";
 import { ResumePreviewModal } from "@/components/candidates/ResumePreviewModal";
 import {
@@ -133,6 +134,8 @@ export function CandidateDetail({
           />
 
           <Separator />
+
+          <CandidateActivityTimeline candidateId={candidate.id} scope="all" />
         </div>
       </ScrollArea>
 

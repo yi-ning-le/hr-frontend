@@ -10,6 +10,7 @@ import type { RegisterInput } from "@/types/auth";
 import type {
   Candidate,
   CandidateComment,
+  CandidateHistoryRecord,
   CandidateJobsCount,
   CandidateListResponse,
   CandidateStatus,
@@ -336,6 +337,35 @@ export const CandidatesAPI = {
       ...response.data,
       appliedAt: new Date(response.data.appliedAt),
     };
+  },
+
+  getHistory: async (
+    id: string,
+    scope: "self" | "all" = "self",
+  ): Promise<CandidateHistoryRecord[]> => {
+    const response = await api.get<CandidateHistoryRecord[]>(
+      `/candidates/${id}/history`,
+      {
+        params: { scope },
+      },
+    );
+    return response.data;
+  },
+
+  getPending: async (): Promise<Candidate[]> => {
+    const response = await api.get<Candidate[]>("/candidates/pending");
+    return response.data.map((c) => ({
+      ...c,
+      appliedAt: new Date(c.appliedAt),
+    }));
+  },
+
+  getReviewed: async (): Promise<Candidate[]> => {
+    const response = await api.get<Candidate[]>("/candidates/reviewed");
+    return response.data.map((c) => ({
+      ...c,
+      appliedAt: new Date(c.appliedAt),
+    }));
   },
 
   getCounts: async (): Promise<CandidateJobsCount> => {

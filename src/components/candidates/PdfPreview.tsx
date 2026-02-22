@@ -46,7 +46,7 @@ export function PdfPreview({
   className,
   showToolbar = true,
   initialScale = 1.0,
-  maxHeight = "600px",
+  maxHeight,
   onFullscreen,
 }: PdfPreviewProps) {
   const { t } = useTranslation();
@@ -167,7 +167,7 @@ export function PdfPreview({
     >
       {/* Toolbar */}
       {showToolbar && (
-        <div className="flex items-center justify-between px-4 py-2 border-b bg-background/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-4 py-2 border-b bg-background/80 backdrop-blur-sm shrink-0">
           {/* Page Navigation */}
           <div className="flex items-center gap-1">
             <Button
@@ -250,7 +250,7 @@ export function PdfPreview({
       )}
 
       <div
-        className="flex-1 overflow-auto flex items-start justify-center p-4"
+        className="flex-1 overflow-auto flex items-start justify-center p-4 bg-slate-50/50 dark:bg-slate-900/50"
         style={{ maxHeight }}
       >
         {error ? (
@@ -281,7 +281,7 @@ export function PdfPreview({
           >
             {!loading && numPages && (
               <div
-                className="shadow-lg rounded-sm overflow-hidden origin-top-left"
+                className="shadow-lg rounded-sm overflow-hidden origin-top-left bg-white"
                 style={pageStyle as React.CSSProperties}
               >
                 <Page

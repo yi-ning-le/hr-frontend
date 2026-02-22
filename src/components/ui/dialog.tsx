@@ -50,10 +50,12 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  hideOverlay = false,
   side = "center",
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean;
+  hideOverlay?: boolean;
   side?: DialogSide;
 }) {
   const sideStyles: Record<DialogSide, string> = {
@@ -66,7 +68,7 @@ function DialogContent({
 
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
+      {!hideOverlay && <DialogOverlay />}
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(

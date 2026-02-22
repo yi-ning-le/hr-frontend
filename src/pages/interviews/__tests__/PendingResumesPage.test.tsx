@@ -1,33 +1,32 @@
+// @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { usePendingResumes } from "@/hooks/queries/usePendingResumes";
+import { useReviewedCandidates } from "@/hooks/queries/useReviewedCandidates";
 import PendingResumesPage from "../PendingResumesPage";
 
 // Mock hooks and components
-vi.mock("@/hooks/queries/usePendingResumes");
+vi.mock("@/hooks/queries/usePendingResumes", () => ({
+  usePendingResumes: vi.fn(),
+}));
+vi.mock("@/hooks/queries/useReviewedCandidates", () => ({
+  useReviewedCandidates: vi.fn(),
+}));
 
 // Mock CandidateReviewDialog
 vi.mock("@/components/interviews/CandidateReviewDialog", () => ({
-  CandidateReviewDialog: vi.fn(({ open, onOpenChange }) =>
+  CandidateReviewDialog: ({ open, onOpenChange }: any) =>
     open ? (
       <div role="dialog">
         Mock Candidate Review Dialog
         <button onClick={() => onOpenChange(false)}>Close</button>
       </div>
     ) : null,
-  ),
 }));
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue || key,
-  }),
-  initReactI18next: {
-    type: "3rdParty",
-    init: vi.fn(),
-  },
-}));
+// react-i18next is already mocked globally in src/test/i18n-mock.ts
+// so we don't need to mock it here again
 
 describe("PendingResumesPage", () => {
   const mockCandidates = [
@@ -49,9 +48,13 @@ describe("PendingResumesPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    (useReviewedCandidates as any).mockReturnValue({
+      data: [],
+      isLoading: false,
+    });
   });
 
-  it("should render loading state", () => {
+  it("should render loading state when pending resumes are loading", () => {
     (usePendingResumes as any).mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -69,11 +72,29 @@ describe("PendingResumesPage", () => {
 
     render(<PendingResumesPage />);
 
-    expect(screen.getByText("Pending Resumes")).toBeInTheDocument();
+    expect(screen.getAllByText("nav.pendingResumes")[0]).toBeInTheDocument();
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Jane Smith")).toBeInTheDocument();
     expect(screen.getByText("Developer")).toBeInTheDocument();
     expect(screen.getByText("Designer")).toBeInTheDocument();
+  });
+
+  it("should not block pending list when reviewed data is loading", () => {
+    (usePendingResumes as any).mockReturnValue({
+      data: mockCandidates,
+      isLoading: false,
+      isError: false,
+    });
+    (useReviewedCandidates as any).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+    });
+
+    render(<PendingResumesPage />);
+
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).toBeInTheDocument();
   });
 
   it("should open review dialog when Review button is clicked", async () => {
@@ -85,7 +106,9 @@ describe("PendingResumesPage", () => {
     render(<PendingResumesPage />);
 
     const user = userEvent.setup();
-    const reviewButtons = screen.getAllByRole("button", { name: "Review" });
+    const reviewButtons = screen.getAllByRole("button", {
+      name: "recruitment.candidates.review",
+    });
     await user.click(reviewButtons[0]);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();

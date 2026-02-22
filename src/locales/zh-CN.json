@@ -44,6 +44,9 @@
     "updateSuccess": "更新成功",
     "updateFailed": "更新失败",
     "pageOf": "第 {{page}} 页，共 {{total}} 页",
+    "page": "页",
+    "retry": "重试",
+    "viewHistory": "查看历史",
     "saving": "正在保存...",
     "submitting": "正在提交...",
     "name": "姓名",
@@ -94,9 +97,12 @@
     "reviewSuccess": "评审提交成功",
     "reviewFailed": "评审提交失败",
     "viewInfo": "查看基本信息",
+    "infoDesc": "{{name}} 的候选人信息 - {{jobTitle}}",
     "review": "评审评估",
     "reviewActions": "评审决定",
     "reviewActionsDesc": "标记当前候选人为：",
+    "noResumeTitle": "暂无简历",
+    "uploadResume": "上传简历",
     "validation": {
       "reviewerRequired": "请选择评审人"
     }
@@ -278,6 +284,12 @@
       },
       "pendingListTitle": "待评审候选人",
       "review": "评审",
+      "reviewedListTitle": "已评审列表",
+      "noHistory": "暂无历史记录",
+      "history": {
+        "title": "处理历史",
+        "empty": "暂无历史记录"
+      },
       "noPendingResumes": "暂无待评审简历。",
       "toolbar": {
         "searchPlaceholder": "搜索候选人姓名或邮箱...",
@@ -294,6 +306,7 @@
       },
       "unknownCandidate": "未知候选人",
       "unknownPosition": "未知职位",
+      "detailTitle": "候选人详情",
       "dialog": {
         "addTitle": "添加候选人",
         "editTitle": "编辑候选人",
@@ -572,6 +585,7 @@
     "subtitle": "管理您的团队成员",
     "notFound": "未找到员工",
     "addEmployee": "添加员工",
+    "addEmployeeDesc": "添加新员工到系统",
     "editEmployee": "编辑员工",
     "editEmployeeDesc": "编辑员工信息",
     "searchPlaceholder": "搜索姓名或邮箱...",
@@ -615,6 +629,8 @@
     },
     "deleteTitle": "删除员工",
     "deleteConfirmation": "您确定要删除 {{name}} 吗？此操作无法撤销。",
+    "deleteSuccess": "员工删除成功",
+    "deleteError": "删除员工失败",
     "viewDetails": "员工详情",
     "viewDetailsDesc": "查看员工详细信息",
     "contact": "联系信息",

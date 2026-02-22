@@ -1,5 +1,6 @@
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ export function CandidateInfoDialog({
   open,
   onOpenChange,
 }: CandidateInfoDialogProps) {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden shadow-2xl border-0 rounded-xl bg-card">
@@ -33,8 +35,14 @@ export function CandidateInfoDialog({
           </DialogTitle>
           <VisuallyHidden.Root asChild>
             <DialogDescription>
-              Candidate information for {candidate.name} -{" "}
-              {candidate.appliedJobTitle}
+              {t(
+                "candidate.infoDesc",
+                "Candidate information for {{name}} - {{jobTitle}}",
+                {
+                  name: candidate.name,
+                  jobTitle: candidate.appliedJobTitle,
+                },
+              )}
             </DialogDescription>
           </VisuallyHidden.Root>
           <p className="text-sm text-muted-foreground font-medium mt-1">

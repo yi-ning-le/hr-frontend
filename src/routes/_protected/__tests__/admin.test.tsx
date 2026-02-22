@@ -72,7 +72,7 @@ describe("Admin Route", () => {
       isAdmin: true,
       isInterviewer: false,
       isHR: false,
-      canReviewResumes: false,
+      isRecruiter: false,
     });
   });
 

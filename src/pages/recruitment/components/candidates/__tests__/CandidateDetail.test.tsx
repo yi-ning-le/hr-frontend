@@ -93,6 +93,10 @@ vi.mock("@/hooks/queries/useCandidates", () => ({
     mutateAsync: vi.fn().mockResolvedValue(undefined),
     isPending: false,
   }),
+  useCandidateHistory: () => ({
+    data: [],
+    isLoading: false,
+  }),
 }));
 
 // Mock useJobs hook

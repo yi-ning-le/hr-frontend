@@ -5,43 +5,54 @@ import { describe, expect, it, vi } from "vitest";
 import { CandidateReviewDialog } from "@/components/interviews/CandidateReviewDialog";
 import type { Candidate } from "@/types/candidate";
 
-vi.mock("@/components/interviews/CandidateResumeViewerDialog", () => ({
-  CandidateResumeViewerDialog: ({
-    open,
-    onOpenChange,
-    onOpenInfo,
-    onReviewSubmit,
-  }: {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onOpenInfo?: () => void;
-    onReviewSubmit?: () => void;
-  }) =>
-    open ? (
-      <div data-testid="resume-viewer">
-        <button onClick={() => onOpenInfo?.()}>open-info</button>
-        <button onClick={() => onReviewSubmit?.()}>submit-review</button>
-        <button onClick={() => onOpenChange(false)}>close-viewer</button>
-      </div>
-    ) : null,
+// Mock the child components
+vi.mock("@/components/candidates/PdfPreview", () => ({
+  PdfPreview: () => <div data-testid="pdf-preview">PDF Preview</div>,
 }));
 
-vi.mock("@/components/interviews/CandidateInfoDialog", () => ({
-  CandidateInfoDialog: ({
-    open,
-    onOpenChange,
-    onOpenResume,
+vi.mock("@/components/candidates/reviews/CandidateReviewPanel", () => ({
+  CandidateReviewPanel: ({
+    onReviewSubmit,
   }: {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onOpenResume?: () => void;
-  }) =>
+    onReviewSubmit: () => void;
+  }) => (
+    <div data-testid="review-panel">
+      Review Panel
+      <button onClick={onReviewSubmit} data-testid="submit-review">
+        Submit Review
+      </button>
+    </div>
+  ),
+}));
+
+// Mock the dialog component parts since Radix UI dialogs can be tricky in tests
+vi.mock("@/components/ui/dialog", () => ({
+  Dialog: ({ children, open, onOpenChange }: any) =>
     open ? (
-      <div data-testid="info-dialog">
-        <button onClick={() => onOpenResume?.()}>back-to-resume</button>
-        <button onClick={() => onOpenChange(false)}>close-info</button>
+      <div data-testid="dialog-root">
+        <button onClick={() => onOpenChange(false)} data-testid="close-dialog">
+          Close
+        </button>
+        {children}
       </div>
     ) : null,
+  DialogContent: ({ children, className }: any) => (
+    <div data-testid="dialog-content" className={className}>
+      {children}
+    </div>
+  ),
+  DialogClose: ({ children }: any) => <>{children}</>,
+  DialogTitle: ({ children }: any) => <div>{children}</div>,
+  DialogDescription: ({ children }: any) => <div>{children}</div>,
+  DialogHeader: ({ children }: any) => <div>{children}</div>,
+  DialogFooter: ({ children }: any) => <div>{children}</div>,
+}));
+
+// Mock VisuallyHidden
+vi.mock("@radix-ui/react-visually-hidden", () => ({
+  Root: ({ children }: any) => (
+    <div data-testid="visually-hidden">{children}</div>
+  ),
 }));
 
 const mockCandidate: Candidate = {
@@ -60,7 +71,7 @@ const mockCandidate: Candidate = {
 };
 
 describe("CandidateReviewDialog", () => {
-  it("opens with resume viewer by default", () => {
+  it("renders the single split-screen dialog correctly", () => {
     render(
       <CandidateReviewDialog
         candidate={mockCandidate}
@@ -69,48 +80,39 @@ describe("CandidateReviewDialog", () => {
       />,
     );
 
-    expect(screen.getByTestId("resume-viewer")).toBeInTheDocument();
-    expect(screen.queryByTestId("info-dialog")).not.toBeInTheDocument();
+    // Check for main dialog content
+    expect(screen.getByTestId("dialog-content")).toBeInTheDocument();
+
+    // Check for split panes
+    expect(screen.getByTestId("pdf-preview")).toBeInTheDocument();
+    expect(screen.getByTestId("review-panel")).toBeInTheDocument();
+
+    // Check for candidate info
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("Frontend Developer")).toBeInTheDocument();
   });
 
-  it("opens info as floating overlay without closing resume viewer", async () => {
-    const user = userEvent.setup();
+  it("handles missing resume correctly", () => {
+    const candidateNoResume = {
+      ...mockCandidate,
+      resumeUrl: undefined,
+    } as unknown as Candidate;
 
     render(
       <CandidateReviewDialog
-        candidate={mockCandidate}
+        candidate={candidateNoResume}
         open={true}
         onOpenChange={vi.fn()}
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "open-info" }));
-    expect(screen.getByTestId("resume-viewer")).toBeInTheDocument();
-    expect(screen.getByTestId("info-dialog")).toBeInTheDocument();
+    expect(screen.queryByTestId("pdf-preview")).not.toBeInTheDocument();
+    expect(screen.getByText("candidate.noResumeTitle")).toBeInTheDocument();
   });
 
-  it("can close info overlay and keep resume viewer open", async () => {
-    const user = userEvent.setup();
-
-    render(
-      <CandidateReviewDialog
-        candidate={mockCandidate}
-        open={true}
-        onOpenChange={vi.fn()}
-      />,
-    );
-
-    await user.click(screen.getByRole("button", { name: "open-info" }));
-    expect(screen.getByTestId("info-dialog")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "close-info" }));
-    expect(screen.getByTestId("resume-viewer")).toBeInTheDocument();
-    expect(screen.queryByTestId("info-dialog")).not.toBeInTheDocument();
-  });
-
-  it("closes parent dialog after submitting review", async () => {
-    const user = userEvent.setup();
+  it("calls onOpenChange when close button is clicked", async () => {
     const onOpenChange = vi.fn();
+    const user = userEvent.setup();
 
     render(
       <CandidateReviewDialog
@@ -120,8 +122,23 @@ describe("CandidateReviewDialog", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "submit-review" }));
+    await user.click(screen.getByTestId("close-dialog"));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 
+  it("closes dialog when review is submitted", async () => {
+    const onOpenChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <CandidateReviewDialog
+        candidate={mockCandidate}
+        open={true}
+        onOpenChange={onOpenChange}
+      />,
+    );
+
+    await user.click(screen.getByTestId("submit-review"));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });

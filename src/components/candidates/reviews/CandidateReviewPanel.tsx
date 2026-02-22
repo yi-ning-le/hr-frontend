@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, X } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,9 @@ import {
   useAddCandidateComment,
   useCandidateComments,
 } from "@/hooks/queries/useCandidateComments";
+import { CANDIDATES_QUERY_KEY } from "@/hooks/queries/useCandidates";
 import { CandidatesAPI } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import type { Candidate } from "@/types/candidate";
 import { CommentInput } from "../comments/CommentInput";
 import { CommentList } from "../comments/CommentList";
@@ -45,7 +47,13 @@ export const CandidateReviewPanel: React.FC<CandidateReviewPanelProps> = ({
 
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["pending-resumes"] });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
+      queryClient.invalidateQueries({
+        queryKey: [...CANDIDATES_QUERY_KEY, "reviewed"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...CANDIDATES_QUERY_KEY, candidate.id, "history"],
+      });
 
       if (onReviewSubmit) {
         onReviewSubmit();
@@ -74,7 +82,11 @@ export const CandidateReviewPanel: React.FC<CandidateReviewPanelProps> = ({
         <div className="grid grid-cols-2 gap-3">
           <Button
             variant="outline"
-            className="border-red-200 hover:bg-red-50 hover:text-red-700 text-red-600 justify-start"
+            className={cn(
+              "justify-start",
+              "border-red-200 hover:bg-red-50 hover:text-red-700 text-red-600",
+              "dark:border-red-900/50 dark:hover:bg-red-950/50 dark:text-red-400",
+            )}
             onClick={() => handleReview("unsuitable")}
             disabled={isReviewing}
           >
@@ -83,7 +95,11 @@ export const CandidateReviewPanel: React.FC<CandidateReviewPanelProps> = ({
           </Button>
           <Button
             variant="outline"
-            className="border-green-200 hover:bg-green-50 hover:text-green-700 text-green-600 justify-start"
+            className={cn(
+              "justify-start",
+              "border-green-200 hover:bg-green-50 hover:text-green-700 text-green-600",
+              "dark:border-green-900/50 dark:hover:bg-green-950/50 dark:text-green-400",
+            )}
             onClick={() => handleReview("suitable")}
             disabled={isReviewing}
           >
@@ -93,31 +109,39 @@ export const CandidateReviewPanel: React.FC<CandidateReviewPanelProps> = ({
         </div>
       </div>
 
-      {/* Title for Comments */}
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between shrink-0">
-        <h3 className="font-semibold text-sm">
-          {t("recruitment.candidates.comments.title", "Comments")}
-        </h3>
-        {comments.length > 0 && (
-          <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground font-medium">
-            {comments.length}
-          </span>
-        )}
-      </div>
-
-      {/* Comments List */}
-      <ScrollArea className="flex-1 min-h-0">
-        <div className="relative py-2 px-4">
-          {(comments.length > 0 || isLoading) && (
-            <div className="absolute left-[36px] top-2 bottom-2 w-[1px] bg-border -z-10" />
-          )}
-          <CommentList comments={comments} isLoading={isLoading} />
+      <div className="flex-1 flex flex-col min-h-0 bg-background border-t">
+        {/* Comments Header */}
+        <div className="px-4 py-3 border-b bg-muted/30 shrink-0 flex items-center justify-between">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            {t("recruitment.candidates.comments.title", "Comments")}
+            {comments.length > 0 && (
+              <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                {comments.length}
+              </span>
+            )}
+          </h3>
         </div>
-      </ScrollArea>
 
-      {/* Comment Input */}
-      <div className="p-4 border-t bg-muted/5 shadow-[0_-1px_3px_rgba(0,0,0,0.05)] shrink-0 z-10">
-        <CommentInput onSubmit={handleAddComment} />
+        {/* Comment List */}
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="relative py-2 px-4">
+            {(comments.length > 0 || isLoading) && (
+              <div className="absolute left-[36px] top-2 bottom-2 w-[1px] bg-border -z-10" />
+            )}
+            {isLoading && comments.length === 0 ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <CommentList comments={comments} isLoading={isLoading} />
+            )}
+          </div>
+        </ScrollArea>
+
+        {/* Comment Input */}
+        <div className="p-4 border-t bg-muted/5 shadow-[0_-1px_3px_rgba(0,0,0,0.05)] shrink-0 z-10">
+          <CommentInput onSubmit={handleAddComment} />
+        </div>
       </div>
     </div>
   );

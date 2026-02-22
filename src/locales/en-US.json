@@ -44,6 +44,9 @@
     "updateSuccess": "Update Successful",
     "updateFailed": "Update Failed",
     "pageOf": "Page {{page}} of {{total}}",
+    "page": "Page",
+    "retry": "Retry",
+    "viewHistory": "View History",
     "saving": "Saving...",
     "submitting": "Submitting...",
     "name": "Name",
@@ -94,9 +97,12 @@
     "reviewSuccess": "Review submitted successfully",
     "reviewFailed": "Failed to submit review",
     "viewInfo": "Info Card",
+    "infoDesc": "Candidate information for {{name}} - {{jobTitle}}",
     "review": "Review Assessment",
     "reviewActions": "Review Decision",
     "reviewActionsDesc": "Mark current candidate as:",
+    "noResumeTitle": "No Resume Available",
+    "uploadResume": "Upload Resume",
     "validation": {
       "reviewerRequired": "Please select a reviewer"
     }
@@ -278,6 +284,12 @@
       },
       "pendingListTitle": "Candidates to Review",
       "review": "Review",
+      "reviewedListTitle": "Reviewed History",
+      "noHistory": "No history found",
+      "history": {
+        "title": "Processing History",
+        "empty": "No history found"
+      },
       "noPendingResumes": "No pending resumes to review.",
       "toolbar": {
         "searchPlaceholder": "Search by name or email...",
@@ -294,6 +306,7 @@
       },
       "unknownCandidate": "Unknown Candidate",
       "unknownPosition": "Unknown Position",
+      "detailTitle": "Candidate Details",
       "dialog": {
         "addTitle": "Add New Candidate",
         "editTitle": "Edit Candidate",
@@ -615,6 +628,8 @@
     },
     "deleteTitle": "Delete Employee",
     "deleteConfirmation": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+    "deleteSuccess": "Employee deleted successfully",
+    "deleteError": "Failed to delete employee",
     "viewDetails": "Employee Details",
     "viewDetailsDesc": "View employee details",
     "contact": "Contact Information",

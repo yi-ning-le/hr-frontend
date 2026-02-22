@@ -50,3 +50,13 @@ export interface CandidateListResponse {
 }
 
 export type CandidateJobsCount = Record<string, number>;
+
+export interface CandidateHistoryRecord {
+  id?: string;
+  candidateId: string;
+  candidateName: string;
+  status: CandidateStatus;
+  reviewStatus: string;
+  appliedAt: string;
+  jobTitle: string;
+}
