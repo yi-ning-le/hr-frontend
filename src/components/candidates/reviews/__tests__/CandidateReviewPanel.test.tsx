@@ -53,6 +53,10 @@ const mockCandidate: Candidate = {
 };
 
 describe("CandidateReviewPanel", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders review buttons", () => {
     render(<CandidateReviewPanel candidate={mockCandidate} />, {
       wrapper: createWrapper(),

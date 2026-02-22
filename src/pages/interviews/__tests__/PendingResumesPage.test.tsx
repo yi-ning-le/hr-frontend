@@ -14,6 +14,13 @@ vi.mock("@/hooks/queries/useReviewedCandidates", () => ({
   useReviewedCandidates: vi.fn(),
 }));
 
+vi.mock("@/routes/_protected/pending-resumes", () => ({
+  Route: {
+    useNavigate: vi.fn(() => vi.fn()),
+    useSearch: vi.fn(() => ({ reviewCandidateId: undefined })),
+  },
+}));
+
 // Mock CandidateReviewDialog
 vi.mock("@/components/interviews/CandidateReviewDialog", () => ({
   CandidateReviewDialog: ({ open, onOpenChange }: any) =>

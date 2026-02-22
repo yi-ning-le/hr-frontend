@@ -19,16 +19,40 @@ vi.mock("@tanstack/react-router", () => ({
   Link: ({
     children,
     to,
+    params,
+    search,
     className,
   }: {
     children: React.ReactNode;
     to: string;
+    params?: Record<string, string>;
+    search?: Record<string, string | undefined>;
     className?: string;
-  }) => (
-    <a href={to} className={className} data-testid="router-link">
-      {children}
-    </a>
-  ),
+  }) => {
+    let href = to;
+    if (params) {
+      for (const [key, value] of Object.entries(params)) {
+        href = href.replace(`$${key}`, value);
+      }
+    }
+
+    if (search) {
+      const query = new URLSearchParams(
+        Object.entries(search)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => [key, String(value)]),
+      ).toString();
+      if (query) {
+        href = `${href}?${query}`;
+      }
+    }
+
+    return (
+      <a href={href} className={className} data-testid="router-link">
+        {children}
+      </a>
+    );
+  },
 }));
 
 // Mock the API calls
@@ -38,6 +62,7 @@ vi.mock("@/lib/api", () => ({
     getUnreadCount: vi.fn(),
     markAsRead: vi.fn(),
     markAllAsRead: vi.fn(),
+    deleteNotification: vi.fn(),
   },
 }));
 
@@ -76,20 +101,50 @@ describe("NotificationBell", () => {
   const mockNotifications = [
     {
       id: "1",
-      userId: "u1",
-      title: "New Job Application",
-      message: "John Doe applied for SWE.",
-      type: "SYSTEM",
+      userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+      eventType: "candidate_reviewer_assigned",
+      subject: {
+        type: "candidate",
+        id: "11111111-1111-1111-1111-111111111111",
+      },
+      context: {
+        candidateId: "11111111-1111-1111-1111-111111111111",
+      },
+      content: {
+        titleKey: "notifications.events.candidate_reviewer_assigned.title",
+        messageKey: "notifications.events.candidate_reviewer_assigned.message",
+      },
+      action: {
+        kind: "candidateReview",
+        params: {
+          candidateId: "11111111-1111-1111-1111-111111111111",
+        },
+      },
       isRead: false,
       createdAt: new Date().toISOString(),
     },
     {
       id: "2",
-      userId: "u1",
-      title: "Maintenance",
-      message: "Server maintenance at midnight.",
-      type: "SYSTEM",
-      linkUrl: "/settings",
+      userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+      eventType: "interview_assigned",
+      subject: {
+        type: "interview",
+        id: "12345678-1234-1234-1234-123456789012",
+      },
+      context: {
+        interviewId: "12345678-1234-1234-1234-123456789012",
+        candidateId: "11111111-1111-1111-1111-111111111111",
+      },
+      content: {
+        titleKey: "notifications.events.interview_assigned.title",
+        messageKey: "notifications.events.interview_assigned.message",
+      },
+      action: {
+        kind: "interviewDetail",
+        params: {
+          interviewId: "12345678-1234-1234-1234-123456789012",
+        },
+      },
       isRead: true,
       createdAt: new Date().toISOString(),
     },
@@ -107,7 +162,6 @@ describe("NotificationBell", () => {
       expect(screen.getByText("5")).toBeInTheDocument();
     });
 
-    // The button that triggers the bell should be present
     const bellButton = screen.getByRole("button", { name: /notifications/i });
     expect(bellButton).toBeInTheDocument();
   });
@@ -127,9 +181,15 @@ describe("NotificationBell", () => {
     await user.click(bellButton);
 
     await waitFor(() => {
-      expect(screen.getByText("New Job Application")).toBeInTheDocument();
-      expect(screen.getByText("John Doe applied for SWE.")).toBeInTheDocument();
-      expect(screen.getByText("Maintenance")).toBeInTheDocument();
+      expect(
+        screen.getByText("New Resume Review Assigned"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "You have been assigned to review a candidate's resume.",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText("New Interview Assigned")).toBeInTheDocument();
     });
   });
 
@@ -149,7 +209,7 @@ describe("NotificationBell", () => {
     await user.click(bellButton);
 
     const unreadNotificationButton = await screen.findByRole("button", {
-      name: "New Job Application",
+      name: "New Resume Review Assigned",
     });
     await user.click(unreadNotificationButton);
 

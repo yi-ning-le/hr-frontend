@@ -649,7 +649,22 @@
     "title": "Notifications",
     "empty": "No notifications",
     "markAllAsRead": "Mark all as read",
-    "viewDetails": "View details"
+    "viewDetails": "View details",
+    "delete": "Delete notification",
+    "events": {
+      "generic": {
+        "title": "Notification",
+        "message": "You have a new notification."
+      },
+      "candidate_reviewer_assigned": {
+        "title": "New Resume Review Assigned",
+        "message": "You have been assigned to review a candidate's resume."
+      },
+      "interview_assigned": {
+        "title": "New Interview Assigned",
+        "message": "You have been assigned to conduct an interview."
+      }
+    }
   },
   "footer": {
     "copyright": "© 2026 HR System. All rights reserved."

@@ -42,3 +42,15 @@ export const useMarkAllNotificationsRead = () => {
     },
   });
 };
+
+export const useDeleteNotification = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => NotificationsAPI.deleteNotification(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: UNREAD_COUNT_QUERY_KEY });
+    },
+  });
+};

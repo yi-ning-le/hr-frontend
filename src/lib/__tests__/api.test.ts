@@ -85,7 +85,7 @@ describe("lib/api", () => {
         config: { url: "/jobs", headers: {} },
       };
 
-      await expect(responseErrorHandler!(error)).rejects.toBe(error);
+      await expect(responseErrorHandler?.(error)).rejects.toBe(error);
       expect(callback).not.toHaveBeenCalled();
     });
 
@@ -100,7 +100,7 @@ describe("lib/api", () => {
         config: { url: "/auth/refresh-token", headers: {} },
       };
 
-      await expect(responseErrorHandler!(error)).rejects.toBe(error);
+      await expect(responseErrorHandler?.(error)).rejects.toBe(error);
       expect(callback).toHaveBeenCalledTimes(1);
     });
 
@@ -120,7 +120,7 @@ describe("lib/api", () => {
         config: { url: "/jobs", headers: {} },
       };
 
-      await expect(responseErrorHandler!(original401)).rejects.toBe(
+      await expect(responseErrorHandler?.(original401)).rejects.toBe(
         refreshError,
       );
       expect(callback).not.toHaveBeenCalled();
@@ -142,7 +142,7 @@ describe("lib/api", () => {
         config: { url: "/jobs", headers: {} },
       };
 
-      await expect(responseErrorHandler!(original401)).rejects.toBe(
+      await expect(responseErrorHandler?.(original401)).rejects.toBe(
         refreshError,
       );
       expect(callback).toHaveBeenCalledTimes(1);
@@ -173,8 +173,8 @@ describe("lib/api", () => {
       };
 
       const [firstResult, secondResult] = await Promise.all([
-        responseErrorHandler!(first401),
-        responseErrorHandler!(second401),
+        responseErrorHandler?.(first401),
+        responseErrorHandler?.(second401),
       ]);
 
       expect(firstResult).toEqual({ data: { ok: true } });

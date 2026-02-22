@@ -44,9 +44,26 @@ describe("useNotifications", () => {
       const mockData = [
         {
           id: "1",
-          title: "Test",
-          message: "Test message",
+          userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+          eventType: "candidate_reviewer_assigned",
+          subject: {
+            type: "candidate",
+            id: "11111111-1111-1111-1111-111111111111",
+          },
+          context: { candidateId: "11111111-1111-1111-1111-111111111111" },
+          content: {
+            titleKey: "notifications.events.candidate_reviewer_assigned.title",
+            messageKey:
+              "notifications.events.candidate_reviewer_assigned.message",
+          },
+          action: {
+            kind: "candidateReview",
+            params: {
+              candidateId: "11111111-1111-1111-1111-111111111111",
+            },
+          },
           isRead: false,
+          createdAt: new Date().toISOString(),
         },
       ];
       vi.mocked(NotificationsAPI.getNotifications).mockResolvedValueOnce(

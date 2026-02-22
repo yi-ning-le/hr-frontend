@@ -650,7 +650,22 @@
     "title": "通知",
     "empty": "暂无通知",
     "markAllAsRead": "全部标记为已读",
-    "viewDetails": "查看详情"
+    "viewDetails": "查看详情",
+    "delete": "删除通知",
+    "events": {
+      "generic": {
+        "title": "通知",
+        "message": "您有一条新通知。"
+      },
+      "candidate_reviewer_assigned": {
+        "title": "分配了新的简历评审",
+        "message": "您已被分配评审一位候选人的简历。"
+      },
+      "interview_assigned": {
+        "title": "分配了新的面试",
+        "message": "您已被安排进行一场面试。"
+      }
+    }
   },
   "footer": {
     "copyright": "© 2026 HR System. 保留所有权利。"

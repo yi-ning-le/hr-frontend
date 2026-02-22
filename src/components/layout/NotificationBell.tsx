@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  useDeleteNotification,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
@@ -26,6 +27,7 @@ export function NotificationBell() {
 
   const markAsRead = useMarkNotificationRead();
   const markAllAsRead = useMarkAllNotificationsRead();
+  const deleteNotification = useDeleteNotification();
 
   const handleRead = (id: string) => {
     markAsRead.mutate(id);
@@ -36,6 +38,10 @@ export function NotificationBell() {
     if (!notification.isRead) {
       markAsRead.mutate(notification.id);
     }
+  };
+
+  const handleDelete = (id: string) => {
+    deleteNotification.mutate(id);
   };
 
   return (
@@ -79,6 +85,7 @@ export function NotificationBell() {
           isLoading={isLoading}
           onRead={handleRead}
           onViewDetails={handleViewDetails}
+          onDelete={handleDelete}
         />
       </PopoverContent>
     </Popover>

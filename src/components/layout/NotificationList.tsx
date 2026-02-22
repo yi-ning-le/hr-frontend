@@ -9,6 +9,7 @@ interface NotificationListProps {
   isLoading: boolean;
   onRead: (id: string) => void;
   onViewDetails: (notification: Notification) => void;
+  onDelete: (id: string) => void;
 }
 
 export function NotificationList({
@@ -16,6 +17,7 @@ export function NotificationList({
   isLoading,
   onRead,
   onViewDetails,
+  onDelete,
 }: NotificationListProps) {
   const { t } = useTranslation();
 
@@ -38,6 +40,7 @@ export function NotificationList({
               notification={notification}
               onRead={onRead}
               onViewDetails={onViewDetails}
+              onDelete={onDelete}
             />
           ))}
         </div>

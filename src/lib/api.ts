@@ -6,6 +6,10 @@ import {
   employeeListResultSchema,
   employeeSchema,
 } from "@/lib/schemas/employee";
+import {
+  notificationsSchema,
+  notificationUnreadCountSchema,
+} from "@/lib/schemas/notification";
 import type { RegisterInput } from "@/types/auth";
 import type {
   Candidate,
@@ -18,10 +22,7 @@ import type {
 } from "@/types/candidate"; // CandidateStatus is string, Definition is object
 import type { Employee } from "@/types/employee";
 import type { JobPosition } from "@/types/job";
-import type {
-  Notification,
-  NotificationUnreadCount,
-} from "@/types/notification";
+import type { Notification } from "@/types/notification";
 import type {
   CreateInterviewInput,
   Interview,
@@ -778,17 +779,15 @@ export const CommentsAPI = {
 
 export const NotificationsAPI = {
   getNotifications: async (limit = 50, offset = 0): Promise<Notification[]> => {
-    const response = await api.get<Notification[]>("/notifications", {
+    const response = await api.get<unknown>("/notifications", {
       params: { limit, offset },
     });
-    return response.data;
+    return notificationsSchema.parse(response.data);
   },
 
   getUnreadCount: async (): Promise<number> => {
-    const response = await api.get<NotificationUnreadCount>(
-      "/notifications/unread-count",
-    );
-    return response.data.count;
+    const response = await api.get<unknown>("/notifications/unread-count");
+    return notificationUnreadCountSchema.parse(response.data).count;
   },
 
   markAsRead: async (id: string): Promise<void> => {
@@ -797,5 +796,9 @@ export const NotificationsAPI = {
 
   markAllAsRead: async (): Promise<void> => {
     await api.put("/notifications/read-all");
+  },
+
+  deleteNotification: async (id: string): Promise<void> => {
+    await api.delete(`/notifications/${id}`);
   },
 };

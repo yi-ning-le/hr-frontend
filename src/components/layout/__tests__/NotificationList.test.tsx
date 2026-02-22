@@ -14,16 +14,39 @@ vi.mock("@tanstack/react-router", () => ({
   Link: ({
     children,
     to,
+    params,
+    search,
     className,
   }: {
     children: React.ReactNode;
     to: string;
+    params?: Record<string, string>;
+    search?: Record<string, string | undefined>;
     className?: string;
-  }) => (
-    <a href={to} className={className} data-testid="router-link">
-      {children}
-    </a>
-  ),
+  }) => {
+    let href = to;
+    if (params) {
+      for (const [key, value] of Object.entries(params)) {
+        href = href.replace(`$${key}`, value);
+      }
+    }
+    if (search) {
+      const query = new URLSearchParams(
+        Object.entries(search)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => [key, String(value)]),
+      ).toString();
+      if (query) {
+        href = `${href}?${query}`;
+      }
+    }
+
+    return (
+      <a href={href} className={className} data-testid="router-link">
+        {children}
+      </a>
+    );
+  },
 }));
 
 vi.mock("date-fns", () => ({
@@ -40,20 +63,50 @@ globalThis.ResizeObserver = class ResizeObserver {
 const mockNotifications: Notification[] = [
   {
     id: "1",
-    userId: "u1",
-    title: "New Job Application",
-    message: "John Doe applied for SWE.",
-    type: "SYSTEM",
+    userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+    eventType: "candidate_reviewer_assigned",
+    subject: {
+      type: "candidate",
+      id: "11111111-1111-1111-1111-111111111111",
+    },
+    context: {
+      candidateId: "11111111-1111-1111-1111-111111111111",
+    },
+    content: {
+      titleKey: "notifications.events.candidate_reviewer_assigned.title",
+      messageKey: "notifications.events.candidate_reviewer_assigned.message",
+    },
+    action: {
+      kind: "candidateReview",
+      params: {
+        candidateId: "11111111-1111-1111-1111-111111111111",
+      },
+    },
     isRead: false,
     createdAt: new Date().toISOString(),
   },
   {
     id: "2",
-    userId: "u1",
-    title: "Interview Scheduled",
-    message: "Your interview is tomorrow.",
-    type: "SYSTEM",
-    linkUrl: "/interviews/123",
+    userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+    eventType: "interview_assigned",
+    subject: {
+      type: "interview",
+      id: "12345678-1234-1234-1234-123456789012",
+    },
+    context: {
+      interviewId: "12345678-1234-1234-1234-123456789012",
+      candidateId: "11111111-1111-1111-1111-111111111111",
+    },
+    content: {
+      titleKey: "notifications.events.interview_assigned.title",
+      messageKey: "notifications.events.interview_assigned.message",
+    },
+    action: {
+      kind: "interviewDetail",
+      params: {
+        interviewId: "12345678-1234-1234-1234-123456789012",
+      },
+    },
     isRead: true,
     createdAt: new Date().toISOString(),
   },
@@ -70,6 +123,7 @@ describe("NotificationList", () => {
         isLoading={true}
         onRead={onRead}
         onViewDetails={onViewDetails}
+        onDelete={vi.fn()}
       />,
     );
 
@@ -87,6 +141,7 @@ describe("NotificationList", () => {
         isLoading={false}
         onRead={onRead}
         onViewDetails={onViewDetails}
+        onDelete={vi.fn()}
       />,
     );
 
@@ -103,11 +158,12 @@ describe("NotificationList", () => {
         isLoading={false}
         onRead={onRead}
         onViewDetails={onViewDetails}
+        onDelete={vi.fn()}
       />,
     );
 
-    expect(screen.getByText("New Job Application")).toBeInTheDocument();
-    expect(screen.getByText("Interview Scheduled")).toBeInTheDocument();
+    expect(screen.getByText("New Resume Review Assigned")).toBeInTheDocument();
+    expect(screen.getByText("New Interview Assigned")).toBeInTheDocument();
   });
 
   it("renders notification messages", () => {
@@ -120,11 +176,18 @@ describe("NotificationList", () => {
         isLoading={false}
         onRead={onRead}
         onViewDetails={onViewDetails}
+        onDelete={vi.fn()}
       />,
     );
 
-    expect(screen.getByText("John Doe applied for SWE.")).toBeInTheDocument();
-    expect(screen.getByText("Your interview is tomorrow.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You have been assigned to review a candidate's resume.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("You have been assigned to conduct an interview."),
+    ).toBeInTheDocument();
   });
 
   it("does not render empty state when loading", () => {
@@ -137,13 +200,14 @@ describe("NotificationList", () => {
         isLoading={true}
         onRead={onRead}
         onViewDetails={onViewDetails}
+        onDelete={vi.fn()}
       />,
     );
 
     expect(screen.queryByText(/no notifications/i)).not.toBeInTheDocument();
   });
 
-  it("passes correct props to NotificationItem", async () => {
+  it("passes correct props to NotificationItem", () => {
     const onRead = vi.fn();
     const onViewDetails = vi.fn();
 
@@ -153,12 +217,12 @@ describe("NotificationList", () => {
         isLoading={false}
         onRead={onRead}
         onViewDetails={onViewDetails}
+        onDelete={vi.fn()}
       />,
     );
 
-    // Find the button inside NotificationItem and click it
     const unreadNotification = screen.getByRole("button", {
-      name: "New Job Application",
+      name: "New Resume Review Assigned",
     });
     unreadNotification.click();
 

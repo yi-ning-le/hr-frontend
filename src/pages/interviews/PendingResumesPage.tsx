@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { AlertCircle, ClipboardList, FileText, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CandidateActivityTimeline } from "@/components/candidates/CandidateActivityTimeline";
 import { CandidateReviewDialog } from "@/components/interviews/CandidateReviewDialog";
@@ -24,12 +24,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePendingResumes } from "@/hooks/queries/usePendingResumes";
 import { useReviewedCandidates } from "@/hooks/queries/useReviewedCandidates";
+import { Route } from "@/routes/_protected/pending-resumes";
 import type { Candidate } from "@/types/candidate";
 
 type CandidateTab = "pending" | "reviewed";
 
 export default function PendingResumesPage() {
   const { t } = useTranslation();
+  const navigate = Route.useNavigate();
+  const { reviewCandidateId } = Route.useSearch();
   const [activeTab, setActiveTab] = useState<CandidateTab>("pending");
   const {
     data: candidates,
@@ -55,6 +58,18 @@ export default function PendingResumesPage() {
   const handleReview = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
   };
+
+  useEffect(() => {
+    if (reviewCandidateId && candidates && candidates.length > 0) {
+      const candidateToReview = candidates.find(
+        (c) => c.id === reviewCandidateId,
+      );
+      if (candidateToReview) {
+        setSelectedCandidate(candidateToReview);
+        setActiveTab("pending");
+      }
+    }
+  }, [reviewCandidateId, candidates]);
 
   const handleViewHistory = (candidateId: string) => {
     setHistoryCandidateId(candidateId);
@@ -293,6 +308,9 @@ export default function PendingResumesPage() {
           onOpenChange={(isOpen) => {
             if (!isOpen) {
               setSelectedCandidate(null);
+              if (reviewCandidateId) {
+                navigate({ search: { reviewCandidateId: undefined } });
+              }
             }
           }}
         />
