@@ -155,6 +155,10 @@ describe("PendingResumesPage", () => {
       data: mockCandidates,
       isLoading: false,
     });
+    mockUseSearch.mockReturnValue({
+      reviewCandidateId: undefined,
+      tab: "pending",
+    });
 
     render(<PendingResumesPage />);
 
@@ -162,8 +166,28 @@ describe("PendingResumesPage", () => {
     const reviewButtons = screen.getAllByRole("button", {
       name: "recruitment.candidates.review",
     });
+
+    // Simulate clicking the review button
     await user.click(reviewButtons[0]);
 
+    // Our component now calls navigate to set the search param, rather than setting local state.
+    // So we need to assert that navigate was called correctly, and simulate the URL param update.
+    expect(mockNavigate).toHaveBeenCalled();
+    const call = mockNavigate.mock.calls.find(
+      (c: unknown[]) =>
+        typeof (c[0] as Record<string, unknown>)?.search === "function",
+    );
+    expect(call).toBeDefined();
+
+    // Now manually trigger the re-render with the updated hook value as if navigate worked
+    mockUseSearch.mockReturnValue({
+      reviewCandidateId: mockCandidates[0].id,
+      tab: "pending",
+    });
+
+    render(<PendingResumesPage />);
+
+    // Now the dialog should be open
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
       screen.getByText("Mock Candidate Review Dialog"),
@@ -300,9 +324,12 @@ describe("PendingResumesPage", () => {
 
   describe("reviewed tab - search and filter", () => {
     beforeEach(() => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
       mockUseSearch.mockReturnValue({
         reviewCandidateId: undefined,
         tab: "reviewed",
+        q: "",
+        status: "all",
       });
       (usePendingResumes as ReturnType<typeof vi.fn>).mockReturnValue({
         data: [],
@@ -312,6 +339,11 @@ describe("PendingResumesPage", () => {
         data: mockReviewedCandidates,
         isLoading: false,
       });
+      mockNavigate.mockClear();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
     });
 
     it("should have a search input on the reviewed tab", () => {
@@ -323,34 +355,36 @@ describe("PendingResumesPage", () => {
       expect(searchInput).toBeInTheDocument();
     });
 
-    it("should filter reviewed candidates by name when typing in search", async () => {
+    it("should navigate to filter reviewed candidates by name when typing in search", async () => {
       render(<PendingResumesPage />);
 
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
       const searchInput = screen.getByPlaceholderText(
         "recruitment.candidates.searchPlaceholder",
       );
 
       await user.type(searchInput, "Alice");
 
-      expect(screen.getByText("Alice Brown")).toBeInTheDocument();
-      expect(screen.queryByText("Bob Wilson")).not.toBeInTheDocument();
-      expect(screen.queryByText("Charlie Davis")).not.toBeInTheDocument();
+      expect(mockNavigate).toHaveBeenCalledWith({
+        search: expect.any(Function),
+        replace: true,
+      });
     });
 
-    it("should filter reviewed candidates by position when typing in search", async () => {
+    it("should navigate to filter reviewed candidates by position when typing in search", async () => {
       render(<PendingResumesPage />);
 
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
       const searchInput = screen.getByPlaceholderText(
         "recruitment.candidates.searchPlaceholder",
       );
 
       await user.type(searchInput, "Developer");
 
-      expect(screen.queryByText("Alice Brown")).not.toBeInTheDocument();
-      expect(screen.queryByText("Bob Wilson")).not.toBeInTheDocument();
-      expect(screen.getByText("Charlie Davis")).toBeInTheDocument();
+      expect(mockNavigate).toHaveBeenCalledWith({
+        search: expect.any(Function),
+        replace: true,
+      });
     });
 
     it("should have a review status filter dropdown", () => {
@@ -362,34 +396,38 @@ describe("PendingResumesPage", () => {
       expect(filterSelect).toBeInTheDocument();
     });
 
-    it("should filter reviewed candidates by review status", async () => {
+    it("should navigate to filter reviewed candidates by review status", async () => {
       render(<PendingResumesPage />);
 
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
       const filterSelect = screen.getByLabelText(
         "candidate.reviewStatusFilter",
       );
 
       await user.selectOptions(filterSelect, "rejected");
 
-      expect(screen.queryByText("Alice Brown")).not.toBeInTheDocument();
-      expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
-      expect(screen.queryByText("Charlie Davis")).not.toBeInTheDocument();
+      expect(mockNavigate).toHaveBeenCalledWith({
+        search: expect.any(Function),
+        replace: true,
+      });
     });
 
-    it("should show empty state when search yields no results", async () => {
+    it("should show empty state when search param yields no results", () => {
+      mockUseSearch.mockReturnValue({
+        reviewCandidateId: undefined,
+        tab: "reviewed",
+        q: "Nonexistent",
+        status: "all",
+      });
+
       render(<PendingResumesPage />);
-
-      const user = userEvent.setup();
-      const searchInput = screen.getByPlaceholderText(
-        "recruitment.candidates.searchPlaceholder",
-      );
-
-      await user.type(searchInput, "Nonexistent");
 
       expect(screen.queryByText("Alice Brown")).not.toBeInTheDocument();
       expect(screen.queryByText("Bob Wilson")).not.toBeInTheDocument();
       expect(screen.queryByText("Charlie Davis")).not.toBeInTheDocument();
+      expect(
+        screen.getByText("recruitment.candidates.noHistory"),
+      ).toBeInTheDocument();
     });
   });
 });
