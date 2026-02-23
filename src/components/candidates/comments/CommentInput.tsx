@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 interface CommentInputProps {
   onSubmit: (content: string) => Promise<void>;
+  onContentChange?: (content: string) => void;
   className?: string;
   placeholder?: string;
   initialValue?: string;
@@ -15,6 +16,7 @@ interface CommentInputProps {
 
 export const CommentInput: React.FC<CommentInputProps> = ({
   onSubmit,
+  onContentChange,
   className,
   placeholder,
   initialValue = "",
@@ -51,7 +53,10 @@ export const CommentInput: React.FC<CommentInputProps> = ({
         <Textarea
           ref={textareaRef}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => {
+            setContent(e.target.value);
+            onContentChange?.(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           placeholder={
             placeholder || t("recruitment.candidates.comments.placeholder")

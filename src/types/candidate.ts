@@ -31,6 +31,8 @@ export interface Candidate {
   reviewedAt?: string;
 }
 
+export type CommentType = "normal" | "review_suitable" | "review_unsuitable";
+
 export interface CandidateComment {
   id: string;
   candidateId: string;
@@ -39,6 +41,7 @@ export interface CandidateComment {
   authorAvatar?: string;
   authorRole: "HR" | "INTERVIEWER";
   content: string; // Supports simplified Markdown
+  commentType?: CommentType; // Defaults to "normal"
   createdAt: string; // ISO Date String
 }
 export interface CandidateListResponse {

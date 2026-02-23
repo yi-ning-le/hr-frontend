@@ -1,10 +1,14 @@
 // @vitest-environment jsdom
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { CandidateReviewPanel } from "@/components/candidates/reviews/CandidateReviewPanel";
 import type { Candidate } from "@/types/candidate";
+
+const mockAddComment = vi.fn().mockResolvedValue({});
+const mockReview = vi.fn().mockResolvedValue({});
 
 vi.mock("@/hooks/queries/useCandidateComments", () => ({
   useCandidateComments: vi.fn(() => ({
@@ -12,13 +16,13 @@ vi.mock("@/hooks/queries/useCandidateComments", () => ({
     isLoading: false,
   })),
   useAddCandidateComment: vi.fn(() => ({
-    mutateAsync: vi.fn(),
+    mutateAsync: mockAddComment,
   })),
 }));
 
 vi.mock("@/lib/api", () => ({
   CandidatesAPI: {
-    review: vi.fn(() => Promise.resolve()),
+    review: (...args: unknown[]) => mockReview(...args),
   },
 }));
 
@@ -55,6 +59,8 @@ const mockCandidate: Candidate = {
 describe("CandidateReviewPanel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockAddComment.mockResolvedValue({});
+    mockReview.mockResolvedValue({});
   });
 
   it("renders review buttons", () => {
@@ -97,5 +103,146 @@ describe("CandidateReviewPanel", () => {
     );
 
     expect(container.querySelector(".flex.flex-col")).toBeInTheDocument();
+  });
+
+  // --- New: Comment-gating tests ---
+
+  it("keeps review buttons enabled when no comment has been typed", () => {
+    render(<CandidateReviewPanel candidate={mockCandidate} />, {
+      wrapper: createWrapper(),
+    });
+
+    const suitableBtn = screen.getByRole("button", {
+      name: /candidate\.suitable/,
+    });
+    const unsuitableBtn = screen.getByRole("button", {
+      name: /candidate\.unsuitable/,
+    });
+
+    expect(suitableBtn).toBeEnabled();
+    expect(unsuitableBtn).toBeEnabled();
+  });
+
+  it("keeps review buttons enabled after typing a comment", async () => {
+    const user = userEvent.setup();
+    render(<CandidateReviewPanel candidate={mockCandidate} />, {
+      wrapper: createWrapper(),
+    });
+
+    // Type into the comment textarea
+    const textareas = screen.getAllByRole("textbox");
+    const commentTextarea = textareas[textareas.length - 1]; // last textarea is CommentInput
+    await user.type(commentTextarea, "This candidate is qualified");
+
+    const suitableBtn = screen.getByRole("button", {
+      name: /candidate\.suitable/,
+    });
+    expect(suitableBtn).toBeEnabled();
+  });
+
+  it("does not show comment-required helper text", () => {
+    render(<CandidateReviewPanel candidate={mockCandidate} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(
+      screen.queryByText(/candidate\.commentRequired/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("submits review directly when comment is empty", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateReviewPanel
+        candidate={mockCandidate}
+        onReviewSubmit={vi.fn()}
+      />,
+      { wrapper: createWrapper() },
+    );
+
+    const suitableBtn = screen.getByRole("button", {
+      name: /candidate\.suitable/,
+    });
+    await user.click(suitableBtn);
+
+    await waitFor(() => {
+      expect(mockAddComment).not.toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(mockReview).toHaveBeenCalledWith(
+        "candidate-1",
+        "suitable",
+        undefined,
+      );
+    });
+  });
+
+  it("submits review with typed comment", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateReviewPanel
+        candidate={mockCandidate}
+        onReviewSubmit={vi.fn()}
+      />,
+      { wrapper: createWrapper() },
+    );
+
+    // Type a comment
+    const textareas = screen.getAllByRole("textbox");
+    const commentTextarea = textareas[textareas.length - 1];
+    await user.type(commentTextarea, "Good candidate");
+
+    // Click suitable
+    const suitableBtn = screen.getByRole("button", {
+      name: /candidate\.suitable/,
+    });
+    await user.click(suitableBtn);
+
+    await waitFor(() => {
+      expect(mockAddComment).not.toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(mockReview).toHaveBeenCalledWith(
+        "candidate-1",
+        "suitable",
+        "Good candidate",
+      );
+    });
+  });
+
+  it("submits unsuitable review with typed comment", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateReviewPanel
+        candidate={mockCandidate}
+        onReviewSubmit={vi.fn()}
+      />,
+      { wrapper: createWrapper() },
+    );
+
+    // Type a comment
+    const textareas = screen.getAllByRole("textbox");
+    const commentTextarea = textareas[textareas.length - 1];
+    await user.type(commentTextarea, "Not a fit");
+
+    // Click unsuitable
+    const unsuitableBtn = screen.getByRole("button", {
+      name: /candidate\.unsuitable/,
+    });
+    await user.click(unsuitableBtn);
+
+    await waitFor(() => {
+      expect(mockAddComment).not.toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(mockReview).toHaveBeenCalledWith(
+        "candidate-1",
+        "unsuitable",
+        "Not a fit",
+      );
+    });
   });
 });

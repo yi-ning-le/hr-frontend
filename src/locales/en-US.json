@@ -106,6 +106,9 @@
     "uploadResume": "Upload Resume",
     "reviewTime": "Review Time",
     "reviewStatusFilter": "Filter by review status",
+    "commentRequired": "Please write a comment before submitting your review",
+    "reviewCommentSuitable": "Suitable",
+    "reviewCommentUnsuitable": "Unsuitable",
     "validation": {
       "reviewerRequired": "Please select a reviewer"
     }
@@ -668,6 +671,10 @@
       "interview_assigned": {
         "title": "New Interview Assigned",
         "message": "You have been assigned to conduct an interview."
+      },
+      "review_completed": {
+        "title": "Resume Review Completed",
+        "message": "A reviewer has submitted their assessment for a candidate."
       }
     }
   },

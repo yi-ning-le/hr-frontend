@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, Loader2, X } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -31,19 +31,30 @@ export const CandidateReviewPanel: React.FC<CandidateReviewPanelProps> = ({
   const { data: comments = [], isLoading } = useCandidateComments(candidate.id);
   const { mutateAsync: addComment } = useAddCandidateComment();
   const [isReviewing, setIsReviewing] = useState(false);
+  const [pendingComment, setPendingComment] = useState("");
+  const [commentInputResetKey, setCommentInputResetKey] = useState(0);
+
+  const handleContentChange = useCallback((content: string) => {
+    setPendingComment(content);
+  }, []);
 
   const handleAddComment = async (content: string) => {
     await addComment({ candidateId: candidate.id, content });
+    setPendingComment("");
   };
 
   const handleReview = async (status: "suitable" | "unsuitable") => {
     setIsReviewing(true);
     try {
-      // We pass empty string for reviewNote as it's no longer collected separately
-      await CandidatesAPI.review(candidate.id, status);
+      const content = pendingComment.trim();
+      await CandidatesAPI.review(candidate.id, status, content || undefined);
       toast.success(
         t("candidate.reviewSuccess", "Review submitted successfully"),
       );
+
+      // Reset comment input state
+      setPendingComment("");
+      setCommentInputResetKey((prev) => prev + 1);
 
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["pending-resumes"] });
@@ -140,7 +151,11 @@ export const CandidateReviewPanel: React.FC<CandidateReviewPanelProps> = ({
 
         {/* Comment Input */}
         <div className="p-4 border-t bg-muted/5 shadow-[0_-1px_3px_rgba(0,0,0,0.05)] shrink-0 z-10">
-          <CommentInput onSubmit={handleAddComment} />
+          <CommentInput
+            key={commentInputResetKey}
+            onSubmit={handleAddComment}
+            onContentChange={handleContentChange}
+          />
         </div>
       </div>
     </div>

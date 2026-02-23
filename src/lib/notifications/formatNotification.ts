@@ -52,6 +52,9 @@ function resolveAction(notification: Notification): NotificationAction | null {
     return candidateId ? { kind: "candidateReview", candidateId } : null;
   }
 
+  // review_completed notifications also use candidateReview action
+  // (handled by the candidateReview branch above)
+
   if (action.kind === "interviewDetail") {
     const interviewId =
       getStringParam(action.params, "interviewId") ??
@@ -82,6 +85,9 @@ function getTitleFallback(key: string, generic: string): string {
   if (key === "notifications.events.interview_assigned.title") {
     return "New Interview Assigned";
   }
+  if (key === "notifications.events.review_completed.title") {
+    return "Resume Review Completed";
+  }
   return generic;
 }
 
@@ -91,6 +97,9 @@ function getMessageFallback(key: string, generic: string): string {
   }
   if (key === "notifications.events.interview_assigned.message") {
     return "You have been assigned to conduct an interview.";
+  }
+  if (key === "notifications.events.review_completed.message") {
+    return "A reviewer has submitted their assessment for a candidate.";
   }
   return generic;
 }

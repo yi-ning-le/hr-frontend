@@ -77,6 +77,7 @@ describe("useCandidateComments Hooks", () => {
     expect(CommentsAPI.create).toHaveBeenCalledWith(
       "candidate-1",
       "New comment",
+      undefined,
     );
   });
 

@@ -423,9 +423,15 @@ export const CandidatesAPI = {
     };
   },
 
-  review: async (id: string, reviewStatus: string): Promise<Candidate> => {
+  review: async (
+    id: string,
+    reviewStatus: string,
+    comment?: string,
+  ): Promise<Candidate> => {
+    const trimmedComment = comment?.trim();
     const response = await api.post<Candidate>(`/candidates/${id}/review`, {
       reviewStatus,
+      ...(trimmedComment ? { comment: trimmedComment } : {}),
     });
     return {
       ...response.data,
@@ -762,11 +768,13 @@ export const CommentsAPI = {
   create: async (
     candidateId: string,
     content: string,
+    commentType?: string,
   ): Promise<CandidateComment> => {
     const response = await api.post<CandidateComment>(
       `/candidates/${candidateId}/comments`,
       {
         content,
+        ...(commentType && commentType !== "normal" ? { commentType } : {}),
       },
     );
     return response.data;

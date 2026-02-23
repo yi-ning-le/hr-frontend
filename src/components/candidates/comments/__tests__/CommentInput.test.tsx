@@ -172,4 +172,21 @@ describe("CommentInput", () => {
       screen.getByPlaceholderText("Custom placeholder"),
     ).toBeInTheDocument();
   });
+
+  it("calls onContentChange when textarea value changes", async () => {
+    const onContentChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <CommentInput
+        onSubmit={mockOnSubmit}
+        onContentChange={onContentChange}
+      />,
+    );
+
+    await user.type(screen.getByRole("textbox"), "abc");
+
+    expect(onContentChange).toHaveBeenCalledWith("a");
+    expect(onContentChange).toHaveBeenCalledWith("ab");
+    expect(onContentChange).toHaveBeenCalledWith("abc");
+  });
 });

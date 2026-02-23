@@ -104,4 +104,44 @@ describe("formatNotification", () => {
     const result = formatNotification(notification, t as TFunction);
     expect(result.action).toBeNull();
   });
+
+  it("formats review_completed notification", () => {
+    const notification: Notification = {
+      id: "4",
+      userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+      eventType: "review_completed",
+      subject: {
+        type: "candidate",
+        id: "22222222-2222-2222-2222-222222222222",
+      },
+      context: {
+        candidateId: "22222222-2222-2222-2222-222222222222",
+        reviewStatus: "suitable",
+        reviewerName: "Alice",
+      },
+      content: {
+        titleKey: "notifications.events.review_completed.title",
+        messageKey: "notifications.events.review_completed.message",
+      },
+      action: {
+        kind: "candidateReview",
+        params: {
+          candidateId: "22222222-2222-2222-2222-222222222222",
+        },
+      },
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    const result = formatNotification(notification, t as TFunction);
+
+    expect(result.title).toBe("Resume Review Completed");
+    expect(result.message).toBe(
+      "A reviewer has submitted their assessment for a candidate.",
+    );
+    expect(result.action).toEqual({
+      kind: "candidateReview",
+      candidateId: "22222222-2222-2222-2222-222222222222",
+    });
+  });
 });

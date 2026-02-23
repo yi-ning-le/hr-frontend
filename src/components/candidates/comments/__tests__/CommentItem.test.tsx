@@ -104,4 +104,66 @@ describe("CommentItem", () => {
     const img = screen.getByRole("img", { name: "John Doe" });
     expect(img).toHaveAttribute("src", "https://example.com/avatar.png");
   });
+
+  it('renders green suitable badge when commentType is "review_suitable"', () => {
+    render(
+      <CommentItem comment={makeComment({ commentType: "review_suitable" })} />,
+    );
+
+    const badge = screen.getByTestId("review-decision-badge");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent(/suitable/i);
+  });
+
+  it('renders red unsuitable badge when commentType is "review_unsuitable"', () => {
+    render(
+      <CommentItem
+        comment={makeComment({ commentType: "review_unsuitable" })}
+      />,
+    );
+
+    const badge = screen.getByTestId("review-decision-badge");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent(/unsuitable/i);
+  });
+
+  it("renders non-status content for review decision comments", () => {
+    render(
+      <CommentItem
+        comment={makeComment({
+          commentType: "review_suitable",
+          content: "Detailed reasoning",
+        })}
+      />,
+    );
+
+    expect(screen.getByText("Detailed reasoning")).toBeInTheDocument();
+  });
+
+  it("hides status-literal content for review decision comments", () => {
+    render(
+      <CommentItem
+        comment={makeComment({
+          commentType: "review_suitable",
+          content: "suitable",
+        })}
+      />,
+    );
+
+    expect(screen.queryByText("suitable")).not.toBeInTheDocument();
+  });
+
+  it('does not render review badge when commentType is "normal" or undefined', () => {
+    const { rerender } = render(
+      <CommentItem comment={makeComment({ commentType: "normal" })} />,
+    );
+    expect(
+      screen.queryByTestId("review-decision-badge"),
+    ).not.toBeInTheDocument();
+
+    rerender(<CommentItem comment={makeComment()} />);
+    expect(
+      screen.queryByTestId("review-decision-badge"),
+    ).not.toBeInTheDocument();
+  });
 });

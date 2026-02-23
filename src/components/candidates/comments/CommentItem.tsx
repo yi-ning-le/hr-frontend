@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { enUS, zhCN } from "date-fns/locale";
+import { Check, X } from "lucide-react";
 import type React from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,6 +21,15 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  const isReviewComment =
+    comment.commentType === "review_suitable" ||
+    comment.commentType === "review_unsuitable";
+  const trimmedContent = comment.content.trim();
+  const isStatusLiteral =
+    trimmedContent === "suitable" || trimmedContent === "unsuitable";
+  const showContent =
+    !isReviewComment || (trimmedContent !== "" && !isStatusLiteral);
 
   return (
     <div className="flex gap-3 py-4 border-b last:border-0 border-border/50 hover:bg-muted/30 transition-colors px-2 -mx-2 rounded-lg group">
@@ -50,9 +60,33 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
             })}
           </span>
         </div>
-        <div className="text-sm text-foreground/90 whitespace-pre-wrap break-words leading-relaxed">
-          {comment.content}
-        </div>
+        {isReviewComment && (
+          <div
+            data-testid="review-decision-badge"
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold mb-2 ${
+              comment.commentType === "review_suitable"
+                ? "bg-green-50 text-green-700 dark:bg-green-950/50 dark:text-green-400"
+                : "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400"
+            }`}
+          >
+            {comment.commentType === "review_suitable" ? (
+              <>
+                <Check className="h-3.5 w-3.5" />
+                {t("candidate.reviewCommentSuitable", "Suitable")}
+              </>
+            ) : (
+              <>
+                <X className="h-3.5 w-3.5" />
+                {t("candidate.reviewCommentUnsuitable", "Unsuitable")}
+              </>
+            )}
+          </div>
+        )}
+        {showContent && (
+          <div className="text-sm text-foreground/90 whitespace-pre-wrap break-words leading-relaxed">
+            {comment.content}
+          </div>
+        )}
       </div>
     </div>
   );

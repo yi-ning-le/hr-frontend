@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CommentsAPI } from "@/lib/api";
+import type { CommentType } from "@/types/candidate";
 import { CANDIDATES_QUERY_KEY } from "./useCandidates";
 
 export const COMMENTS_QUERY_KEY = (candidateId: string) =>
@@ -19,10 +20,12 @@ export const useAddCandidateComment = () => {
     mutationFn: ({
       candidateId,
       content,
+      commentType,
     }: {
       candidateId: string;
       content: string;
-    }) => CommentsAPI.create(candidateId, content),
+      commentType?: CommentType;
+    }) => CommentsAPI.create(candidateId, content, commentType),
     onSuccess: (_, { candidateId }) => {
       queryClient.invalidateQueries({
         queryKey: COMMENTS_QUERY_KEY(candidateId),
