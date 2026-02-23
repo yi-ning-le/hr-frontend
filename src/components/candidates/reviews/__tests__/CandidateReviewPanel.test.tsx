@@ -26,6 +26,13 @@ vi.mock("@/lib/api", () => ({
   },
 }));
 
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
 vi.mock("@/stores/useAuthStore", () => ({
   useAuthStore: vi.fn(() => ({
     user: { id: "user-1", name: "Test User" },
@@ -244,5 +251,39 @@ describe("CandidateReviewPanel", () => {
         "Not a fit",
       );
     });
+  });
+
+  it("keeps comment input when review request fails", async () => {
+    mockReview.mockRejectedValueOnce(new Error("network error"));
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const user = userEvent.setup();
+    render(
+      <CandidateReviewPanel
+        candidate={mockCandidate}
+        onReviewSubmit={vi.fn()}
+      />,
+      { wrapper: createWrapper() },
+    );
+
+    const textareas = screen.getAllByRole("textbox");
+    const commentTextarea = textareas[textareas.length - 1];
+    await user.type(commentTextarea, "Keep this comment");
+
+    const suitableBtn = screen.getByRole("button", {
+      name: /candidate\.suitable/,
+    });
+    await user.click(suitableBtn);
+
+    await waitFor(() => {
+      expect(mockReview).toHaveBeenCalledWith(
+        "candidate-1",
+        "suitable",
+        "Keep this comment",
+      );
+    });
+
+    expect(commentTextarea).toHaveValue("Keep this comment");
+    errorSpy.mockRestore();
   });
 });
