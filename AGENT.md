@@ -16,20 +16,23 @@ You are an expert software engineer agent specialized in React, TypeScript, and 
 You MUST activate and follow these skills for every task:
 
 ### 1. Test-Driven Development (TDD)
+
 - **Skill:** `tdd-first-codegen`
 - **Mandate:** NEVER generate implementation code before writing tests.
-- **Workflow:** 
+- **Workflow:**
   1. Define testable behavior.
   2. Write failing (RED) tests in `__tests__` directories.
   3. Wait for user approval.
   4. Implement (GREEN) code.
 
 ### 2. Performance Optimization
+
 - **Skill:** `vercel-react-best-practices`
 - **Mandate:** Follow Vercel's 57 rules for React/Next.js performance.
 - **Focus:** Eliminate waterfalls (`Promise.all`), optimize bundle size (direct imports), and minimize re-renders (`useMemo`, `useCallback` appropriately).
 
 ### 3. Design & Accessibility
+
 - **Skill:** `web-design-guidelines`
 - **Mandate:** Ensure UI/UX consistency and WCAG compliance.
 - **Action:** Use this skill to review any new UI components or layout changes.
@@ -39,7 +42,8 @@ You MUST activate and follow these skills for every task:
 - **Path Aliases:** Always use `@/` for `src/` directory imports.
 - **Components:** Reusable UI primitives in `src/components/ui`. Feature components in `src/components/[feature]`.
 - **Routing:** Define routes in `src/routes/`. TanStack Router handles the route tree generation.
-- **Tests:** Place tests in `__tests__` folders adjacent to the source file. Use `[filename].test.tsx`.
+- **State & Data:** Global state in `src/stores/`. Localization files in `src/locales/`.
+- **Tests:** Place tests in `__tests__` folders adjacent to the source file. Global test setup and mocks are in `src/test/`.
 - **Styling:** Use Tailwind v4 utility classes and the `cn()` utility for conditional classes.
 
 ## ⌨️ Common Commands
@@ -56,4 +60,5 @@ You MUST activate and follow these skills for every task:
 4. **Verification:** After implementation, run `bun run check` and `bun run test:run` to ensure no regressions and compliance with standards.
 
 ---
-*Refer to `GEMINI.md` for a deeper overview of the project architecture and `package.json` for full dependency details.*
+
+_Refer to `GEMINI.md` for a deeper overview of the project architecture and `package.json` for full dependency details._

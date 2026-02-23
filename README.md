@@ -1,73 +1,43 @@
-# React + TypeScript + Vite
+# hr-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**hr-frontend** is a modern human resources management frontend web application.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework:** React 19 + TypeScript (~5.9) + Vite (using Rolldown)
+- **Runtime:** Bun
+- **Styling:** Tailwind CSS v4 + shadcn/ui (Radix UI primitives)
+- **State Management:** Zustand (Global UI), TanStack Query (Server State)
+- **Routing:** TanStack Router
+- **Forms:** react-hook-form + zod
+- **Testing:** Vitest + React Testing Library + jsdom
 
-## React Compiler
+## Development Workflow
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+### Requirements
 
-## Expanding the ESLint configuration
+- [Bun](https://bun.sh/) is used as the runtime and package manager.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Commands
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The project provides the following key scripts:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Start Dev Server:** `bun run dev`
+- **Build for Production:** `bun run build`
+- **Lint Code:** `bun run lint` (Uses Biome)
+- **Format Code:** `bun run format` (Uses Biome)
+- **Check & Fix:** `bun run check` (Uses Biome)
+- **Run Tests:** `bun run test` (Watch mode)
+- **Run Tests Once:** `bun run test:run`
+- **Test Coverage:** `bun run test:coverage`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Documentation & AI Guidelines
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This repository includes detailed guidelines for developers and AI agents (such as Claude, Gemini, or Cursor):
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- [README.md](./README.md): Basic project overview (this file).
+- [AGENT.md](./AGENT.md): Key instructions, core mandates (TDD, Performance), and project conventions.
+- [GEMINI.md](./GEMINI.md): Comprehensive project architecture, detailed tech stack, layout, and conventions.
+- [CLAUDE.md](./CLAUDE.md): Quick reference and development guidelines for Claude/AI.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Please refer to these files to ensure code quality standards, consistent architecture, and TDD-first principles are strictly followed.

@@ -30,16 +30,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```text
 src/
+├── assets/          # Static assets (images, fonts, etc.)
 ├── components/      # React components
 │   ├── home/        # Dashboard/Home page components
 │   ├── layout/      # Layout components (Header, Footer)
 │   └── ui/          # Reusable shadcn/ui primitives
 ├── hooks/           # Custom React hooks
 ├── lib/             # Utilities (cn helper in utils.ts)
+├── locales/         # i18n localization files
 ├── pages/           # Feature-based page components
 ├── routes/          # TanStack Router route definitions
 ├── stores/          # Zustand state stores
+├── test/            # Test setup, mocks, and utilities
 ├── types/           # TypeScript type definitions
+├── App.css          # Application specific styles
 ├── App.tsx          # Main application component
 ├── main.tsx         # Entry point
 ├── router.ts        # TanStack Router instance
@@ -49,6 +53,7 @@ src/
 ## Guidelines & Conventions
 
 ### General
+
 - **Path Aliases:** Use `@/` to import from `src`.
 - **Styling:** Use Tailwind utility classes. Use `cn()` from `@/lib/utils` for conditional classes.
 - **Routing:** Define routes in `src/routes/`. Use TanStack Router.
@@ -58,20 +63,21 @@ src/
 - **Testing:** Tests in `__tests__` adjacent to files. Naming: `[filename].test.tsx`.
 
 ### Agent Skills & Best Practices
+
 This project has specific agent skills configured in `.agents/skills`:
 
-1.  **TDD First (`tdd-first-codegen`):** Strictly follow Test-Driven Development. Write tests *before* implementation.
-    -   **Phase 1:** Define testable behavior.
-    -   **Phase 2:** Write failing tests (RED).
-    -   **Phase 3:** Plan implementation.
-    -   **Phase 4:** Implement (GREEN) only after approval.
-    -   **Phase 5:** Refactor.
+1.  **TDD First (`tdd-first-codegen`):** Strictly follow Test-Driven Development. Write tests _before_ implementation.
+    - **Phase 1:** Define testable behavior.
+    - **Phase 2:** Write failing tests (RED).
+    - **Phase 3:** Plan implementation.
+    - **Phase 4:** Implement (GREEN) only after approval.
+    - **Phase 5:** Refactor.
 
 2.  **Vercel React Best Practices (`vercel-react-best-practices`):**
-    -   Prioritize eliminating waterfalls (`async-*`).
-    -   Optimize bundle size (avoid barrel files, use dynamic imports).
-    -   Use `React.cache()` and `Suspense` effectively.
+    - Prioritize eliminating waterfalls (`async-*`).
+    - Optimize bundle size (avoid barrel files, use dynamic imports).
+    - Use `React.cache()` and `Suspense` effectively.
 
 3.  **Web Design Guidelines (`web-design-guidelines`):**
-    -   Ensure UI compliance.
-    -   Check accessibility.
+    - Ensure UI compliance.
+    - Check accessibility.
