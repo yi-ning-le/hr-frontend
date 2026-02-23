@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { format } from "date-fns";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -259,7 +259,7 @@ describe("PendingResumesPage", () => {
       );
       expect(call).toBeDefined();
       const searchFn = (
-        call![0] as {
+        call?.[0] as {
           search: (prev: Record<string, unknown>) => Record<string, unknown>;
         }
       ).search;
@@ -364,6 +364,9 @@ describe("PendingResumesPage", () => {
       );
 
       await user.type(searchInput, "Alice");
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
 
       expect(mockNavigate).toHaveBeenCalledWith({
         search: expect.any(Function),
@@ -380,6 +383,9 @@ describe("PendingResumesPage", () => {
       );
 
       await user.type(searchInput, "Developer");
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
 
       expect(mockNavigate).toHaveBeenCalledWith({
         search: expect.any(Function),
@@ -404,7 +410,7 @@ describe("PendingResumesPage", () => {
         "candidate.reviewStatusFilter",
       );
 
-      await user.selectOptions(filterSelect, "rejected");
+      await user.selectOptions(filterSelect, "unsuitable");
 
       expect(mockNavigate).toHaveBeenCalledWith({
         search: expect.any(Function),

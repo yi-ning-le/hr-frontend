@@ -2,6 +2,9 @@ import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { format } from "date-fns";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("pdfjs-dist", () => ({ GlobalWorkerOptions: {} }));
+
 import { useReviewedCandidates } from "@/hooks/queries/useReviewedCandidates";
 import { ReviewedCandidatesTab } from "../ReviewedCandidatesTab";
 
@@ -37,7 +40,7 @@ describe("ReviewedCandidatesTab", () => {
       appliedJobTitle: "Manager",
       experienceYears: 10,
       appliedAt: "2025-01-06T00:00:00.000Z",
-      reviewStatus: "rejected",
+      reviewStatus: "unsuitable",
       status: "rejected",
       reviewedAt: "2025-01-11T09:15:00.000Z",
     },
@@ -173,6 +176,26 @@ describe("ReviewedCandidatesTab", () => {
     expect(screen.queryByText("Charlie Davis")).not.toBeInTheDocument();
   });
 
+  it("should sync input value when query changes from route", async () => {
+    (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: mockReviewedCandidates,
+      isLoading: false,
+      isError: false,
+      error: null,
+    });
+    mockUseSearch.mockReturnValue({ q: "Alice", status: "all" });
+    const { rerender } = render(<ReviewedCandidatesTab />);
+
+    expect(
+      screen.getByPlaceholderText("recruitment.candidates.searchPlaceholder"),
+    ).toHaveValue("Alice");
+
+    mockUseSearch.mockReturnValue({ q: "Bob", status: "all" });
+    rerender(<ReviewedCandidatesTab />);
+
+    expect(await screen.findByDisplayValue("Bob")).toBeInTheDocument();
+  });
+
   it("should navigate to filter reviewed candidates by position when typing in search", async () => {
     (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
       data: mockReviewedCandidates,
@@ -182,14 +205,21 @@ describe("ReviewedCandidatesTab", () => {
     });
     render(<ReviewedCandidatesTab />);
 
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const user = userEvent.setup();
     const searchInput = screen.getByPlaceholderText(
       "recruitment.candidates.searchPlaceholder",
     );
 
     await user.type(searchInput, "Developer");
 
-    expect(mockNavigate).toHaveBeenCalled();
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      search: expect.any(Function),
+      replace: true,
+    });
   });
 
   it("should navigate to filter reviewed candidates by review status", async () => {
@@ -204,7 +234,7 @@ describe("ReviewedCandidatesTab", () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const filterSelect = screen.getByLabelText("candidate.reviewStatusFilter");
 
-    await user.selectOptions(filterSelect, "rejected");
+    await user.selectOptions(filterSelect, "unsuitable");
 
     act(() => {
       vi.advanceTimersByTime(500);
@@ -252,11 +282,27 @@ describe("ReviewedCandidatesTab", () => {
 
     const filterSelect = screen.getByLabelText("candidate.reviewStatusFilter");
     expect(filterSelect).toHaveValue("all");
+  });
 
-    expect(mockNavigate).toHaveBeenCalledWith({
-      search: expect.any(Function),
-      replace: true,
+  it("should render system statuses in filter options", () => {
+    (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: mockReviewedCandidates,
+      isLoading: false,
+      isError: false,
+      error: null,
     });
+    render(<ReviewedCandidatesTab />);
+
+    expect(
+      screen.getByRole("option", {
+        name: "candidate.suitable",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", {
+        name: "candidate.unsuitable",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("should show empty state when no candidates are furnished", () => {
@@ -272,5 +318,49 @@ describe("ReviewedCandidatesTab", () => {
     expect(
       screen.getByText("recruitment.candidates.noHistory"),
     ).toBeInTheDocument();
+  });
+
+  it("should display suitable status with green text and unsuitable with red text", () => {
+    (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: mockReviewedCandidates,
+      isLoading: false,
+      isError: false,
+      error: null,
+    });
+    render(<ReviewedCandidatesTab />);
+
+    const suitableCells = screen.getAllByRole("cell", {
+      name: "candidate.suitable",
+    });
+    expect(suitableCells[0]).toHaveClass("text-green-600");
+
+    const unsuitableCells = screen.getAllByRole("cell", {
+      name: "candidate.unsuitable",
+    });
+    expect(unsuitableCells[0]).toHaveClass("text-red-600");
+  });
+
+  it("should fallback to hyphen when date is invalid", () => {
+    (useReviewedCandidates as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: [
+        {
+          id: "r-invalid-date",
+          name: "Invalid Date Candidate",
+          appliedJobTitle: "Designer",
+          experienceYears: 3,
+          appliedAt: "invalid-date",
+          reviewStatus: "suitable",
+          status: "interview",
+          reviewedAt: "invalid-review-time",
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      error: null,
+    });
+    render(<ReviewedCandidatesTab />);
+
+    const row = screen.getByText("Invalid Date Candidate").closest("tr");
+    expect(within(row!).getAllByText("-")).toHaveLength(2);
   });
 });

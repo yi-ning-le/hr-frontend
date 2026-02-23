@@ -8,12 +8,6 @@ export function getCandidateReviewStatus(candidate: ReviewedCandidateRow) {
   return candidate.reviewStatus || candidate.status;
 }
 
-export function getReviewStatusOptions(candidates?: ReviewedCandidateRow[]) {
-  if (!candidates) return [];
-  const statuses = new Set(candidates.map(getCandidateReviewStatus));
-  return Array.from(statuses).filter(Boolean);
-}
-
 export function normalizeReviewedFilters(
   search: { q?: string; status?: string },
   validStatuses: readonly string[],
