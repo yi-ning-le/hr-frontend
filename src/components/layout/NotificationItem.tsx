@@ -2,12 +2,17 @@ import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { formatNotification } from "@/lib/notifications/formatNotification";
+import {
+  formatNotification,
+  type NotificationAction,
+} from "@/lib/notifications/formatNotification";
 import { cn } from "@/lib/utils";
 import type { Notification } from "@/types/notification";
 
 interface NotificationItemProps {
   notification: Notification;
+  isRecruiter?: boolean;
+  isInterviewer?: boolean;
   onRead: (id: string) => void;
   onViewDetails: (notification: Notification) => void;
   onDelete: (id: string) => void;
@@ -15,12 +20,19 @@ interface NotificationItemProps {
 
 export function NotificationItem({
   notification,
+  isRecruiter = false,
+  isInterviewer = false,
   onRead,
   onViewDetails,
   onDelete,
 }: NotificationItemProps) {
   const { t } = useTranslation();
   const formatted = formatNotification(notification, t);
+  const detailTarget = resolveDetailTarget(
+    formatted.action,
+    isRecruiter,
+    isInterviewer,
+  );
 
   return (
     <article
@@ -69,25 +81,11 @@ export function NotificationItem({
       <p className="line-clamp-2 text-xs text-slate-500 dark:text-slate-400">
         {formatted.message}
       </p>
-      {formatted.action?.kind === "candidateReview" && (
+      {detailTarget && (
         <Link
-          to="/pending-resumes"
-          search={{
-            tab: "pending",
-            reviewCandidateId: formatted.action.candidateId,
-          }}
-          className="mt-1 text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
-          onClick={() => {
-            onViewDetails(notification);
-          }}
-        >
-          {t("notifications.viewDetails", "View details")}
-        </Link>
-      )}
-      {formatted.action?.kind === "interviewDetail" && (
-        <Link
-          to="/interviews/$interviewId"
-          params={{ interviewId: formatted.action.interviewId }}
+          to={detailTarget.to}
+          params={detailTarget.params}
+          search={detailTarget.search}
           className="mt-1 text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
           onClick={() => {
             onViewDetails(notification);
@@ -98,4 +96,77 @@ export function NotificationItem({
       )}
     </article>
   );
+}
+
+type NotificationDetailTarget =
+  | {
+      to: "/pending-resumes";
+      search: {
+        tab: "pending";
+        reviewCandidateId: string;
+      };
+      params?: undefined;
+    }
+  | {
+      to: "/recruitment";
+      search: {
+        tab: "candidates";
+        candidateId: string;
+        showResume: true;
+      };
+      params?: undefined;
+    }
+  | {
+      to: "/interviews/$interviewId";
+      params: { interviewId: string };
+      search?: undefined;
+    };
+
+function resolveDetailTarget(
+  action: NotificationAction | null,
+  isRecruiter: boolean,
+  isInterviewer: boolean,
+): NotificationDetailTarget | null {
+  if (!action || (!isRecruiter && !isInterviewer)) {
+    return null;
+  }
+
+  if (action.kind === "candidateReview") {
+    return {
+      to: "/pending-resumes",
+      search: {
+        tab: "pending",
+        reviewCandidateId: action.candidateId,
+      },
+    };
+  }
+
+  if (action.kind === "reviewFinished") {
+    if (isRecruiter) {
+      return {
+        to: "/recruitment",
+        search: {
+          tab: "candidates",
+          candidateId: action.candidateId,
+          showResume: true,
+        },
+      };
+    }
+    return {
+      to: "/pending-resumes",
+      search: {
+        tab: "pending",
+        reviewCandidateId: action.candidateId,
+      },
+    };
+  }
+
+  if (action.kind === "interviewDetail") {
+    return {
+      to: "/interviews/$interviewId",
+      params: { interviewId: action.interviewId },
+    };
+  }
+
+  return null;
 }

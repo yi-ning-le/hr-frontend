@@ -6,7 +6,18 @@ import { NotificationList } from "../NotificationList";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback || key,
+    t: (
+      key: string,
+      options?: string | { defaultValue?: string; [k: string]: unknown },
+    ) => {
+      if (typeof options === "string") {
+        return options;
+      }
+      if (options && typeof options === "object") {
+        return options.defaultValue || key;
+      }
+      return key;
+    },
   }),
 }));
 
@@ -21,7 +32,7 @@ vi.mock("@tanstack/react-router", () => ({
     children: React.ReactNode;
     to: string;
     params?: Record<string, string>;
-    search?: Record<string, string | undefined>;
+    search?: Record<string, unknown>;
     className?: string;
   }) => {
     let href = to;

@@ -15,6 +15,7 @@ import {
   useNotifications,
   useUnreadCount,
 } from "@/hooks/queries/useNotifications";
+import { useUserRole } from "@/hooks/useUserRole";
 import type { Notification } from "@/types/notification";
 import { NotificationList } from "./NotificationList";
 
@@ -24,6 +25,7 @@ export function NotificationBell() {
 
   const { data: unreadCount = 0 } = useUnreadCount();
   const { data: notifications = [], isLoading } = useNotifications(isOpen);
+  const roles = useUserRole();
 
   const markAsRead = useMarkNotificationRead();
   const markAllAsRead = useMarkAllNotificationsRead();
@@ -83,6 +85,8 @@ export function NotificationBell() {
         <NotificationList
           notifications={notifications}
           isLoading={isLoading}
+          isRecruiter={roles.isRecruiter}
+          isInterviewer={roles.isInterviewer}
           onRead={handleRead}
           onViewDetails={handleViewDetails}
           onDelete={handleDelete}

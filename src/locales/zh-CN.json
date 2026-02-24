@@ -675,7 +675,8 @@
       },
       "review_completed": {
         "title": "简历评审已完成",
-        "message": "评审人已提交了对候选人的评审意见。"
+        "message": "评审人已提交了对候选人 {{candidateName}} 的评审意见。",
+        "message_without_name": "评审人已提交了对候选人的评审意见。"
       }
     }
   },

@@ -3,6 +3,7 @@ import type { Notification } from "@/types/notification";
 
 export type NotificationAction =
   | { kind: "candidateReview"; candidateId: string }
+  | { kind: "reviewFinished"; candidateId: string }
   | { kind: "interviewDetail"; interviewId: string };
 
 export interface FormattedNotification {
@@ -15,20 +16,25 @@ export function formatNotification(
   notification: Notification,
   t: TFunction,
 ): FormattedNotification {
+  const contentParams = notification.content.params;
   const fallbackTitle = t("notifications.events.generic.title", "Notification");
   const fallbackMessage = t(
     "notifications.events.generic.message",
     "You have a new notification.",
   );
+  const messageKey = getMessageKey(notification);
 
-  const title = t(
-    notification.content.titleKey,
-    getTitleFallback(notification.content.titleKey, fallbackTitle),
-  );
-  const message = t(
-    notification.content.messageKey,
-    getMessageFallback(notification.content.messageKey, fallbackMessage),
-  );
+  const title = t(notification.content.titleKey, {
+    ...contentParams,
+    defaultValue: getTitleFallback(
+      notification.content.titleKey,
+      fallbackTitle,
+    ),
+  });
+  const message = t(messageKey, {
+    ...contentParams,
+    defaultValue: getMessageFallback(messageKey, fallbackMessage),
+  });
 
   return {
     title,
@@ -43,17 +49,32 @@ function resolveAction(notification: Notification): NotificationAction | null {
     return null;
   }
 
+  if (action.kind === "reviewFinished") {
+    const candidateId =
+      getStringParam(action.params, "candidateId") ??
+      (notification.subject.type === "candidate"
+        ? notification.subject.id
+        : null);
+    return candidateId ? { kind: "reviewFinished", candidateId } : null;
+  }
+
   if (action.kind === "candidateReview") {
     const candidateId =
       getStringParam(action.params, "candidateId") ??
       (notification.subject.type === "candidate"
         ? notification.subject.id
         : null);
-    return candidateId ? { kind: "candidateReview", candidateId } : null;
-  }
 
-  // review_completed notifications also use candidateReview action
-  // (handled by the candidateReview branch above)
+    if (!candidateId) {
+      return null;
+    }
+
+    // Distinguish between assigned review and finished review
+    if (notification.eventType === "review_completed") {
+      return { kind: "reviewFinished", candidateId };
+    }
+    return { kind: "candidateReview", candidateId };
+  }
 
   if (action.kind === "interviewDetail") {
     const interviewId =
@@ -65,6 +86,17 @@ function resolveAction(notification: Notification): NotificationAction | null {
   }
 
   return null;
+}
+
+function getMessageKey(notification: Notification): string {
+  const messageKey = notification.content.messageKey;
+  if (
+    messageKey === "notifications.events.review_completed.message" &&
+    !getStringParam(notification.content.params, "candidateName")
+  ) {
+    return "notifications.events.review_completed.message_without_name";
+  }
+  return messageKey;
 }
 
 function getStringParam(
@@ -99,6 +131,9 @@ function getMessageFallback(key: string, generic: string): string {
     return "You have been assigned to conduct an interview.";
   }
   if (key === "notifications.events.review_completed.message") {
+    return "A reviewer has submitted their assessment for candidate {{candidateName}}.";
+  }
+  if (key === "notifications.events.review_completed.message_without_name") {
     return "A reviewer has submitted their assessment for a candidate.";
   }
   return generic;

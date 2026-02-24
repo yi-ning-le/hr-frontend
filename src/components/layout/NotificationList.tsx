@@ -7,6 +7,8 @@ import { NotificationItem } from "./NotificationItem";
 interface NotificationListProps {
   notifications: Notification[];
   isLoading: boolean;
+  isRecruiter?: boolean;
+  isInterviewer?: boolean;
   onRead: (id: string) => void;
   onViewDetails: (notification: Notification) => void;
   onDelete: (id: string) => void;
@@ -15,6 +17,8 @@ interface NotificationListProps {
 export function NotificationList({
   notifications,
   isLoading,
+  isRecruiter = false,
+  isInterviewer = false,
   onRead,
   onViewDetails,
   onDelete,
@@ -38,6 +42,8 @@ export function NotificationList({
             <NotificationItem
               key={notification.id}
               notification={notification}
+              isRecruiter={isRecruiter}
+              isInterviewer={isInterviewer}
               onRead={onRead}
               onViewDetails={onViewDetails}
               onDelete={onDelete}

@@ -10,7 +10,31 @@ import { NotificationBell } from "../NotificationBell";
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback || key,
+    t: (
+      key: string,
+      options?: string | { defaultValue?: string; [k: string]: unknown },
+    ) => {
+      if (typeof options === "string") {
+        return options;
+      }
+      if (options && typeof options === "object") {
+        return options.defaultValue || key;
+      }
+      return key;
+    },
+  }),
+}));
+
+vi.mock("@/hooks/useUserRole", () => ({
+  useUserRole: () => ({
+    isAdmin: false,
+    isRecruiter: true,
+    isInterviewer: true,
+    isHR: false,
+    isLoading: false,
+    isError: false,
+    error: null,
+    refetch: vi.fn(),
   }),
 }));
 
@@ -26,7 +50,7 @@ vi.mock("@tanstack/react-router", () => ({
     children: React.ReactNode;
     to: string;
     params?: Record<string, string>;
-    search?: Record<string, string | undefined>;
+    search?: Record<string, unknown>;
     className?: string;
   }) => {
     let href = to;

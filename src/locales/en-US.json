@@ -674,7 +674,8 @@
       },
       "review_completed": {
         "title": "Resume Review Completed",
-        "message": "A reviewer has submitted their assessment for a candidate."
+        "message": "A reviewer has submitted their assessment for candidate {{candidateName}}.",
+        "message_without_name": "A reviewer has submitted their assessment for a candidate."
       }
     }
   },

@@ -3,7 +3,22 @@ import { describe, expect, it } from "vitest";
 import type { Notification } from "@/types/notification";
 import { formatNotification } from "../formatNotification";
 
-const t = (key: string, fallback?: string) => fallback || key;
+const t = (
+  key: string,
+  options?: string | { defaultValue?: string; [k: string]: unknown },
+) => {
+  if (typeof options === "string") {
+    return options;
+  }
+  if (options && typeof options === "object") {
+    const template = options.defaultValue ?? key;
+    return String(template).replaceAll(/\{\{(\w+)\}\}/g, (_, token: string) => {
+      const value = options[token];
+      return typeof value === "string" && value !== "" ? value : `{{${token}}}`;
+    });
+  }
+  return key;
+};
 
 describe("formatNotification", () => {
   it("formats reviewer assignment notification", () => {
@@ -116,12 +131,16 @@ describe("formatNotification", () => {
       },
       context: {
         candidateId: "22222222-2222-2222-2222-222222222222",
+        candidateName: "Jane Doe",
         reviewStatus: "suitable",
         reviewerName: "Alice",
       },
       content: {
         titleKey: "notifications.events.review_completed.title",
         messageKey: "notifications.events.review_completed.message",
+        params: {
+          candidateName: "Jane Doe",
+        },
       },
       action: {
         kind: "candidateReview",
@@ -137,11 +156,45 @@ describe("formatNotification", () => {
 
     expect(result.title).toBe("Resume Review Completed");
     expect(result.message).toBe(
+      "A reviewer has submitted their assessment for candidate Jane Doe.",
+    );
+    expect(result.action).toEqual({
+      kind: "reviewFinished",
+      candidateId: "22222222-2222-2222-2222-222222222222",
+    });
+  });
+
+  it("falls back to legacy review_completed message when candidateName is missing", () => {
+    const notification: Notification = {
+      id: "5",
+      userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+      eventType: "review_completed",
+      subject: {
+        type: "candidate",
+        id: "33333333-3333-3333-3333-333333333333",
+      },
+      content: {
+        titleKey: "notifications.events.review_completed.title",
+        messageKey: "notifications.events.review_completed.message",
+      },
+      action: {
+        kind: "candidateReview",
+        params: {
+          candidateId: "33333333-3333-3333-3333-333333333333",
+        },
+      },
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    const result = formatNotification(notification, t as TFunction);
+
+    expect(result.message).toBe(
       "A reviewer has submitted their assessment for a candidate.",
     );
     expect(result.action).toEqual({
-      kind: "candidateReview",
-      candidateId: "22222222-2222-2222-2222-222222222222",
+      kind: "reviewFinished",
+      candidateId: "33333333-3333-3333-3333-333333333333",
     });
   });
 });

@@ -13,6 +13,7 @@ const recruitmentSearchSchema = z.object({
   jobId: z.string().optional().catch("all"),
   q: z.string().optional().catch(""),
   candidateId: z.string().optional(),
+  showResume: z.coerce.boolean().optional(),
   view: z.enum(["list", "board"]).optional().catch("board"),
   status: z.array(z.string()).optional().catch([]),
   page: z.number().optional().catch(1),
@@ -25,7 +26,7 @@ export const Route = createRoute({
   validateSearch: (search) => recruitmentSearchSchema.parse(search),
   beforeLoad: async () => {
     const roles = await queryClient.ensureQueryData(userRoleQueryOptions());
-    if (!roles.isAdmin && !roles.isRecruiter) {
+    if (!roles.isRecruiter) {
       throw redirect({ to: "/" });
     }
   },

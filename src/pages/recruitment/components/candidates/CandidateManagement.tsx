@@ -42,6 +42,7 @@ export function CandidateManagement() {
   const selectedJobId = search.jobId || "all";
   const searchQuery = search.q || "";
   const selectedCandidateId = search.candidateId;
+  const showResume = search.showResume;
   const viewMode = search.view || "board";
   const statusFilter = search.status || [];
   const page = search.page || 1;
@@ -73,7 +74,11 @@ export function CandidateManagement() {
 
   const selectCandidate = (id: string | null) =>
     navigate({
-      search: (prev) => ({ ...prev, candidateId: id || undefined }),
+      search: (prev) => ({
+        ...prev,
+        candidateId: id || undefined,
+        showResume: undefined,
+      }),
       replace: true,
     });
 
@@ -91,6 +96,12 @@ export function CandidateManagement() {
 
   const setPage = (p: number) =>
     navigate({ search: (prev) => ({ ...prev, page: p }), replace: true });
+
+  const toggleShowResume = (show: boolean) =>
+    navigate({
+      search: (prev) => ({ ...prev, showResume: show || undefined }),
+      replace: true,
+    });
 
   // Filter out closed jobs for sidebar
   const openJobs = useMemo(
@@ -237,6 +248,8 @@ export function CandidateManagement() {
           {selectedCandidateId && (
             <CandidateDetail
               candidateId={selectedCandidateId}
+              showResume={showResume}
+              onShowResumeChange={toggleShowResume}
               onClose={() => selectCandidate(null)}
             />
           )}

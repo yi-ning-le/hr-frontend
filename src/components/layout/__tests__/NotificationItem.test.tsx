@@ -7,7 +7,18 @@ import { NotificationItem } from "../NotificationItem";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback || key,
+    t: (
+      key: string,
+      options?: string | { defaultValue?: string; [k: string]: unknown },
+    ) => {
+      if (typeof options === "string") {
+        return options;
+      }
+      if (options && typeof options === "object") {
+        return options.defaultValue || key;
+      }
+      return key;
+    },
   }),
 }));
 
@@ -22,7 +33,7 @@ vi.mock("@tanstack/react-router", () => ({
     children: React.ReactNode;
     to: string;
     params?: Record<string, string>;
-    search?: Record<string, string | undefined>;
+    search?: Record<string, unknown>;
     className?: string;
   }) => {
     let href = to;
@@ -106,6 +117,31 @@ const mockNotificationWithLink: Notification = {
   createdAt: new Date().toISOString(),
 };
 
+const mockReviewCompletedNotification: Notification = {
+  id: "3",
+  userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+  eventType: "review_completed",
+  subject: {
+    type: "candidate",
+    id: "22222222-2222-2222-2222-222222222222",
+  },
+  content: {
+    titleKey: "notifications.events.review_completed.title",
+    messageKey: "notifications.events.review_completed.message",
+    params: {
+      candidateName: "Jane Doe",
+    },
+  },
+  action: {
+    kind: "reviewFinished",
+    params: {
+      candidateId: "22222222-2222-2222-2222-222222222222",
+    },
+  },
+  isRead: false,
+  createdAt: new Date().toISOString(),
+};
+
 describe("NotificationItem", () => {
   it("renders notification title and message", () => {
     const onRead = vi.fn();
@@ -177,6 +213,7 @@ describe("NotificationItem", () => {
     render(
       <NotificationItem
         notification={mockNotificationWithLink}
+        isInterviewer={true}
         onRead={onRead}
         onViewDetails={onViewDetails}
         onDelete={onDelete}
@@ -198,6 +235,7 @@ describe("NotificationItem", () => {
     render(
       <NotificationItem
         notification={mockNotificationWithLink}
+        isInterviewer={true}
         onRead={onRead}
         onViewDetails={onViewDetails}
         onDelete={onDelete}
@@ -220,6 +258,7 @@ describe("NotificationItem", () => {
     render(
       <NotificationItem
         notification={mockNotification}
+        isInterviewer={true}
         onRead={onRead}
         onViewDetails={onViewDetails}
         onDelete={onDelete}
@@ -250,6 +289,24 @@ describe("NotificationItem", () => {
     expect(
       screen.getByRole("button", { name: "New Resume Review Assigned" }),
     ).toBeInTheDocument();
+  });
+
+  it("renders recruiter deep link for review finished notifications", () => {
+    render(
+      <NotificationItem
+        notification={mockReviewCompletedNotification}
+        isRecruiter={true}
+        onRead={vi.fn()}
+        onViewDetails={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    );
+
+    const link = screen.getByTestId("router-link");
+    expect(link).toHaveAttribute(
+      "href",
+      "/recruitment?tab=candidates&candidateId=22222222-2222-2222-2222-222222222222&showResume=true",
+    );
   });
 
   it("calls onDelete when delete button is clicked", async () => {

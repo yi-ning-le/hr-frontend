@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CandidateResumeSection } from "@/components/candidates/CandidateResumeSection";
@@ -30,17 +30,31 @@ import { CandidateInfoSection } from "./detail/CandidateInfoSection";
 
 interface CandidateDetailProps {
   candidateId: string;
+  showResume?: boolean;
+  onShowResumeChange?: (show: boolean) => void;
   onClose: () => void;
 }
 
 export function CandidateDetail({
   candidateId,
+  showResume = false,
+  onShowResumeChange,
   onClose,
 }: CandidateDetailProps) {
   const { t } = useTranslation();
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(showResume);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+
+  // Synchronize state with prop for deep linking
+  useEffect(() => {
+    setIsPreviewOpen(showResume);
+  }, [showResume]);
+
+  const handlePreviewOpenChange = (open: boolean) => {
+    setIsPreviewOpen(open);
+    onShowResumeChange?.(open);
+  };
 
   // Resume Upload State
   const [isUploadingResume, setIsUploadingResume] = useState(false);
@@ -129,7 +143,7 @@ export function CandidateDetail({
             candidate={candidate}
             isUploadingResume={isUploadingResume}
             onResumeUpload={handleResumeUpload}
-            onPreviewClick={() => setIsPreviewOpen(true)}
+            onPreviewClick={() => handlePreviewOpenChange(true)}
           />
 
           <Separator />
@@ -142,7 +156,7 @@ export function CandidateDetail({
       <ResumePreviewModal
         candidate={candidate}
         open={isPreviewOpen}
-        onOpenChange={setIsPreviewOpen}
+        onOpenChange={handlePreviewOpenChange}
       />
 
       {/* Delete Confirmation Alert */}
