@@ -18,4 +18,7 @@ hooks = [
     { id = "unit-test", name = "unit-test", entry = "bun run test:run", language = "system", types = [
         "text",
     ], pass_filenames = false },
+    { id = "build", name = "build", entry = "bun run build", language = "system", types = [
+        "text",
+    ], pass_filenames = false },
 ]
