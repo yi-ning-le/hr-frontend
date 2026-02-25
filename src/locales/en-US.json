@@ -292,12 +292,14 @@
       "review": "Review",
       "reviewedListTitle": "Reviewed History",
       "noHistory": "No history found",
+      "noHistoryDesc": "You haven't reviewed any candidates yet.",
       "history": {
         "title": "Processing History",
         "empty": "No history found",
         "description": "View the candidate review history timeline."
       },
       "noPendingResumes": "No pending resumes to review.",
+      "noPendingResumesDesc": "There are no candidates waiting for review at the moment.",
       "searchPlaceholder": "Search by name or position...",
       "toolbar": {
         "searchPlaceholder": "Search by name or email...",
