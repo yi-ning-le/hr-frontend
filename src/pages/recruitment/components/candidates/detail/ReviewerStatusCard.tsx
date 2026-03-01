@@ -22,10 +22,13 @@ interface ReviewerStatusCardProps {
 }
 
 const REVIEW_STATUS_CONFIG = {
-  pending: { key: "candidate.reviewStatus.pending", default: "Pending" },
-  suitable: { key: "candidate.reviewStatus.suitable", default: "Suitable" },
+  pending: { key: "candidate.reviewStatusOptions.pending", default: "Pending" },
+  suitable: {
+    key: "candidate.reviewStatusOptions.suitable",
+    default: "Suitable",
+  },
   unsuitable: {
-    key: "candidate.reviewStatus.unsuitable",
+    key: "candidate.reviewStatusOptions.unsuitable",
     default: "Unsuitable",
   },
 } as const;

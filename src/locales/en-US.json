@@ -93,7 +93,8 @@
     "assignFailed": "Failed to assign reviewer",
     "reviewTitle": "Review Candidate",
     "reviewDescription": "Provide your feedback for {{name}}.",
-    "reviewStatus": {
+    "reviewStatus": "Decision",
+    "reviewStatusOptions": {
       "pending": "Pending",
       "suitable": "Suitable",
       "unsuitable": "Unsuitable"

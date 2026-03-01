@@ -93,7 +93,8 @@
     "assignFailed": "评审人分配失败",
     "reviewTitle": "评审候选人",
     "reviewDescription": "请为 {{name}} 提供反馈意见。",
-    "reviewStatus": {
+    "reviewStatus": "评审结果",
+    "reviewStatusOptions": {
       "pending": "待评审",
       "suitable": "合适",
       "unsuitable": "不合适"
