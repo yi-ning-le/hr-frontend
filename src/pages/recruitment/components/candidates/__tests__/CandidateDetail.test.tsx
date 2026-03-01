@@ -97,6 +97,10 @@ vi.mock("@/hooks/queries/useCandidates", () => ({
     data: [],
     isLoading: false,
   }),
+  useRevertReviewer: () => ({
+    mutateAsync: vi.fn().mockResolvedValue(undefined),
+    isPending: false,
+  }),
 }));
 
 // Mock useJobs hook

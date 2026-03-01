@@ -153,6 +153,19 @@ describe("CommentItem", () => {
     expect(screen.queryByText("suitable")).not.toBeInTheDocument();
   });
 
+  it("shows status-literal content for normal comments", () => {
+    render(
+      <CommentItem
+        comment={makeComment({
+          commentType: "normal",
+          content: "suitable",
+        })}
+      />,
+    );
+
+    expect(screen.getByText("suitable")).toBeInTheDocument();
+  });
+
   it('does not render review badge when commentType is "normal" or undefined', () => {
     const { rerender } = render(
       <CommentItem comment={makeComment({ commentType: "normal" })} />,

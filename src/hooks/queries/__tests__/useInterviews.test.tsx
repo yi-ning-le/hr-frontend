@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InterviewsAPI } from "@/lib/api";
 import {
   useCreateInterview,
+  useDeleteInterview,
   useInterview,
   useInterviews,
   useMyInterviews,
@@ -22,6 +23,7 @@ vi.mock("@/lib/api", () => ({
     updateStatus: vi.fn(),
     getAll: vi.fn(),
     update: vi.fn(),
+    delete: vi.fn(),
   },
 }));
 
@@ -165,6 +167,28 @@ describe("useInterviews Hooks", () => {
         updateData.id,
         updateData.data,
       );
+    });
+  });
+
+  describe("useDeleteInterview", () => {
+    it("calls InterviewsAPI.delete and invalidates interview queries", async () => {
+      const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
+      (InterviewsAPI.delete as any).mockResolvedValue(undefined);
+
+      const { result } = renderHook(() => useDeleteInterview(), { wrapper });
+
+      result.current.mutate("1");
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(InterviewsAPI.delete).toHaveBeenCalledWith("1");
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: ["interviews", "user-1"],
+      });
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: ["interviews", "user-1", "1"],
+      });
+      invalidateSpy.mockRestore();
     });
   });
 });

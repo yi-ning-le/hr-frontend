@@ -26,10 +26,10 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
     comment.commentType === "review_suitable" ||
     comment.commentType === "review_unsuitable";
   const trimmedContent = comment.content.trim();
-  const isStatusLiteral =
-    trimmedContent === "suitable" || trimmedContent === "unsuitable";
+  // Only hide content if it's strictly a status marker without additional commentary
+  const isStatusLiteral = /^(suitable|unsuitable)$/i.test(trimmedContent);
   const showContent =
-    !isReviewComment || (trimmedContent !== "" && !isStatusLiteral);
+    trimmedContent !== "" && (!isReviewComment || !isStatusLiteral);
 
   return (
     <div className="flex gap-3 py-4 border-b last:border-0 border-border/50 hover:bg-muted/30 transition-colors px-2 -mx-2 rounded-lg group">

@@ -1,7 +1,8 @@
 import { format } from "date-fns";
-import { Briefcase, Clock, Edit, FileText, User } from "lucide-react";
+import { Briefcase, Clock, Edit, FileText, Trash2, User } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { EditInterviewDialog } from "@/components/interviews/EditInterviewDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useDeleteInterview } from "@/hooks/queries/useInterviews";
 import { useResolveCandidateStatus } from "@/hooks/useCandidateStatuses";
 import type { Candidate } from "@/types/candidate";
 import type { Interview } from "@/types/recruitment.d";
@@ -32,6 +42,31 @@ export function RecruiterInterviewCard({
   const { resolveStatus } = useResolveCandidateStatus();
   const statusDef = resolveStatus(interview, candidate);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const { mutateAsync: deleteInterview, isPending: isDeleting } =
+    useDeleteInterview();
+
+  const handleDelete = async () => {
+    try {
+      await deleteInterview(interview.id);
+      setIsDeleteOpen(false);
+      toast.success(
+        t(
+          "recruitment.interviews.deleteSuccess",
+          "Interview deleted successfully",
+        ),
+      );
+    } catch (error) {
+      const err = error as { response?: { data?: { error?: string } } };
+      toast.error(
+        err.response?.data?.error ||
+          t(
+            "recruitment.interviews.deleteFailed",
+            "Failed to delete interview",
+          ),
+      );
+    }
+  };
 
   return (
     <>
@@ -74,14 +109,34 @@ export function RecruiterInterviewCard({
                 )}
               </CardDescription>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 -mr-2"
-              onClick={() => setIsEditOpen(true)}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-1">
+              {interview.status === "PENDING" && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t(
+                    "recruitment.interviews.deleteInterview",
+                    "Delete Interview",
+                  )}
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  onClick={() => setIsDeleteOpen(true)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t(
+                  "recruitment.interviews.editInterview",
+                  "Edit Interview",
+                )}
+                className="h-8 w-8 -mr-2"
+                onClick={() => setIsEditOpen(true)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="flex-1 pb-4 space-y-3">
@@ -144,6 +199,40 @@ export function RecruiterInterviewCard({
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
       />
+
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t("recruitment.interviews.deleteInterview", "Delete Interview")}
+            </DialogTitle>
+            <DialogDescription>
+              {t(
+                "recruitment.interviews.deleteConfirm",
+                "Are you sure you want to delete this interview? This action cannot be undone.",
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteOpen(false)}
+              disabled={isDeleting}
+            >
+              {t("common.cancel", "Cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting
+                ? t("common.deleting", "Deleting...")
+                : t("common.delete", "Delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

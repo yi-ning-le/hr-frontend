@@ -423,6 +423,16 @@ export const CandidatesAPI = {
     };
   },
 
+  revertReviewer: async (id: string): Promise<Candidate> => {
+    const response = await api.post<Candidate>(
+      `/candidates/${id}/revert-reviewer`,
+    );
+    return {
+      ...response.data,
+      appliedAt: new Date(response.data.appliedAt),
+    };
+  },
+
   review: async (
     id: string,
     reviewStatus: string,
@@ -754,6 +764,10 @@ export const InterviewsAPI = {
       { status },
     );
     return interviewSchema.parse(response.data);
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/recruitment/interviews/${id}`);
   },
 };
 

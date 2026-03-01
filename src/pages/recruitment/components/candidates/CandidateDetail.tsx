@@ -27,6 +27,7 @@ import type { Candidate } from "@/types/candidate";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
 import { CandidateDetailHeader } from "./detail/CandidateDetailHeader";
 import { CandidateInfoSection } from "./detail/CandidateInfoSection";
+import { ReviewerStatusCard } from "./detail/ReviewerStatusCard";
 
 interface CandidateDetailProps {
   candidateId: string;
@@ -60,7 +61,7 @@ export function CandidateDetail({
   const [isUploadingResume, setIsUploadingResume] = useState(false);
 
   // Use TanStack Query
-  const { data: candidateData } = useCandidates();
+  const { data: candidateData, refetch } = useCandidates();
   const candidates = candidateData?.data || [];
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
   const { mutate: updateCandidate } = useUpdateCandidate();
@@ -135,7 +136,13 @@ export function CandidateDetail({
 
       <ScrollArea className="flex-1 min-h-0 w-full">
         <div className="p-6 pb-20 grid gap-8">
-          <CandidateInfoSection candidate={candidate} />
+          <div className="flex flex-col gap-6">
+            <CandidateInfoSection candidate={candidate} />
+            <ReviewerStatusCard
+              candidate={candidate}
+              onUpdate={() => refetch()}
+            />
+          </div>
 
           <Separator />
 
@@ -174,7 +181,7 @@ export function CandidateDetail({
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive active:bg-destructive/80 transition-colors"
             >
               {t("common.delete")}
             </AlertDialogAction>

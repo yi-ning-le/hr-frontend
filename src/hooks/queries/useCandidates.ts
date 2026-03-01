@@ -129,3 +129,16 @@ export const useUploadResume = () => {
     },
   });
 };
+
+export const useRevertReviewer = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => CandidatesAPI.revertReviewer(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
+      queryClient.invalidateQueries({
+        queryKey: [...CANDIDATES_QUERY_KEY, id],
+      });
+    },
+  });
+};

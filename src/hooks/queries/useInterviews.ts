@@ -103,3 +103,20 @@ export function useUpdateInterview() {
     },
   });
 }
+
+export function useDeleteInterview() {
+  const queryClient = useQueryClient();
+  const sessionScope = useInterviewSessionScope();
+
+  return useMutation({
+    mutationFn: (id: string) => InterviewsAPI.delete(id),
+    onSuccess: (_data, id) => {
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", sessionScope],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", sessionScope, id],
+      });
+    },
+  });
+}

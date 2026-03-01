@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RecruiterInterviewCard } from "../RecruiterInterviewCard";
 
 // Mock dependencies
@@ -14,6 +14,21 @@ vi.mock("@/hooks/useCandidateStatuses", () => ({
   useResolveCandidateStatus: () => ({
     resolveStatus: () => ({ name: "Screening", color: "blue" }),
   }),
+}));
+
+const mockDeleteInterview = vi.fn();
+vi.mock("@/hooks/queries/useInterviews", () => ({
+  useDeleteInterview: () => ({
+    mutateAsync: mockDeleteInterview,
+    isPending: false,
+  }),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }));
 
 // Mock i18next
@@ -35,20 +50,34 @@ const renderComponent = (props: any) =>
   );
 
 describe("RecruiterInterviewCard", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   const mockInterview = {
     id: "1",
+    jobId: "j1",
     candidateId: "c1",
     interviewerId: "i1",
     interviewerName: "Bob",
     scheduledTime: "2023-10-10T10:00:00Z",
     scheduledEndTime: "2023-10-10T11:00:00Z",
     status: "PENDING",
+    createdAt: "2023-10-10T09:00:00Z",
   };
   const mockCandidate = {
     id: "c1",
     name: "Alice",
+    email: "alice@example.com",
+    phone: "1234567890",
+    experienceYears: 5,
+    education: "BSc",
+    appliedJobId: "j1",
     appliedJobTitle: "Dev",
+    channel: "LinkedIn",
     resumeUrl: "http://resume.url",
+    status: "SCREENING",
+    appliedAt: new Date("2023-10-01T10:00:00Z"),
   };
 
   const defaultProps = {
@@ -79,29 +108,37 @@ describe("RecruiterInterviewCard", () => {
     const user = userEvent.setup();
     renderComponent(defaultProps);
 
-    // Filter by testId or look for icon button.
-    // The edit button has an Edit icon. We can find by role button.
-    // But there are two buttons. "View Resume" and the edit icon button.
-    // The edit icon button has variant="ghost" and size="icon".
-    // Let's find by class or just try picking one.
-    // Or add aria-label to the button in component (best practice).
-    // For now, let's look for the edit icon if possible, or select all buttons.
-
-    // Actually, one button has text "View Resume". The other has icon.
-    // We can click the one without text or check logic.
-    // Let's query buttons.
-    const buttons = screen.getAllByRole("button");
-    // 1. Edit button (icon)
-    // 2. View Resume button
-    // The edit button is in the header.
-
-    // Let's rely on the fact that we can find it structurally or add aria-label later.
-    // Assuming the icon button comes first in DOM order or we can target it.
-    // But let's check if we can query by icon? No.
-
-    // Let's click the first button, which is the Edit button in the header.
-    await user.click(buttons[0]);
+    await user.click(screen.getByLabelText("Edit Interview"));
 
     expect(screen.getByTestId("edit-dialog")).toBeDefined();
+  });
+
+  it("shows delete button only for pending interviews", () => {
+    const { rerender } = renderComponent(defaultProps);
+    expect(screen.getByLabelText("Delete Interview")).toBeInTheDocument();
+
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <RecruiterInterviewCard
+          {...defaultProps}
+          interview={{ ...mockInterview, status: "COMPLETED" }}
+        />
+      </QueryClientProvider>,
+    );
+    expect(screen.queryByLabelText("Delete Interview")).not.toBeInTheDocument();
+  });
+
+  it("deletes interview after confirmation", async () => {
+    const user = userEvent.setup();
+    mockDeleteInterview.mockResolvedValueOnce(undefined);
+    renderComponent(defaultProps);
+
+    await user.click(screen.getByLabelText("Delete Interview"));
+    expect(screen.getByText("Delete Interview")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    await waitFor(() => {
+      expect(mockDeleteInterview).toHaveBeenCalledWith("1");
+    });
   });
 });
