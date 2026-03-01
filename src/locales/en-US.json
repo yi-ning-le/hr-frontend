@@ -49,6 +49,9 @@
     "retry": "Retry",
     "viewHistory": "View History",
     "saving": "Saving...",
+    "revert": "Revert",
+    "reverting": "Reverting...",
+    "deleting": "Deleting...",
     "submitting": "Submitting...",
     "name": "Name",
     "contact": "Contact",
@@ -90,7 +93,11 @@
     "assignFailed": "Failed to assign reviewer",
     "reviewTitle": "Review Candidate",
     "reviewDescription": "Provide your feedback for {{name}}.",
-    "reviewStatus": "Decision",
+    "reviewStatus": {
+      "pending": "Pending",
+      "suitable": "Suitable",
+      "unsuitable": "Unsuitable"
+    },
     "selectDecision": "Select decision",
     "suitable": "Suitable",
     "unsuitable": "Unsuitable",
@@ -107,6 +114,10 @@
     "reviewTime": "Review Time",
     "reviewStatusFilter": "Filter by review status",
     "commentRequired": "Please write a comment before submitting your review",
+    "noReviewer": "No reviewer assigned",
+    "revertReviewer": "Revert Reviewer Assignment",
+    "revertReviewerFailed": "Failed to revert reviewer",
+    "revertReviewerConfirm": "Are you sure you want to remove this reviewer? This action cannot be undone.",
     "reviewCommentSuitable": "Suitable",
     "reviewCommentUnsuitable": "Unsuitable",
     "validation": {

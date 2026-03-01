@@ -49,6 +49,9 @@
     "retry": "重试",
     "viewHistory": "查看历史",
     "saving": "正在保存...",
+    "revert": "撤销",
+    "reverting": "正在撤销...",
+    "deleting": "正在删除...",
     "submitting": "正在提交...",
     "name": "姓名",
     "contact": "联系方式",
@@ -90,7 +93,11 @@
     "assignFailed": "评审人分配失败",
     "reviewTitle": "评审候选人",
     "reviewDescription": "请为 {{name}} 提供反馈意见。",
-    "reviewStatus": "评审结果",
+    "reviewStatus": {
+      "pending": "待评审",
+      "suitable": "合适",
+      "unsuitable": "不合适"
+    },
     "selectDecision": "选择结果",
     "suitable": "合适",
     "unsuitable": "不合适",
@@ -107,6 +114,10 @@
     "reviewTime": "评审时间",
     "reviewStatusFilter": "按评审状态筛选",
     "commentRequired": "请先写评论再提交评审意见",
+    "noReviewer": "未分配评审人",
+    "revertReviewer": "撤销评审人分配",
+    "revertReviewerFailed": "撤销评审人失败",
+    "revertReviewerConfirm": "确定要移除此评审人吗？此操作无法撤销。",
     "reviewCommentSuitable": "合适",
     "reviewCommentUnsuitable": "不合适",
     "validation": {
