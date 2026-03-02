@@ -1,10 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import * as z from "zod";
+import { PersonCombobox } from "@/components/candidates/PersonCombobox";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,19 +18,11 @@ import {
 } from "@/components/ui/dialog";
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useReviewers } from "@/hooks/queries/useReviewers";
 import { CandidatesAPI } from "@/lib/api";
 import type { Candidate } from "@/types/candidate";
@@ -116,40 +110,36 @@ export function AssignReviewerDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("candidate.reviewer", "Reviewer")}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "candidate.selectReviewer",
-                            "Select reviewer",
-                          )}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {reviewers?.map((reviewer) => (
-                        <SelectItem
-                          key={reviewer.employeeId}
-                          value={reviewer.employeeId}
-                        >
-                          {reviewer.firstName} {reviewer.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <PersonCombobox
+                    options={(reviewers ?? []).map((r) => ({
+                      id: r.employeeId,
+                      firstName: r.firstName,
+                      lastName: r.lastName,
+                      department: r.department,
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder={t(
+                      "candidate.selectReviewer",
+                      "Select reviewer",
+                    )}
+                    searchPlaceholder={t("common.search", "Search…")}
+                    emptyMessage={t("common.noResults", "No results found.")}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting
-                  ? t("common.saving", "Saving...")
-                  : t("common.save", "Save")}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("common.saving", "Saving…")}
+                  </>
+                ) : (
+                  t("common.save", "Save")
+                )}
               </Button>
             </DialogFooter>
           </form>

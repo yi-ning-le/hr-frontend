@@ -23,8 +23,13 @@ vi.mock("@/hooks/queries/useInterviews", () => ({
 }));
 
 const mockInterviewers = [
-  { employeeId: "emp1", firstName: "Alice", lastName: "Smith" },
-  { employeeId: "emp2", firstName: "Bob", lastName: "Jones" },
+  {
+    employeeId: "emp1",
+    firstName: "Alice",
+    lastName: "Smith",
+    department: "Engineering",
+  },
+  { employeeId: "emp2", firstName: "Bob", lastName: "Jones", department: "HR" },
 ];
 
 vi.mock("@/hooks/queries/useInterviewers", () => ({
@@ -33,7 +38,40 @@ vi.mock("@/hooks/queries/useInterviewers", () => ({
   }),
 }));
 
-// Mock Calendar component - this mock is used when the popover opens
+// Mock PersonCombobox for simplified testing
+vi.mock("@/components/candidates/PersonCombobox", () => ({
+  PersonCombobox: ({
+    value,
+    onChange,
+    placeholder,
+    options,
+  }: {
+    value: string;
+    onChange: (id: string) => void;
+    placeholder: string;
+    options: Array<{ id: string; firstName: string; lastName: string }>;
+  }) => (
+    <div data-testid="person-combobox">
+      <span>
+        {value ? options.find((o) => o.id === value)?.firstName : placeholder}
+      </span>
+      <select
+        data-testid="person-combobox-select"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((o) => (
+          <option key={o.id} value={o.id}>
+            {o.firstName} {o.lastName}
+          </option>
+        ))}
+      </select>
+    </div>
+  ),
+}));
+
+// Mock Calendar component
 vi.mock("@/components/ui/calendar", () => ({
   Calendar: ({
     onSelect,
@@ -102,31 +140,6 @@ vi.mock("@/components/ui/time-picker", () => ({
   ),
 }));
 
-// Mock Select component
-vi.mock("@/components/ui/select", () => ({
-  Select: ({ onValueChange, children, value, defaultValue }: any) => {
-    return (
-      <select
-        data-testid="select-native"
-        value={value || defaultValue || ""}
-        onChange={(e) => onValueChange(e.target.value)}
-      >
-        {children}
-      </select>
-    );
-  },
-  SelectTrigger: ({ children }: any) => <>{children}</>,
-  SelectValue: ({ placeholder }: any) => (
-    <option value="">{placeholder}</option>
-  ),
-  SelectContent: ({ children }: any) => <>{children}</>,
-  SelectItem: ({ value, children, disabled }: any) => (
-    <option value={value} disabled={disabled}>
-      {children}
-    </option>
-  ),
-}));
-
 // Mock sonner
 vi.mock("sonner", () => ({
   toast: {
@@ -189,6 +202,18 @@ describe("AssignInterviewerDialog", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders PersonCombobox for interviewer selection", () => {
+    render(
+      <AssignInterviewerDialog
+        candidate={mockCandidate}
+        open={true}
+        onOpenChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId("person-combobox")).toBeInTheDocument();
+  });
+
   it("validates required fields", async () => {
     const user = userEvent.setup();
     render(
@@ -231,7 +256,6 @@ describe("AssignInterviewerDialog", () => {
       />,
     );
 
-    // Both TimePicker components should be rendered
     const timePickers = screen.getAllByTestId("time-picker");
     expect(timePickers).toHaveLength(2);
   });
@@ -248,8 +272,8 @@ describe("AssignInterviewerDialog", () => {
       />,
     );
 
-    // Select interviewer
-    const interviewerSelect = screen.getByTestId("select-native");
+    // Select interviewer via PersonCombobox mock
+    const interviewerSelect = screen.getByTestId("person-combobox-select");
     await user.selectOptions(interviewerSelect, "emp1");
     expect(interviewerSelect).toHaveValue("emp1");
 
@@ -291,9 +315,8 @@ describe("AssignInterviewerDialog", () => {
 
     await user.click(screen.getByTestId("select-today"));
 
-    // Check that start TimePicker has minTime (the implementation sets it when date is today)
+    // Check that start TimePicker has minTime
     const minTimeElements = screen.queryAllByTestId("time-picker-min");
-    // Start time picker should have minTime when today is selected
     expect(minTimeElements.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -317,7 +340,7 @@ describe("AssignInterviewerDialog", () => {
     // Select a date
     await user.click(screen.getByTestId("select-tomorrow"));
 
-    // Calendar should still be in DOM but we verify the date was selected
+    // Calendar should still be in DOM
     expect(screen.getByTestId("calendar")).toBeInTheDocument();
   });
 });

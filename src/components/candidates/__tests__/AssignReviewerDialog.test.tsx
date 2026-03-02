@@ -40,18 +40,36 @@ vi.mock("@tanstack/react-query", () => ({
   })),
 }));
 
-// Mock UI components to simplify testing
-vi.mock("@/components/ui/select", () => ({
-  Select: ({ onValueChange, children }: any) => (
-    <div data-testid="select-mock" onClick={() => onValueChange?.("e1")}>
-      {children}
+// Mock PersonCombobox for simplified testing
+vi.mock("@/components/candidates/PersonCombobox", () => ({
+  PersonCombobox: ({
+    value,
+    onChange,
+    placeholder,
+    options,
+  }: {
+    value: string;
+    onChange: (id: string) => void;
+    placeholder: string;
+    options: Array<{ id: string; firstName: string; lastName: string }>;
+  }) => (
+    <div data-testid="person-combobox">
+      <span>
+        {value ? options.find((o) => o.id === value)?.firstName : placeholder}
+      </span>
+      <select
+        data-testid="person-combobox-select"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((o) => (
+          <option key={o.id} value={o.id}>
+            {o.firstName} {o.lastName}
+          </option>
+        ))}
+      </select>
     </div>
-  ),
-  SelectTrigger: ({ children }: any) => <button>{children}</button>,
-  SelectValue: () => <div>Select Value</div>,
-  SelectContent: ({ children }: any) => <div>{children}</div>,
-  SelectItem: ({ value, children }: any) => (
-    <div data-value={value}>{children}</div>
   ),
 }));
 
@@ -78,13 +96,11 @@ describe("AssignReviewerDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock pointer capture methods for radix-ui
     window.HTMLElement.prototype.hasPointerCapture = vi.fn();
     window.HTMLElement.prototype.setPointerCapture = vi.fn();
     window.HTMLElement.prototype.releasePointerCapture = vi.fn();
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
-    // Mock ResizeObserver
     window.ResizeObserver = class ResizeObserver {
       observe() {}
       unobserve() {}
@@ -107,6 +123,18 @@ describe("AssignReviewerDialog", () => {
     ).toBeInTheDocument();
   });
 
+  it("should render PersonCombobox", () => {
+    render(
+      <AssignReviewerDialog
+        candidate={mockCandidate}
+        open={true}
+        onOpenChange={mockOnOpenChange}
+      />,
+    );
+
+    expect(screen.getByTestId("person-combobox")).toBeInTheDocument();
+  });
+
   it("should submit assignment successfully", async () => {
     render(
       <AssignReviewerDialog
@@ -118,9 +146,9 @@ describe("AssignReviewerDialog", () => {
 
     const user = userEvent.setup();
 
-    // Trigger value change directly via mock interaction
-    const selectMock = screen.getByTestId("select-mock");
-    await user.click(selectMock);
+    // Select a reviewer via the mock combobox
+    const select = screen.getByTestId("person-combobox-select");
+    await user.selectOptions(select, "e1");
 
     // Submit
     const submitButton = screen.getByRole("button", { name: "Save" });

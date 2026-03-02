@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, startOfToday } from "date-fns";
 import { enUS, zhCN } from "date-fns/locale";
-import { CalendarIcon, UserPlus } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import * as z from "zod";
+import { PersonCombobox } from "@/components/candidates/PersonCombobox";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -30,13 +31,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { TimePicker } from "@/components/ui/time-picker";
 
 import { useInterviewers } from "@/hooks/queries/useInterviewers";
@@ -181,30 +175,19 @@ export function AssignInterviewerDialog({
                   <FormLabel>
                     {t("recruitment.interviews.interviewer")}
                   </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "recruitment.interviews.selectInterviewer",
-                          )}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {interviewers.map((interviewer) => (
-                        <SelectItem
-                          key={interviewer.employeeId}
-                          value={interviewer.employeeId}
-                        >
-                          {interviewer.firstName} {interviewer.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <PersonCombobox
+                    options={interviewers.map((i) => ({
+                      id: i.employeeId,
+                      firstName: i.firstName,
+                      lastName: i.lastName,
+                      department: i.department,
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder={t("recruitment.interviews.selectInterviewer")}
+                    searchPlaceholder={t("common.search", "Search…")}
+                    emptyMessage={t("common.noResults", "No results found.")}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
@@ -312,7 +295,7 @@ export function AssignInterviewerDialog({
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
-                  <UserPlus className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 {t("common.assign")}
               </Button>
