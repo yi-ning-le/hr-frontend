@@ -21,7 +21,6 @@ import {
   useDeleteCandidate,
   useUpdateCandidate,
   useUpdateCandidateStatus,
-  useUploadResume,
 } from "@/hooks/queries/useCandidates";
 import type { Candidate } from "@/types/candidate";
 import { CandidateForm, type CandidateFormValues } from "./CandidateForm";
@@ -57,40 +56,16 @@ export function CandidateDetail({
     onShowResumeChange?.(open);
   };
 
-  // Resume Upload State
-  const [isUploadingResume, setIsUploadingResume] = useState(false);
-
   // Use TanStack Query
   const { data: candidateData, refetch } = useCandidates();
   const candidates = candidateData?.data || [];
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
   const { mutate: updateCandidate } = useUpdateCandidate();
   const { mutate: deleteCandidate } = useDeleteCandidate();
-  const { mutateAsync: uploadResumeAsync } = useUploadResume();
 
   const candidate = candidates.find((c: Candidate) => c.id === candidateId);
 
   if (!candidate) return null;
-
-  const handleResumeUpload = async (file: File) => {
-    // 1. Validate file format (PDF only)
-    if (file.type !== "application/pdf") {
-      toast.error(t("recruitment.candidates.dialog.resumeFormatError"));
-      return;
-    }
-
-    setIsUploadingResume(true);
-
-    try {
-      await uploadResumeAsync({ id: candidate.id, file });
-      toast.success(t("recruitment.candidates.dialog.resumeUploadSuccess"));
-    } catch (error) {
-      console.error(error);
-      toast.error(t("recruitment.candidates.dialog.resumeUploadFailed"));
-    } finally {
-      setIsUploadingResume(false);
-    }
-  };
 
   const handleEditSubmit = (values: CandidateFormValues) => {
     updateCandidate({ id: candidate.id, updates: values });
@@ -148,8 +123,6 @@ export function CandidateDetail({
 
           <CandidateResumeSection
             candidate={candidate}
-            isUploadingResume={isUploadingResume}
-            onResumeUpload={handleResumeUpload}
             onPreviewClick={() => handlePreviewOpenChange(true)}
           />
 

@@ -374,8 +374,15 @@ export const CandidatesAPI = {
     return response.data;
   },
 
-  create: async (data: Partial<Candidate>): Promise<Candidate> => {
-    const response = await api.post<Candidate>("/candidates", data);
+  create: async (data: Partial<Candidate>, file: File): Promise<Candidate> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("data", JSON.stringify(data));
+    const response = await api.post<Candidate>("/candidates", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return {
       ...response.data,
       appliedAt: new Date(response.data.appliedAt),
@@ -446,29 +453,6 @@ export const CandidatesAPI = {
     return {
       ...response.data,
       appliedAt: new Date(response.data.appliedAt),
-    };
-  },
-
-  uploadResume: async (
-    id: string,
-    file: File,
-  ): Promise<{ resumeUrl: string; candidate: Candidate }> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await api.post<{
-      resumeUrl: string;
-      candidate: Candidate;
-    }>(`/candidates/${id}/resume`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return {
-      resumeUrl: response.data.resumeUrl,
-      candidate: {
-        ...response.data.candidate,
-        appliedAt: new Date(response.data.candidate.appliedAt),
-      },
     };
   },
 };

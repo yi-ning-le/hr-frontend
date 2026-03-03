@@ -105,6 +105,11 @@ export function AddCandidateDialog() {
   };
 
   const handleSubmit = async (values: CandidateFormValues) => {
+    if (!resumeFile) {
+      toast.error(t("recruitment.candidates.dialog.uploadError"));
+      return;
+    }
+
     const newCandidate = {
       ...values,
       appliedAt: new Date(),
@@ -112,7 +117,7 @@ export function AddCandidateDialog() {
 
     await createCandidate({
       data: newCandidate,
-      file: resumeFile || undefined,
+      file: resumeFile,
     });
     toast.success(t("recruitment.candidates.dialog.addSuccess"));
     setOpen(false);
@@ -173,19 +178,10 @@ export function AddCandidateDialog() {
                   </Button>
                   <input
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf"
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     onChange={handleFileUpload}
                   />
-                </div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setStep("form")}
-                  >
-                    {t("recruitment.candidates.dialog.skipUpload")}
-                  </Button>
                 </div>
               </>
             )}

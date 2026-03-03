@@ -14,7 +14,6 @@ vi.mock("@/lib/api", () => ({
     delete: vi.fn(),
     updateStatus: vi.fn(),
     updateNote: vi.fn(),
-    uploadResume: vi.fn(),
   },
 }));
 

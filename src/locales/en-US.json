@@ -337,7 +337,6 @@
         "uploadResume": "Upload Resume",
         "dragDropHint": "Drag and drop your PDF here, or click to browse.",
         "selectFile": "Select File",
-        "skipUpload": "Skip Upload",
         "parsingResume": "Parsing resume...",
         "uploadError": "Please upload a PDF document (.pdf)",
         "autoFilled": "Auto-filled: {{fields}}",
@@ -348,10 +347,7 @@
         "deleteConfirmTitle": "Are you sure?",
         "deleteConfirmDesc": "This action cannot be undone. This will permanently delete the candidate and remove their data from our servers.",
         "deleteSuccess": "Candidate deleted",
-        "noteUpdated": "Note updated",
-        "resumeUploadSuccess": "Resume uploaded successfully",
-        "resumeUploadFailed": "Failed to upload resume",
-        "resumeFormatError": "Format error: Only PDF files are supported for resume upload."
+        "noteUpdated": "Note updated"
       },
       "comments": {
         "title": "Comments",
@@ -387,10 +383,6 @@
         "resumePreview": "Resume Preview",
         "downloadResume": "Download Resume",
         "noResume": "No resume file",
-        "uploadHint": "Click to upload or drag and drop",
-        "uploadingResume": "Uploading resume...",
-        "dropToUpload": "Drop to upload",
-        "uploadResume": "Upload Resume",
         "interviewerNotes": "Interviewer Notes",
         "addNotePlaceholder": "Add candidate notes...",
         "noNotesYet": "No notes yet. Click to add..."

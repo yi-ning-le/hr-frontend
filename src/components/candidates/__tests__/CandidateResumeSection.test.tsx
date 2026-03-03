@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-// Mock react-pdf which is imported by PdfPreview - must be hoisted
 vi.mock("react-pdf", () => ({
   pdfjs: { GlobalWorkerOptions: { workerSrc: "" } },
   Document: ({ children }: { children?: React.ReactNode }) => (
@@ -8,7 +7,6 @@ vi.mock("react-pdf", () => ({
   Page: () => <div data-testid="pdf-page">Page</div>,
 }));
 
-// Mock the CSS imports
 vi.mock("react-pdf/dist/Page/AnnotationLayer.css", () => ({}));
 vi.mock("react-pdf/dist/Page/TextLayer.css", () => ({}));
 
@@ -18,7 +16,6 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Candidate } from "@/types/candidate";
 import { CandidateResumeSection } from "../CandidateResumeSection";
 
-// Mock ResizeObserver for jsdom
 beforeAll(() => {
   globalThis.ResizeObserver = class ResizeObserver {
     observe() {}
@@ -26,6 +23,7 @@ beforeAll(() => {
     disconnect() {}
   } as typeof globalThis.ResizeObserver;
 });
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -54,15 +52,8 @@ const mockCandidateWithoutResume: Candidate = {
   resumeUrl: "",
 };
 
-const mockCandidateWithPlaceholderResume: Candidate = {
-  ...mockCandidateWithResume,
-  resumeUrl: "#",
-};
-
 const defaultProps = {
   candidate: mockCandidateWithResume,
-  isUploadingResume: false,
-  onResumeUpload: vi.fn(),
   onPreviewClick: vi.fn(),
 };
 
@@ -79,181 +70,69 @@ describe("CandidateResumeSection", () => {
     ).toBeInTheDocument();
   });
 
-  describe("With resume", () => {
-    it("renders resume preview button", () => {
-      render(<CandidateResumeSection {...defaultProps} />);
+  it("renders resume preview and download when resume exists", () => {
+    render(<CandidateResumeSection {...defaultProps} />);
 
-      expect(
-        screen.getByText("recruitment.candidates.detail.viewResume"),
-      ).toBeInTheDocument();
-    });
-
-    it("renders download button", () => {
-      render(<CandidateResumeSection {...defaultProps} />);
-
-      expect(
-        screen.getByText("recruitment.candidates.detail.downloadResume"),
-      ).toBeInTheDocument();
-    });
-
-    it("calls onPreviewClick when preview button is clicked", () => {
-      const onPreviewClick = vi.fn();
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          onPreviewClick={onPreviewClick}
-        />,
-      );
-
-      // Find the clickable button containing viewResume text
-      const previewButton = screen
-        .getByText("recruitment.candidates.detail.viewResume")
-        .closest("button");
-      if (previewButton) {
-        fireEvent.click(previewButton);
-      }
-
-      expect(onPreviewClick).toHaveBeenCalled();
-    });
-
-    it("opens resume URL when download is clicked", () => {
-      const openMock = vi.fn();
-      vi.stubGlobal("open", openMock);
-
-      render(<CandidateResumeSection {...defaultProps} />);
-
-      const downloadButton = screen.getByText(
-        "recruitment.candidates.detail.downloadResume",
-      );
-      fireEvent.click(downloadButton);
-
-      expect(openMock).toHaveBeenCalledWith(
-        "https://example.com/resume.pdf",
-        "_blank",
-      );
-
-      vi.unstubAllGlobals();
-    });
+    expect(
+      screen.getByText("recruitment.candidates.detail.viewResume"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("recruitment.candidates.detail.downloadResume"),
+    ).toBeInTheDocument();
   });
 
-  describe("Without resume", () => {
-    it("renders upload area when no resume URL", () => {
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithoutResume}
-        />,
-      );
+  it("calls onPreviewClick when preview button is clicked", () => {
+    const onPreviewClick = vi.fn();
+    render(
+      <CandidateResumeSection
+        {...defaultProps}
+        onPreviewClick={onPreviewClick}
+      />,
+    );
 
-      expect(
-        screen.getByText("recruitment.candidates.detail.noResume"),
-      ).toBeInTheDocument();
-    });
+    const previewButton = screen
+      .getByText("recruitment.candidates.detail.viewResume")
+      .closest("button");
+    if (previewButton) {
+      fireEvent.click(previewButton);
+    }
 
-    it("renders upload area when resume URL is placeholder", () => {
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithPlaceholderResume}
-        />,
-      );
-
-      expect(
-        screen.getByText("recruitment.candidates.detail.noResume"),
-      ).toBeInTheDocument();
-    });
-
-    it("renders upload button", () => {
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithoutResume}
-        />,
-      );
-
-      expect(
-        screen.getByText("recruitment.candidates.detail.uploadResume"),
-      ).toBeInTheDocument();
-    });
-
-    it("renders upload hint", () => {
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithoutResume}
-        />,
-      );
-
-      expect(
-        screen.getByText("recruitment.candidates.detail.uploadHint"),
-      ).toBeInTheDocument();
-    });
-
-    it("does not render download button", () => {
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithoutResume}
-        />,
-      );
-
-      expect(
-        screen.queryByText("recruitment.candidates.detail.downloadResume"),
-      ).not.toBeInTheDocument();
-    });
+    expect(onPreviewClick).toHaveBeenCalled();
   });
 
-  describe("Upload in progress", () => {
-    it("renders loading indicator when uploading", () => {
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithoutResume}
-          isUploadingResume={true}
-        />,
-      );
+  it("opens resume URL when download is clicked", () => {
+    const openMock = vi.fn();
+    vi.stubGlobal("open", openMock);
 
-      expect(
-        screen.getByText("recruitment.candidates.detail.uploadingResume"),
-      ).toBeInTheDocument();
-    });
+    render(<CandidateResumeSection {...defaultProps} />);
 
-    it("does not render upload button when uploading", () => {
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithoutResume}
-          isUploadingResume={true}
-        />,
-      );
+    fireEvent.click(
+      screen.getByText("recruitment.candidates.detail.downloadResume"),
+    );
 
-      expect(
-        screen.queryByText("recruitment.candidates.detail.uploadResume"),
-      ).not.toBeInTheDocument();
-    });
+    expect(openMock).toHaveBeenCalledWith(
+      "https://example.com/resume.pdf",
+      "_blank",
+    );
+    vi.unstubAllGlobals();
   });
 
-  describe("File upload handling", () => {
-    it("calls onResumeUpload when file is selected via input", () => {
-      const onResumeUpload = vi.fn();
-      render(
-        <CandidateResumeSection
-          {...defaultProps}
-          candidate={mockCandidateWithoutResume}
-          onResumeUpload={onResumeUpload}
-        />,
-      );
+  it("renders no-resume text and hides actions when resume is missing", () => {
+    render(
+      <CandidateResumeSection
+        {...defaultProps}
+        candidate={mockCandidateWithoutResume}
+      />,
+    );
 
-      const file = new File(["test"], "resume.pdf", {
-        type: "application/pdf",
-      });
-      const input = document.querySelector('input[type="file"]');
-
-      if (input) {
-        fireEvent.change(input, { target: { files: [file] } });
-      }
-
-      expect(onResumeUpload).toHaveBeenCalledWith(file);
-    });
+    expect(
+      screen.getByText("recruitment.candidates.detail.noResume"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("recruitment.candidates.detail.downloadResume"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("recruitment.candidates.detail.viewResume"),
+    ).not.toBeInTheDocument();
   });
 });

@@ -388,15 +388,27 @@ describe("lib/api", () => {
       it("should create a candidate and transform dates", async () => {
         mockAxios.post.mockResolvedValueOnce({ data: mockCandidate });
 
-        const result = await CandidatesAPI.create({
-          name: "John Doe",
-          email: "john@example.com",
+        const mockFile = new File(["resume content"], "resume.pdf", {
+          type: "application/pdf",
         });
 
-        expect(mockAxios.post).toHaveBeenCalledWith("/candidates", {
-          name: "John Doe",
-          email: "john@example.com",
-        });
+        const result = await CandidatesAPI.create(
+          {
+            name: "John Doe",
+            email: "john@example.com",
+          },
+          mockFile,
+        );
+
+        expect(mockAxios.post).toHaveBeenCalledWith(
+          "/candidates",
+          expect.any(FormData),
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
         expect(result.appliedAt).toBeInstanceOf(Date);
       });
     });
@@ -434,30 +446,6 @@ describe("lib/api", () => {
           status: "interview",
         });
         expect(result.appliedAt).toBeInstanceOf(Date);
-      });
-    });
-
-    describe("uploadResume", () => {
-      it("should upload resume with multipart form data", async () => {
-        const mockFile = new File(["resume content"], "resume.pdf", {
-          type: "application/pdf",
-        });
-        mockAxios.post.mockResolvedValueOnce({
-          data: {
-            resumeUrl: "https://example.com/resume.pdf",
-            candidate: mockCandidate,
-          },
-        });
-
-        const result = await CandidatesAPI.uploadResume("1", mockFile);
-
-        expect(mockAxios.post).toHaveBeenCalledWith(
-          "/candidates/1/resume",
-          expect.any(FormData),
-          { headers: { "Content-Type": "multipart/form-data" } },
-        );
-        expect(result.resumeUrl).toBe("https://example.com/resume.pdf");
-        expect(result.candidate.appliedAt).toBeInstanceOf(Date);
       });
     });
   });

@@ -1,21 +1,16 @@
 import { FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ResumePreview } from "@/components/candidates/resume/ResumePreview";
-import { ResumeUploader } from "@/components/candidates/resume/ResumeUploader";
 import { Button } from "@/components/ui/button";
 import type { Candidate } from "@/types/candidate";
 
 interface CandidateResumeSectionProps {
   candidate: Candidate;
-  isUploadingResume: boolean;
-  onResumeUpload: (file: File) => void;
   onPreviewClick: () => void;
 }
 
 export function CandidateResumeSection({
   candidate,
-  isUploadingResume,
-  onResumeUpload,
   onPreviewClick,
 }: CandidateResumeSectionProps) {
   const { t } = useTranslation();
@@ -45,10 +40,9 @@ export function CandidateResumeSection({
       {hasResume ? (
         <ResumePreview onClick={onPreviewClick} />
       ) : (
-        <ResumeUploader
-          isUploading={isUploadingResume}
-          onUpload={onResumeUpload}
-        />
+        <p className="text-sm text-muted-foreground">
+          {t("recruitment.candidates.detail.noResume")}
+        </p>
       )}
     </section>
   );

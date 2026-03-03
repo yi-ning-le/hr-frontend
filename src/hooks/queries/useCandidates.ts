@@ -58,13 +58,9 @@ export const useCreateCandidate = () => {
       file,
     }: {
       data: Partial<Candidate>;
-      file?: File;
+      file: File;
     }) => {
-      let candidate = await CandidatesAPI.create(data);
-      if (file) {
-        const result = await CandidatesAPI.uploadResume(candidate.id, file);
-        candidate = result.candidate;
-      }
+      const candidate = await CandidatesAPI.create(data, file);
       return candidate;
     },
     onSuccess: () => {
@@ -112,20 +108,6 @@ export const useDeleteCandidate = () => {
     mutationFn: (id: string) => CandidatesAPI.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
-    },
-  });
-};
-
-export const useUploadResume = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, file }: { id: string; file: File }) =>
-      CandidatesAPI.uploadResume(id, file),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
-      queryClient.invalidateQueries({
-        queryKey: [...CANDIDATES_QUERY_KEY, id],
-      });
     },
   });
 };

@@ -337,7 +337,6 @@
         "uploadResume": "上传简历",
         "dragDropHint": "拖拽PDF文件到此处，或点击选择。",
         "selectFile": "选择文件",
-        "skipUpload": "跳过上传",
         "parsingResume": "正在解析简历...",
         "uploadError": "请上传PDF文档(.pdf)",
         "autoFilled": "已自动填充: {{fields}}",
@@ -348,10 +347,7 @@
         "deleteConfirmTitle": "确定删除？",
         "deleteConfirmDesc": "此操作无法撤销。这将永久删除该候选人及其所有数据。",
         "deleteSuccess": "候选人已删除",
-        "noteUpdated": "备注已更新",
-        "resumeUploadSuccess": "简历上传成功",
-        "resumeUploadFailed": "简历上传失败",
-        "resumeFormatError": "格式错误：只支持PDF格式的简历上传。"
+        "noteUpdated": "备注已更新"
       },
       "comments": {
         "title": "评论",
@@ -387,10 +383,6 @@
         "resumePreview": "简历预览",
         "downloadResume": "下载简历",
         "noResume": "暂无简历文件",
-        "uploadHint": "点击上传或拖拽文件到此处",
-        "uploadingResume": "正在上传简历...",
-        "dropToUpload": "松开以上传",
-        "uploadResume": "上传简历",
         "interviewerNotes": "面试官备注",
         "addNotePlaceholder": "添加候选人备注...",
         "noNotesYet": "暂无备注，点击添加..."

@@ -65,5 +65,10 @@ describe("AddCandidateDialog", () => {
     expect(
       screen.getByText("recruitment.candidates.dialog.uploadResume"),
     ).toBeInTheDocument();
+
+    // We expect there NOT to be a skip upload option anymore
+    expect(
+      screen.queryByText("recruitment.candidates.dialog.skipUpload"),
+    ).not.toBeInTheDocument();
   });
 });

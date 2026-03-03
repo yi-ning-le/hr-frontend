@@ -89,10 +89,6 @@ vi.mock("@/hooks/queries/useCandidates", () => ({
     mutate: vi.fn(),
     isPending: false,
   }),
-  useUploadResume: () => ({
-    mutateAsync: vi.fn().mockResolvedValue(undefined),
-    isPending: false,
-  }),
   useCandidateHistory: () => ({
     data: [],
     isLoading: false,
