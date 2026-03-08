@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { Candidate } from "@/types/candidate";
 import { CandidateDetail } from "../CandidateDetail";
@@ -69,6 +70,9 @@ const mockCandidate: Candidate = {
   appliedAt: new Date("2024-01-01"),
 };
 
+const mockUpdateResumeMutate = vi.fn();
+let isUpdateResumePending = false;
+
 // Mock TanStack Query hooks
 vi.mock("@/hooks/queries/useCandidates", () => ({
   CANDIDATES_QUERY_KEY: ["candidates"],
@@ -84,6 +88,10 @@ vi.mock("@/hooks/queries/useCandidates", () => ({
   useUpdateCandidate: () => ({
     mutate: vi.fn(),
     isPending: false,
+  }),
+  useUpdateCandidateResume: () => ({
+    mutate: mockUpdateResumeMutate,
+    isPending: isUpdateResumePending,
   }),
   useDeleteCandidate: () => ({
     mutate: vi.fn(),
@@ -150,6 +158,13 @@ const renderInDialog = () => {
 };
 
 describe("CandidateDetail", () => {
+  beforeEach(() => {
+    mockUpdateResumeMutate.mockReset();
+    isUpdateResumePending = false;
+    vi.mocked(toast.error).mockReset();
+    vi.mocked(toast.success).mockReset();
+  });
+
   it("renders candidate name and job title", () => {
     renderInDialog();
 
@@ -169,5 +184,29 @@ describe("CandidateDetail", () => {
     expect(
       screen.getByText("recruitment.candidates.form.channels.linkedin"),
     ).toBeInTheDocument();
+  });
+
+  it("does not call update resume API when selected file is not PDF", () => {
+    renderInDialog();
+
+    const fileInput = screen.getByTestId("resume-file-input");
+    const file = new File(["dummy"], "resume.docx", {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    expect(mockUpdateResumeMutate).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith(
+      "recruitment.candidates.dialog.uploadError",
+    );
+  });
+
+  it("disables replace resume button while uploading", () => {
+    isUpdateResumePending = true;
+    renderInDialog();
+
+    expect(
+      screen.getByText("recruitment.candidates.detail.replaceResume"),
+    ).toBeDisabled();
   });
 });

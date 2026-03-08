@@ -55,6 +55,8 @@ const mockCandidateWithoutResume: Candidate = {
 const defaultProps = {
   candidate: mockCandidateWithResume,
   onPreviewClick: vi.fn(),
+  onResumeUpdate: vi.fn(),
+  isResumeUpdating: false,
 };
 
 describe("CandidateResumeSection", () => {
@@ -134,5 +136,54 @@ describe("CandidateResumeSection", () => {
     expect(
       screen.queryByText("recruitment.candidates.detail.viewResume"),
     ).not.toBeInTheDocument();
+  });
+
+  it("renders replace resume button when onResumeUpdate is provided", () => {
+    render(<CandidateResumeSection {...defaultProps} />);
+
+    expect(
+      screen.getByText("recruitment.candidates.detail.replaceResume"),
+    ).toBeInTheDocument();
+  });
+
+  it("does not render replace resume button when onResumeUpdate is not provided", () => {
+    render(
+      <CandidateResumeSection
+        candidate={mockCandidateWithResume}
+        onPreviewClick={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.queryByText("recruitment.candidates.detail.replaceResume"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("calls onResumeUpdate with selected file when file is chosen", () => {
+    const onResumeUpdate = vi.fn();
+    render(
+      <CandidateResumeSection
+        {...defaultProps}
+        onResumeUpdate={onResumeUpdate}
+      />,
+    );
+
+    const fileInput = screen.getByTestId("resume-file-input");
+    const file = new File(["dummy pdf"], "resume.pdf", {
+      type: "application/pdf",
+    });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    expect(onResumeUpdate).toHaveBeenCalledWith(file);
+  });
+
+  it("disables replace button while resume update is pending", () => {
+    render(
+      <CandidateResumeSection {...defaultProps} isResumeUpdating={true} />,
+    );
+
+    expect(
+      screen.getByText("recruitment.candidates.detail.replaceResume"),
+    ).toBeDisabled();
   });
 });

@@ -20,6 +20,7 @@ import {
   useCandidates,
   useDeleteCandidate,
   useUpdateCandidate,
+  useUpdateCandidateResume,
   useUpdateCandidateStatus,
 } from "@/hooks/queries/useCandidates";
 import type { Candidate } from "@/types/candidate";
@@ -61,6 +62,8 @@ export function CandidateDetail({
   const candidates = candidateData?.data || [];
   const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
   const { mutate: updateCandidate } = useUpdateCandidate();
+  const { mutate: updateResume, isPending: isResumeUpdating } =
+    useUpdateCandidateResume();
   const { mutate: deleteCandidate } = useDeleteCandidate();
 
   const candidate = candidates.find((c: Candidate) => c.id === candidateId);
@@ -124,6 +127,31 @@ export function CandidateDetail({
           <CandidateResumeSection
             candidate={candidate}
             onPreviewClick={() => handlePreviewOpenChange(true)}
+            isResumeUpdating={isResumeUpdating}
+            onResumeUpdate={(file) => {
+              const lowerName = file.name.toLowerCase();
+              const lowerType = file.type.toLowerCase();
+              const hasPdfExtension = lowerName.endsWith(".pdf");
+              const hasPdfMime = lowerType.includes("pdf");
+              if (!hasPdfExtension && lowerType !== "" && !hasPdfMime) {
+                toast.error(t("recruitment.candidates.dialog.uploadError"));
+                return;
+              }
+
+              updateResume(
+                { id: candidate.id, file },
+                {
+                  onSuccess: () =>
+                    toast.success(
+                      t("recruitment.candidates.detail.resumeUpdateSuccess"),
+                    ),
+                  onError: () =>
+                    toast.error(
+                      t("recruitment.candidates.detail.resumeUpdateError"),
+                    ),
+                },
+              );
+            }}
           />
 
           <Separator />

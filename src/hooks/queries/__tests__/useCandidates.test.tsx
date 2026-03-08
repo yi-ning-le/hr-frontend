@@ -12,6 +12,7 @@ vi.mock("@/lib/api", () => ({
     create: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
+    updateResume: vi.fn(),
     updateStatus: vi.fn(),
     updateNote: vi.fn(),
   },
@@ -19,12 +20,18 @@ vi.mock("@/lib/api", () => ({
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
   });
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
+
+// Also need useUpdateCandidateResume from the actual file
+import { useUpdateCandidateResume } from "../useCandidates";
 
 describe("useCandidates", () => {
   beforeEach(() => {
@@ -50,5 +57,22 @@ describe("useCandidates", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.data?.[0].appliedAt).toBeInstanceOf(Date);
     expect(CandidatesAPI.list).toHaveBeenCalledWith({ jobId: "all" });
+  });
+
+  it("updates candidate resume", async () => {
+    const mockCandidate = { id: "1", name: "Alice", resumeUrl: "new.pdf" };
+    vi.mocked(CandidatesAPI.updateResume).mockResolvedValue(
+      mockCandidate as any,
+    );
+
+    const { result } = renderHook(() => useUpdateCandidateResume(), {
+      wrapper: createWrapper(),
+    });
+
+    const file = new File(["test"], "test.pdf", { type: "application/pdf" });
+    result.current.mutate({ id: "1", file });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(CandidatesAPI.updateResume).toHaveBeenCalledWith("1", file);
   });
 });

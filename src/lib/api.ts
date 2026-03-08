@@ -401,6 +401,22 @@ export const CandidatesAPI = {
     await api.delete(`/candidates/${id}`);
   },
 
+  updateResume: async (id: string, file: File): Promise<Candidate> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.patch<Candidate>(
+      `/candidates/${id}/resume`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
+    return {
+      ...response.data,
+      appliedAt: new Date(response.data.appliedAt),
+    };
+  },
+
   updateStatus: async (
     id: string,
     status: CandidateStatus,

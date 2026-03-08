@@ -112,6 +112,20 @@ export const useDeleteCandidate = () => {
   });
 };
 
+export const useUpdateCandidateResume = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, file }: { id: string; file: File }) =>
+      CandidatesAPI.updateResume(id, file),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: CANDIDATES_QUERY_KEY });
+      queryClient.invalidateQueries({
+        queryKey: [...CANDIDATES_QUERY_KEY, id],
+      });
+    },
+  });
+};
+
 export const useRevertReviewer = () => {
   const queryClient = useQueryClient();
   return useMutation({
