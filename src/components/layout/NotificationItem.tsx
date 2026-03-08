@@ -168,5 +168,19 @@ function resolveDetailTarget(
     };
   }
 
+  if (action.kind === "interviewCompleted") {
+    if (isRecruiter) {
+      return {
+        to: "/recruitment",
+        search: {
+          tab: "candidates",
+          candidateId: action.candidateId,
+          showResume: true,
+        },
+      };
+    }
+    return null;
+  }
+
   return null;
 }

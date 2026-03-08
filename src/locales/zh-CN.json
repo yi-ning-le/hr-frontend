@@ -550,7 +550,14 @@
       "noHistoryInterviewsDesc": "您还没有完成过任何面试。",
       "viewDetails": "查看详情",
       "complete": "完成面试",
+      "completeTitle": "完成面试",
+      "completeDescription": "选择面试结果并添加评语。",
       "completeConfirmation": "这将标记面试为已完成。",
+      "result": "面试结果",
+      "resultPass": "通过",
+      "resultFail": "不通过",
+      "commentLabel": "评语",
+      "commentPlaceholder": "输入您的面试评价...",
       "cancel": "取消面试",
       "cancelConfirmation": "这将标记面试为已取消。",
       "validation": {
@@ -686,6 +693,10 @@
         "title": "简历评审已完成",
         "message": "评审人已提交了对候选人 {{candidateName}} 的评审意见。",
         "message_without_name": "评审人已提交了对候选人的评审意见。"
+      },
+      "interview_completed": {
+        "title": "面试已完成",
+        "message": "{{interviewerName}} 已完成对候选人 {{candidateName}} 的面试。"
       }
     }
   },

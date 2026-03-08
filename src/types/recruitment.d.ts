@@ -10,6 +10,8 @@ export interface Interview {
   scheduledTime: string; // ISO date string
   scheduledEndTime: string; // ISO date string
   status: "PENDING" | "COMPLETED" | "CANCELLED";
+  result?: "PASS" | "FAIL" | null;
+  comment?: string | null;
   createdAt: string;
   snapshotStatus?: {
     key: string;
@@ -23,6 +25,18 @@ export interface InterviewListResult {
   page: number;
   limit: number;
 }
+
+export type UpdateInterviewStatusPayload =
+  | {
+      id: string;
+      status: "COMPLETED";
+      result: "PASS" | "FAIL";
+      comment?: string;
+    }
+  | {
+      id: string;
+      status: "CANCELLED";
+    };
 
 export interface CreateInterviewInput {
   candidateId: string;

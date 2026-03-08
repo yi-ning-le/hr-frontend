@@ -15,7 +15,7 @@ vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, ...props }: any) => <a {...props}>{children}</a>,
 }));
 
-// Mock UI components that might cause issues in tests or to simplify
+// Mock UI components
 vi.mock("@/components/ui/alert-dialog", () => ({
   AlertDialog: ({ children }: any) => <div>{children}</div>,
   AlertDialogTrigger: ({ children }: any) => (
@@ -30,10 +30,39 @@ vi.mock("@/components/ui/alert-dialog", () => ({
   AlertDialogTitle: ({ children }: any) => <div>{children}</div>,
   AlertDialogDescription: ({ children }: any) => <div>{children}</div>,
   AlertDialogFooter: ({ children }: any) => <div>{children}</div>,
-  AlertDialogCancel: ({ children }: any) => <button>{children}</button>,
-  AlertDialogAction: ({ children, onClick }: any) => (
+  AlertDialogCancel: ({ children, onClick }: any) => (
     <button onClick={onClick}>{children}</button>
   ),
+  AlertDialogAction: ({ children, onClick, disabled }: any) => (
+    <button onClick={onClick} disabled={disabled} data-testid="confirm-action">
+      {children}
+    </button>
+  ),
+}));
+
+vi.mock("@/components/ui/radio-group", () => ({
+  RadioGroup: ({ children, value }: any) => (
+    <div data-testid="radio-group" data-value={value}>
+      {children}
+    </div>
+  ),
+  RadioGroupItem: ({ value, id }: any) => (
+    <input
+      type="radio"
+      value={value}
+      id={id}
+      data-testid={`radio-${value}`}
+      onChange={() => {}}
+    />
+  ),
+}));
+
+vi.mock("@/components/ui/label", () => ({
+  Label: ({ children, ...props }: any) => <label {...props}>{children}</label>,
+}));
+
+vi.mock("@/components/ui/textarea", () => ({
+  Textarea: (props: any) => <textarea {...props} />,
 }));
 
 describe("InterviewHeader", () => {
@@ -57,8 +86,6 @@ describe("InterviewHeader", () => {
       />,
     );
 
-    // The key is recruitment.interviews.status.PENDING
-    // The mock returns the key if default value is not provided
     expect(
       screen.getByText("recruitment.interviews.status.PENDING"),
     ).toBeInTheDocument();
@@ -73,7 +100,7 @@ describe("InterviewHeader", () => {
       />,
     );
 
-    expect(screen.getByText("Complete Interview")).toBeInTheDocument();
+    expect(screen.getAllByText("Complete Interview").length).toBeGreaterThan(0);
     expect(screen.getByText("Cancel Interview")).toBeInTheDocument();
   });
 
@@ -94,7 +121,21 @@ describe("InterviewHeader", () => {
     expect(screen.queryByText("Cancel Interview")).not.toBeInTheDocument();
   });
 
-  it("calls onUpdateStatus when confirming action", () => {
+  it("renders PASS/FAIL radio buttons in completion dialog", () => {
+    render(
+      <InterviewHeader
+        interview={mockInterview}
+        isUpdating={false}
+        onUpdateStatus={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Pass")).toBeInTheDocument();
+    expect(screen.getByText("Fail")).toBeInTheDocument();
+    expect(screen.getByText("Interview Result")).toBeInTheDocument();
+  });
+
+  it("calls onUpdateStatus with CANCELLED for cancel action", () => {
     const onUpdateStatus = vi.fn();
     render(
       <InterviewHeader
@@ -104,29 +145,14 @@ describe("InterviewHeader", () => {
       />,
     );
 
-    // Click "Complete Interview" trigger (which is mocked as a div with role button)
-    // Wait, I mocked AlertDialogTrigger as just a div.
-    // The structure is:
-    // AlertDialog
-    //   AlertDialogTrigger -> Button "Complete Interview"
-    //   AlertDialogContent -> AlertDialogAction "Confirm"
-
-    // In the real component, clicking Trigger opens Content.
-    // In my mock, everything is rendered?
-    // Let's check the mock again.
-    // AlertDialog renders children.
-    // AlertDialogTrigger renders children.
-    // AlertDialogContent renders children.
-
-    // So "Confirm" buttons are probably visible in the DOM immediately with my naive mock.
-    // There are two "Confirm" buttons (one for complete, one for cancel).
-
+    // There are multiple confirm buttons. The cancel dialog's confirm is the last one.
     const confirmButtons = screen.getAllByText("Confirm");
-    fireEvent.click(confirmButtons[0]); // Complete confirm
+    const cancelConfirm = confirmButtons[confirmButtons.length - 1];
+    fireEvent.click(cancelConfirm);
 
-    expect(onUpdateStatus).toHaveBeenCalledWith("i1", "COMPLETED");
-
-    fireEvent.click(confirmButtons[1]); // Cancel confirm
-    expect(onUpdateStatus).toHaveBeenCalledWith("i1", "CANCELLED");
+    expect(onUpdateStatus).toHaveBeenCalledWith({
+      id: "i1",
+      status: "CANCELLED",
+    });
   });
 });

@@ -25,11 +25,17 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
   const isReviewComment =
     comment.commentType === "review_suitable" ||
     comment.commentType === "review_unsuitable";
+  const isInterviewResult =
+    comment.commentType === "interview_pass" ||
+    comment.commentType === "interview_fail";
+  const hasDecisionBadge = isReviewComment || isInterviewResult;
   const trimmedContent = comment.content.trim();
   // Only hide content if it's strictly a status marker without additional commentary
-  const isStatusLiteral = /^(suitable|unsuitable)$/i.test(trimmedContent);
+  const isStatusLiteral = /^(suitable|unsuitable|pass|fail)$/i.test(
+    trimmedContent,
+  );
   const showContent =
-    trimmedContent !== "" && (!isReviewComment || !isStatusLiteral);
+    trimmedContent !== "" && (!hasDecisionBadge || !isStatusLiteral);
 
   return (
     <div className="flex gap-3 py-4 border-b last:border-0 border-border/50 hover:bg-muted/30 transition-colors px-2 -mx-2 rounded-lg group">
@@ -78,6 +84,28 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
               <>
                 <X className="h-3.5 w-3.5" />
                 {t("candidate.reviewCommentUnsuitable", "Unsuitable")}
+              </>
+            )}
+          </div>
+        )}
+        {isInterviewResult && (
+          <div
+            data-testid="interview-result-badge"
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold mb-2 ${
+              comment.commentType === "interview_pass"
+                ? "bg-green-50 text-green-700 dark:bg-green-950/50 dark:text-green-400"
+                : "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400"
+            }`}
+          >
+            {comment.commentType === "interview_pass" ? (
+              <>
+                <Check className="h-3.5 w-3.5" />
+                {t("recruitment.interviews.resultPass", "Pass")}
+              </>
+            ) : (
+              <>
+                <X className="h-3.5 w-3.5" />
+                {t("recruitment.interviews.resultFail", "Fail")}
               </>
             )}
           </div>

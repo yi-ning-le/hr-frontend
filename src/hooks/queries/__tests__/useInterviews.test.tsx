@@ -112,7 +112,11 @@ describe("useInterviews Hooks", () => {
 
   describe("useUpdateInterviewStatus", () => {
     it("calls InterviewsAPI.updateStatus and invalidates queries", async () => {
-      const updateData = { id: "1", status: "COMPLETED" as const };
+      const updateData = {
+        id: "1",
+        status: "COMPLETED" as const,
+        result: "PASS" as const,
+      };
       (InterviewsAPI.updateStatus as any).mockResolvedValue({});
 
       const { result } = renderHook(() => useUpdateInterviewStatus(), {
@@ -123,10 +127,7 @@ describe("useInterviews Hooks", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(InterviewsAPI.updateStatus).toHaveBeenCalledWith(
-        updateData.id,
-        updateData.status,
-      );
+      expect(InterviewsAPI.updateStatus).toHaveBeenCalledWith(updateData);
     });
   });
 

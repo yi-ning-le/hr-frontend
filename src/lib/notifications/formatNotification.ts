@@ -4,7 +4,8 @@ import type { Notification } from "@/types/notification";
 export type NotificationAction =
   | { kind: "candidateReview"; candidateId: string }
   | { kind: "reviewFinished"; candidateId: string }
-  | { kind: "interviewDetail"; interviewId: string };
+  | { kind: "interviewDetail"; interviewId: string }
+  | { kind: "interviewCompleted"; candidateId: string };
 
 export interface FormattedNotification {
   title: string;
@@ -85,6 +86,15 @@ function resolveAction(notification: Notification): NotificationAction | null {
     return interviewId ? { kind: "interviewDetail", interviewId } : null;
   }
 
+  if (action.kind === "interviewCompleted") {
+    const candidateId =
+      getStringParam(action.params, "candidateId") ??
+      (notification.subject.type === "candidate"
+        ? notification.subject.id
+        : null);
+    return candidateId ? { kind: "interviewCompleted", candidateId } : null;
+  }
+
   return null;
 }
 
@@ -120,6 +130,9 @@ function getTitleFallback(key: string, generic: string): string {
   if (key === "notifications.events.review_completed.title") {
     return "Resume Review Completed";
   }
+  if (key === "notifications.events.interview_completed.title") {
+    return "Interview Completed";
+  }
   return generic;
 }
 
@@ -135,6 +148,9 @@ function getMessageFallback(key: string, generic: string): string {
   }
   if (key === "notifications.events.review_completed.message_without_name") {
     return "A reviewer has submitted their assessment for a candidate.";
+  }
+  if (key === "notifications.events.interview_completed.message") {
+    return "{{interviewerName}} has completed the interview for candidate {{candidateName}}.";
   }
   return generic;
 }

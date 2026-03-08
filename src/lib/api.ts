@@ -27,6 +27,7 @@ import type {
   CreateInterviewInput,
   Interview,
   InterviewListResult,
+  UpdateInterviewStatusPayload,
 } from "@/types/recruitment.d";
 
 // Create Axios instance with default config
@@ -678,6 +679,8 @@ const interviewSchema = z.object({
   scheduledTime: z.string().min(1),
   scheduledEndTime: z.string().min(1),
   status: z.enum(["PENDING", "COMPLETED", "CANCELLED"]),
+  result: z.enum(["PASS", "FAIL"]).optional().nullable(),
+  comment: z.string().optional().nullable(),
   createdAt: z.string().min(1),
   snapshotStatus: z
     .object({
@@ -756,12 +759,12 @@ export const InterviewsAPI = {
   },
 
   updateStatus: async (
-    id: string,
-    status: "COMPLETED" | "CANCELLED",
+    input: UpdateInterviewStatusPayload,
   ): Promise<Interview> => {
+    const { id, ...payload } = input;
     const response = await api.patch<unknown>(
       `/recruitment/interviews/${id}/status`,
-      { status },
+      payload,
     );
     return interviewSchema.parse(response.data);
   },

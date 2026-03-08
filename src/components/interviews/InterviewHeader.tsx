@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
@@ -14,12 +15,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Interview } from "@/types/recruitment.d";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import type {
+  Interview,
+  UpdateInterviewStatusPayload,
+} from "@/types/recruitment.d";
 
 interface InterviewHeaderProps {
   interview: Interview;
   isUpdating: boolean;
-  onUpdateStatus: (id: string, status: "COMPLETED" | "CANCELLED") => void;
+  onUpdateStatus: (input: UpdateInterviewStatusPayload) => void;
 }
 
 export function InterviewHeader({
@@ -28,6 +34,17 @@ export function InterviewHeader({
   onUpdateStatus,
 }: InterviewHeaderProps) {
   const { t } = useTranslation();
+  const [result, setResult] = useState<"PASS" | "FAIL" | "">("");
+
+  const handleComplete = () => {
+    if (result === "PASS" || result === "FAIL") {
+      onUpdateStatus({
+        id: interview.id,
+        status: "COMPLETED",
+        result,
+      });
+    }
+  };
 
   return (
     <div className="mb-6">
@@ -66,21 +83,66 @@ export function InterviewHeader({
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    {t("common.areYouSure", "Are you sure?")}
+                    {t(
+                      "recruitment.interviews.completeTitle",
+                      "Complete Interview",
+                    )}
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     {t(
-                      "recruitment.interviews.completeConfirmation",
-                      "This will mark the interview as completed.",
+                      "recruitment.interviews.completeDescription",
+                      "Select the interview result.",
                     )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+                <div className="space-y-4 py-2">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">
+                      {t("recruitment.interviews.result", "Interview Result")}{" "}
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <RadioGroup
+                      value={result}
+                      onValueChange={(v) => setResult(v as "PASS" | "FAIL")}
+                      className="flex gap-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="PASS" id="result-pass" />
+                        <Label
+                          htmlFor="result-pass"
+                          className="text-green-600 dark:text-green-400 font-medium cursor-pointer"
+                        >
+                          {t("recruitment.interviews.resultPass", "Pass")}
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="FAIL" id="result-fail" />
+                        <Label
+                          htmlFor="result-fail"
+                          className="text-red-600 dark:text-red-400 font-medium cursor-pointer"
+                        >
+                          {t("recruitment.interviews.resultFail", "Fail")}
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setResult("");
+                    }}
+                  >
                     {t("common.cancel", "Cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => onUpdateStatus(interview.id, "COMPLETED")}
+                    onClick={handleComplete}
+                    disabled={result === ""}
+                    className={
+                      result === ""
+                        ? "opacity-50 pointer-events-none"
+                        : undefined
+                    }
                   >
                     {t("common.confirm", "Confirm")}
                   </AlertDialogAction>
@@ -111,7 +173,12 @@ export function InterviewHeader({
                     {t("common.cancel", "Cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => onUpdateStatus(interview.id, "CANCELLED")}
+                    onClick={() =>
+                      onUpdateStatus({
+                        id: interview.id,
+                        status: "CANCELLED",
+                      })
+                    }
                   >
                     {t("common.confirm", "Confirm")}
                   </AlertDialogAction>

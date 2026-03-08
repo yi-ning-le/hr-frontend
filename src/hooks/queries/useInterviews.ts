@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { InterviewsAPI } from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";
-import type { CreateInterviewInput } from "@/types/recruitment.d";
+import type {
+  CreateInterviewInput,
+  UpdateInterviewStatusPayload,
+} from "@/types/recruitment.d";
 
 const useInterviewSessionScope = () =>
   useAuthStore((state) => state.user?.id ?? state.token ?? "anonymous");
@@ -44,13 +47,8 @@ export function useUpdateInterviewStatus() {
   const sessionScope = useInterviewSessionScope();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: "COMPLETED" | "CANCELLED";
-    }) => InterviewsAPI.updateStatus(id, status),
+    mutationFn: (input: UpdateInterviewStatusPayload) =>
+      InterviewsAPI.updateStatus(input),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["interviews", sessionScope],

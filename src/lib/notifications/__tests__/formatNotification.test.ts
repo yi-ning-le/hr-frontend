@@ -197,4 +197,49 @@ describe("formatNotification", () => {
       candidateId: "33333333-3333-3333-3333-333333333333",
     });
   });
+
+  it("formats interview_completed notification", () => {
+    const notification: Notification = {
+      id: "6",
+      userId: "6f3e6fd9-7867-4fff-b3f6-27edab0b4973",
+      eventType: "interview_completed",
+      subject: {
+        type: "interview",
+        id: "44444444-4444-4444-4444-444444444444",
+      },
+      context: {
+        interviewId: "44444444-4444-4444-4444-444444444444",
+        candidateId: "11111111-1111-1111-1111-111111111111",
+        candidateName: "John Doe",
+        interviewerName: "Alice Lee",
+      },
+      content: {
+        titleKey: "notifications.events.interview_completed.title",
+        messageKey: "notifications.events.interview_completed.message",
+        params: {
+          candidateName: "John Doe",
+          interviewerName: "Alice Lee",
+        },
+      },
+      action: {
+        kind: "interviewCompleted",
+        params: {
+          candidateId: "11111111-1111-1111-1111-111111111111",
+        },
+      },
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    const result = formatNotification(notification, t as TFunction);
+
+    expect(result.title).toBe("Interview Completed");
+    expect(result.message).toBe(
+      "Alice Lee has completed the interview for candidate John Doe.",
+    );
+    expect(result.action).toEqual({
+      kind: "interviewCompleted",
+      candidateId: "11111111-1111-1111-1111-111111111111",
+    });
+  });
 });

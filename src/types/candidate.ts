@@ -32,7 +32,12 @@ export interface Candidate {
   reviewedAt?: string;
 }
 
-export type CommentType = "normal" | "review_suitable" | "review_unsuitable";
+export type CommentType =
+  | "normal"
+  | "review_suitable"
+  | "review_unsuitable"
+  | "interview_pass"
+  | "interview_fail";
 
 export interface CandidateComment {
   id: string;

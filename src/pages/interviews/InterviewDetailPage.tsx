@@ -21,6 +21,7 @@ import {
   useUpdateInterviewStatus,
 } from "@/hooks/queries/useInterviews";
 import { useResolveCandidateStatus } from "@/hooks/useCandidateStatuses";
+import type { UpdateInterviewStatusPayload } from "@/types/recruitment.d";
 
 export function InterviewDetailPage() {
   const { interviewId } = useParams({
@@ -55,11 +56,8 @@ export function InterviewDetailPage() {
     return <div>{t("common.notFound")}</div>;
   }
 
-  const handleUpdateStatus = (
-    id: string,
-    status: "COMPLETED" | "CANCELLED",
-  ) => {
-    updateStatus({ id, status });
+  const handleUpdateStatus = (input: UpdateInterviewStatusPayload) => {
+    updateStatus(input);
   };
 
   return (

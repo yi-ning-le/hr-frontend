@@ -550,7 +550,14 @@
       "noHistoryInterviewsDesc": "You haven't completed any interviews yet.",
       "viewDetails": "View Details",
       "complete": "Complete Interview",
+      "completeTitle": "Complete Interview",
+      "completeDescription": "Select the interview result and optionally add a comment.",
       "completeConfirmation": "This will mark the interview as completed.",
+      "result": "Interview Result",
+      "resultPass": "Pass",
+      "resultFail": "Fail",
+      "commentLabel": "Comment",
+      "commentPlaceholder": "Enter your interview feedback...",
       "cancel": "Cancel Interview",
       "cancelConfirmation": "This will mark the interview as cancelled.",
       "validation": {
@@ -685,6 +692,10 @@
         "title": "Resume Review Completed",
         "message": "A reviewer has submitted their assessment for candidate {{candidateName}}.",
         "message_without_name": "A reviewer has submitted their assessment for a candidate."
+      },
+      "interview_completed": {
+        "title": "Interview Completed",
+        "message": "{{interviewerName}} has completed the interview for candidate {{candidateName}}."
       }
     }
   },
