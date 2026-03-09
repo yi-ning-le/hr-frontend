@@ -30,6 +30,9 @@ The project provides the following key scripts:
 - **Run Tests:** `bun run test` (Watch mode)
 - **Run Tests Once:** `bun run test:run`
 - **Test Coverage:** `bun run test:coverage`
+- **Preview Build:** `bun run preview`
+- **Run Pre-commit Hooks:** `bun run prek`
+- **Install Hooks:** `bun run prepare`
 
 ## Documentation & AI Guidelines
 
