@@ -4,7 +4,7 @@
 
 ## Tech Stack
 
-- **Framework:** React 19 + TypeScript (~5.9) + Vite (using Rolldown)
+- **Framework:** React 19 + TypeScript (~5.9) + Vite 8.0
 - **Runtime:** Bun
 - **Styling:** Tailwind CSS v4 + shadcn/ui (Radix UI primitives)
 - **State Management:** Zustand (Global UI), TanStack Query (Server State)
@@ -40,7 +40,6 @@ This repository includes detailed guidelines for developers and AI agents (such 
 
 - [README.md](./README.md): Basic project overview (this file).
 - [AGENT.md](./AGENT.md): Key instructions, core mandates (TDD, Performance), and project conventions.
-- [GEMINI.md](./GEMINI.md): Comprehensive project architecture, detailed tech stack, layout, and conventions.
 - [CLAUDE.md](./CLAUDE.md): Quick reference and development guidelines for Claude/AI.
 
 Please refer to these files to ensure code quality standards, consistent architecture, and TDD-first principles are strictly followed.
