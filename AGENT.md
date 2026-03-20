@@ -1,64 +1,73 @@
-# Agent Instructions: hr-frontend
+# AGENT.md
 
-You are an expert software engineer agent specialized in React, TypeScript, and modern frontend architecture. Your goal is to maintain and evolve the **hr-frontend** project while adhering to strict quality, performance, and testing standards.
+## Project
 
-## 🚀 Project Identity & Tech Stack
+**hr-frontend** - HR management app (React 19, TypeScript, Vite, Bun, Tailwind v4, shadcn/ui, TanStack Router, Zustand, Vitest)
 
-- **Core:** React 19, TypeScript, Vite (using experimental Rolldown bundler).
-- **Styling:** Tailwind CSS v4, shadcn/ui (Radix UI primitives).
-- **Routing:** TanStack Router (File-based routing).
-- **State:** Zustand (Global UI state), TanStack Query (Server state).
-- **Quality:** Biome (Linting & Formatting), Vitest (Testing), Zod (Validation).
-- **Runtime:** Bun.
+## Structure
 
-## 🛠 Core Mandates & Skills
+```
+src/
+├── assets/              # Static assets
+├── components/
+│   ├── candidates/      # Candidate components
+│   ├── home/           # Dashboard components
+│   ├── interviews/     # Interview components
+│   ├── layout/         # Header, Footer
+│   └── ui/             # shadcn/ui primitives
+├── hooks/              # Custom hooks
+│   └── queries/        # TanStack Query hooks
+├── lib/
+│   ├── api/            # API client
+│   ├── notifications/  # Notification utilities
+│   ├── schemas/        # Zod schemas
+│   └── utils.ts        # cn() helper
+├── locales/            # i18n (en-US, zh-CN)
+├── pages/              # Route pages
+│   ├── admin/
+│   ├── auth/
+│   ├── employees/
+│   ├── interviews/
+│   ├── profile/
+│   ├── recruitment/
+│   └── settings/
+├── routes/             # TanStack Router
+│   └── __tests__/
+├── stores/             # Zustand stores
+│   └── __tests__/
+├── test/               # Test setup & mocks
+├── types/              # TypeScript types
+├── App.tsx
+├── main.tsx
+└── router.ts
+```
 
-You MUST activate and follow these skills for every task:
+## Commands
 
-### 1. Test-Driven Development (TDD)
+| Command            | Description   |
+| ------------------ | ------------- |
+| `bun run dev`      | Dev server    |
+| `bun run build`    | Build         |
+| `bun run check`    | Lint + format |
+| `bun run test:run` | Tests         |
 
-- **Skill:** `tdd-first-codegen`
-- **Mandate:** NEVER generate implementation code before writing tests.
-- **Workflow:**
-  1. Define testable behavior.
-  2. Write failing (RED) tests in `__tests__` directories.
-  3. Wait for user approval.
-  4. Implement (GREEN) code.
+## Conventions
 
-### 2. Performance Optimization
+- Imports: `@/` for `src/`
+- Components: functional + TypeScript interfaces
+- Styling: Tailwind + `cn()` utility
+- Forms: `react-hook-form` + `zod`
+- Tests: `__tests__/[filename].test.tsx`
 
-- **Skill:** `vercel-react-best-practices`
-- **Mandate:** Follow Vercel's 57 rules for React/Next.js performance.
-- **Focus:** Eliminate waterfalls (`Promise.all`), optimize bundle size (direct imports), and minimize re-renders (`useMemo`, `useCallback` appropriately).
+## Skills (Required)
 
-### 3. Design & Accessibility
+1. **TDD** (`tdd-first-codegen`): Write tests FIRST, then implement
+2. **Performance** (`vercel-react-best-practices`): Avoid waterfalls, optimize bundles
+3. **Design** (`web-design-guidelines`): WCAG compliance
 
-- **Skill:** `web-design-guidelines`
-- **Mandate:** Ensure UI/UX consistency and WCAG compliance.
-- **Action:** Use this skill to review any new UI components or layout changes.
+## Workflow
 
-## 📂 Project Structure & Conventions
-
-- **Path Aliases:** Always use `@/` for `src/` directory imports.
-- **Components:** Reusable UI primitives in `src/components/ui`. Feature components in `src/components/[feature]`.
-- **Routing:** Define routes in `src/routes/`. TanStack Router handles the route tree generation.
-- **State & Data:** Global state in `src/stores/`. Localization files in `src/locales/`.
-- **Tests:** Place tests in `__tests__` folders adjacent to the source file. Global test setup and mocks are in `src/test/`.
-- **Styling:** Use Tailwind v4 utility classes and the `cn()` utility for conditional classes.
-
-## ⌨️ Common Commands
-
-- **Check Code:** `bun run check` (Runs Biome lint/format/import-sort).
-- **Run Tests:** `bun run test:run` (One-time test execution).
-- **Dev Server:** `bun run dev`.
-
-## 🤖 Workflow Expectations
-
-1. **Discovery:** Use `grep_search` and `read_file` to understand existing patterns before suggesting changes.
-2. **Plan:** Propose a plan that includes the TDD phases.
-3. **Execution:** Strictly follow the TDD workflow.
-4. **Verification:** After implementation, run `bun run check` and `bun run test:run` to ensure no regressions and compliance with standards.
-
----
-
-_Refer to `GEMINI.md` for a deeper overview of the project architecture and `package.json` for full dependency details._
+1. Discover: read existing patterns
+2. Plan: propose with TDD phases
+3. Execute: tests → implementation
+4. Verify: `bun run check` + `bun run test:run` + `bun run build`
